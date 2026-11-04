@@ -38,3 +38,8 @@
   - Step 9: Created the Category model and connected it to
   Department using ForeignKey. Learned how categories
   support automatic complaint routing.
+
+
+  - Step 10: Created the Product model to store software
+  products. Learned BooleanField and how is_active
+  helps deactivate products without deleting records.
