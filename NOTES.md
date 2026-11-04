@@ -68,3 +68,8 @@
 
   - Step 15: Registered the custom User model in Django Admin.
   Learned that role='admin' and is_superuser=True are separate.
+
+
+  - Step 16: Added four support departments through Django Admin.
+  Learned that models define tables, while Admin creates
+  and manages actual database records.
