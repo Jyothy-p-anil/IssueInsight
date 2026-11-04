@@ -63,3 +63,8 @@
   - Step 14: Started Django's development server using runserver.
   Logged into Django Admin with a superuser and verified
   that the registered models are accessible in the browser. 
+
+
+
+  - Step 15: Registered the custom User model in Django Admin.
+  Learned that role='admin' and is_superuser=True are separate.
