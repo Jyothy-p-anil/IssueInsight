@@ -54,3 +54,7 @@
   in Django Admin. Learned how admin.site.register()
   makes database models manageable through Django's
   built-in administration interface.
+
+  - Step 13: Created a Django superuser using createsuperuser.
+  Learned that a superuser has full Django Admin permissions.
+  The account is stored locally in SQLite.
