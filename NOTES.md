@@ -43,3 +43,8 @@
   - Step 10: Created the Product model to store software
   products. Learned BooleanField and how is_active
   helps deactivate products without deleting records.
+
+  - Step 11: Created the Ticket model to store employee and
+  customer complaints. Learned TextField, ForeignKey,
+  status choices and auto_now_add. Added support for
+  products not listed in the dropdown.
