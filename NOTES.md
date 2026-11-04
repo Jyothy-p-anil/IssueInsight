@@ -104,3 +104,7 @@
   division, category, department, status and creation time.
   Learned list_display, list_filter, search_fields and
   descending ordering in Django Admin.
+
+  - Step 22: Created and tested a Django seed-data command.
+  Learned BaseCommand, handle() and get_or_create().
+  The initial database records can now be recreated automatically.
