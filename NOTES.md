@@ -30,3 +30,7 @@
 
   - GitHub Setup Step 3: Moved Django's SECRET_KEY into a
   Git-ignored local file to keep it out of the repository.
+
+
+  - Step 8: Connected User to Department using ForeignKey.
+  Learned one-to-many relationships and on_delete=SET_NULL.

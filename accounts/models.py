@@ -16,3 +16,12 @@ class User(AbstractUser):
         choices=ROLE_CHOICES,
         default='customer'
     )
+
+    
+    department = models.ForeignKey(
+        'tickets.Department',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='staff_members'
+    )
