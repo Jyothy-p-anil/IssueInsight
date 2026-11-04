@@ -48,3 +48,9 @@
   customer complaints. Learned TextField, ForeignKey,
   status choices and auto_now_add. Added support for
   products not listed in the dropdown.
+
+
+  - Step 12: Registered Department, Category, Product and Ticket
+  in Django Admin. Learned how admin.site.register()
+  makes database models manageable through Django's
+  built-in administration interface.
