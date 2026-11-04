@@ -34,3 +34,7 @@
 
   - Step 8: Connected User to Department using ForeignKey.
   Learned one-to-many relationships and on_delete=SET_NULL.
+
+  - Step 9: Created the Category model and connected it to
+  Department using ForeignKey. Learned how categories
+  support automatic complaint routing.
