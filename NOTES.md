@@ -93,3 +93,8 @@
   - Step 19: Created a test employee and sample complaint.
   Learned how Ticket uses ForeignKey relationships to
   connect Reporter, Category and Department records.
+
+
+  - Step 20: Created a customer account and software complaint.
+  Learned that one Ticket model supports both employee and
+  customer complaints using the division field.
