@@ -98,3 +98,9 @@
   - Step 20: Created a customer account and software complaint.
   Learned that one Ticket model supports both employee and
   customer complaints using the division field.
+
+
+  - Step 21: Customized TicketAdmin to display reporter,
+  division, category, department, status and creation time.
+  Learned list_display, list_filter, search_fields and
+  descending ordering in Django Admin.

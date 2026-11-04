@@ -23,4 +23,30 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Product)
-admin.site.register(Ticket)
+
+@admin.register(Ticket)
+class TicketAdmin(admin.ModelAdmin):
+
+    list_display = (
+        'title',
+        'reporter',
+        'division',
+        'category',
+        'department',
+        'status',
+        'created_at',
+    )
+
+    list_filter = (
+        'division',
+        'status',
+        'department',
+    )
+
+    search_fields = (
+        'title',
+        'description',
+        'reporter__username',
+    )
+
+    ordering = ('-created_at',)
