@@ -83,3 +83,8 @@
         - Step 17.1: Customized CategoryAdmin using list_display,
         list_filter, search_fields and ordering to make
         complaint categories easier to manage.
+
+
+- Step 18: Added three sample software products using Django Admin.
+  Learned how Product records will support customer complaint
+  submission and product-wise analytics.
