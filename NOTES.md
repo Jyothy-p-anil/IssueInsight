@@ -88,3 +88,8 @@
 - Step 18: Added three sample software products using Django Admin.
   Learned how Product records will support customer complaint
   submission and product-wise analytics.
+
+
+  - Step 19: Created a test employee and sample complaint.
+  Learned how Ticket uses ForeignKey relationships to
+  connect Reporter, Category and Department records.
