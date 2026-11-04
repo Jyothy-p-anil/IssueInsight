@@ -73,3 +73,13 @@
   - Step 16: Added four support departments through Django Admin.
   Learned that models define tables, while Admin creates
   and manages actual database records.
+
+
+  - Step 17: Added 12 complaint categories and mapped them
+  to support departments. Learned that category records
+  can define routing rules, while unrecognized categories
+  can be reviewed manually.
+
+        - Step 17.1: Customized CategoryAdmin using list_display,
+        list_filter, search_fields and ordering to make
+        complaint categories easier to manage.
