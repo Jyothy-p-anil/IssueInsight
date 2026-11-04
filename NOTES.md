@@ -58,3 +58,8 @@
   - Step 13: Created a Django superuser using createsuperuser.
   Learned that a superuser has full Django Admin permissions.
   The account is stored locally in SQLite.
+
+
+  - Step 14: Started Django's development server using runserver.
+  Logged into Django Admin with a superuser and verified
+  that the registered models are accessible in the browser. 
