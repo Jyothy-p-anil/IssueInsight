@@ -141,3 +141,8 @@
   - Step 29: Tested Django's built-in authentication and sessions.
   Learned how Django identifies a logged-in user using
   a session cookie and the is_authenticated property.
+
+  - Step 30: Created the IssueInsight login page using
+  Django's built-in LoginView and AuthenticationForm.
+  Learned POST requests, CSRF protection, login redirects,
+  and how authentication creates user sessions.
