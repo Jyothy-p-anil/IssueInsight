@@ -108,3 +108,7 @@
   - Step 22: Created and tested a Django seed-data command.
   Learned BaseCommand, handle() and get_or_create().
   The initial database records can now be recreated automatically.
+
+
+  Step 23: Planned the user-facing screens and navigation.
+  Learned how role-based interfaces share reusable pages.
