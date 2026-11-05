@@ -1,0 +1,11 @@
+
+/* Common IssueInsight styles */
+
+body {
+    font-family: Arial, sans-serif;
+}
+
+.welcome-title {
+    color: #244a7d;
+    font-weight: 700;
+}

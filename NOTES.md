@@ -129,3 +129,7 @@
   routing, and template inheritance.
 - Resolved TemplateDoesNotExist and verified the homepage
   using a fresh Django server process.
+
+  - Step 27: Created a reusable CSS file for IssueInsight.
+  Learned about Django static files, STATICFILES_DIRS,
+  {% load static %}, and connecting CSS to templates.
