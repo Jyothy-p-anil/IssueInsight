@@ -112,3 +112,8 @@
 
   Step 23: Planned the user-facing screens and navigation.
   Learned how role-based interfaces share reusable pages.
+
+
+  - Step 24: Planned the shared layout and role-based navigation.
+  Learned how a base template keeps common UI elements
+  consistent across Django pages.
