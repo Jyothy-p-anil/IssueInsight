@@ -123,3 +123,9 @@
   - Step 25: Created a reusable base.html template using Bootstrap.
   Learned that Django template blocks allow multiple pages to
   share the same layout without repeating HTML.
+
+
+- Step 26: Created the Django homepage using a view, URL
+  routing, and template inheritance.
+- Resolved TemplateDoesNotExist and verified the homepage
+  using a fresh Django server process.
