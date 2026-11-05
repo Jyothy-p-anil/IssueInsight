@@ -133,3 +133,11 @@
   - Step 27: Created a reusable CSS file for IssueInsight.
   Learned about Django static files, STATICFILES_DIRS,
   {% load static %}, and connecting CSS to templates.
+
+  - Step 28: Created shared navigation with a top bar and sidebar.
+  Learned Django template conditions, user roles, named URLs,
+  and responsive Bootstrap columns.
+
+  - Step 29: Tested Django's built-in authentication and sessions.
+  Learned how Django identifies a logged-in user using
+  a session cookie and the is_authenticated property.
