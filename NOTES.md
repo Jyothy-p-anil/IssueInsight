@@ -117,3 +117,9 @@
   - Step 24: Planned the shared layout and role-based navigation.
   Learned how a base template keeps common UI elements
   consistent across Django pages.
+
+
+
+  - Step 25: Created a reusable base.html template using Bootstrap.
+  Learned that Django template blocks allow multiple pages to
+  share the same layout without repeating HTML.
