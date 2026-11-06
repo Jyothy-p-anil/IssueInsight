@@ -146,3 +146,7 @@
   Django's built-in LoginView and AuthenticationForm.
   Learned POST requests, CSRF protection, login redirects,
   and how authentication creates user sessions.
+
+  - Step 31: Implemented logout using Django's LogoutView.
+  Learned how POST requests, CSRF protection, and
+  session termination work during logout.
