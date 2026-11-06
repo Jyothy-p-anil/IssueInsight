@@ -158,3 +158,8 @@
   - Step 33: Implemented and tested customer self-registration.
   Verified password validation, successful registration,
   customer role assignment and login.
+
+  - Step 34 (Part 2): Created the Forgot Password request
+  and confirmation pages using Django PasswordResetView.
+  Learned about reset tokens, email-based password
+  recovery, and generic confirmation messages.
