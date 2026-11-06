@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from tickets import views
+from accounts import views as account_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -21,5 +22,6 @@ urlpatterns = [
     auth_views.LogoutView.as_view(),
     name='logout'
     ),
+    path('register/', account_views.register, name='register'),
 
 ]

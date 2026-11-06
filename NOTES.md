@@ -154,3 +154,7 @@
   - Step 32: Created CustomerRegistrationForm using Django's
   UserCreationForm. Learned form validation, Meta, clean_email(),
   and overriding save() to assign the customer role.
+
+  - Step 33: Implemented and tested customer self-registration.
+  Verified password validation, successful registration,
+  customer role assignment and login.
