@@ -150,3 +150,7 @@
   - Step 31: Implemented logout using Django's LogoutView.
   Learned how POST requests, CSRF protection, and
   session termination work during logout.
+
+  - Step 32: Created CustomerRegistrationForm using Django's
+  UserCreationForm. Learned form validation, Meta, clean_email(),
+  and overriding save() to assign the customer role.
