@@ -193,7 +193,12 @@
   Learned to handle email failures using try/except and logging.
 
 
-  - Step 36 (Part 2): Created a form for admin-managed
-  Employee and Support Staff account creation.
-  Added email validation, department validation and
-  initial password protection.
+        - Step 36 (Part 2): Created a form for admin-managed
+        Employee and Support Staff account creation.
+        Added email validation, department validation and
+        initial password protection.
+
+        - Step 36 (Part 3): Connected StaffAccountCreationForm
+        to Django Admin. Customized the Add User screen to
+        collect username, email, role and department without
+        requiring an administrator-set password.
