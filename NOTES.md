@@ -191,3 +191,9 @@
   Verified successful customer registration and welcome
   email delivery to the registered Gmail inbox.
   Learned to handle email failures using try/except and logging.
+
+
+  - Step 36 (Part 2): Created a form for admin-managed
+  Employee and Support Staff account creation.
+  Added email validation, department validation and
+  initial password protection.
