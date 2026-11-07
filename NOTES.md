@@ -222,3 +222,10 @@
   decorator to restrict access by user role.
   Added permission-error messages to the shared template.
   Actual role-specific page testing follows in Part 2.
+
+
+
+  - Step 39 (Part 2): Created role-specific dashboard entry
+  pages and protected them using role_required().
+  Verified that unauthorized users cannot open restricted
+  pages by entering their URLs directly.

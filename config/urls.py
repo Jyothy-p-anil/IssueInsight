@@ -58,4 +58,27 @@ path(
 ),
 
 
+    path(
+        'employee/dashboard/',
+        views.employee_dashboard,
+        name='employee_dashboard'
+    ),
+    path(
+        'customer/dashboard/',
+        views.customer_dashboard,
+        name='customer_dashboard'
+    ),
+    path(
+        'support/dashboard/',
+        views.support_dashboard,
+        name='support_dashboard'
+    ),
+    path(
+        'management/dashboard/',
+        views.admin_dashboard,
+        name='admin_dashboard'
+    ),
+
+
+
 ]
