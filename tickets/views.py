@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from accounts.decorators import role_required
+
 
 @login_required
 def home(request):
@@ -32,3 +33,20 @@ def admin_dashboard(request):
     return render(request, 'role_dashboard.html', {
         'page_title': 'Admin Dashboard'
     })
+
+@login_required
+def dashboard_redirect(request):
+    user = request.user
+
+    if user.is_superuser or user.role == 'admin':
+        return redirect('admin_dashboard')
+
+    dashboards = {
+        'employee': 'employee_dashboard',
+        'customer': 'customer_dashboard',
+        'support': 'support_dashboard',
+    }
+
+    dashboard = dashboards.get(user.role, 'home')
+
+    return redirect(dashboard)
