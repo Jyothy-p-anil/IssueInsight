@@ -159,7 +159,28 @@
   Verified password validation, successful registration,
   customer role assignment and login.
 
-  - Step 34 (Part 2): Created the Forgot Password request
-  and confirmation pages using Django PasswordResetView.
-  Learned about reset tokens, email-based password
-  recovery, and generic confirmation messages.
+  
+- Step 34 (Part 1): Configured Django's Console Email Backend
+  for local development.
+  Learned how Django generates emails and displays them
+  in the terminal without sending them to a real inbox.
+  Tested email generation using send_mail().
+
+
+          - Step 34 (Part 2): Created the Forgot Password request
+          and confirmation pages using Django PasswordResetView.
+          Learned about reset tokens, email-based password
+          recovery, and generic confirmation messages.
+
+          
+        - Step 34 (Part 3): Completed the password reset workflow
+          using Django's PasswordResetConfirmView and
+          PasswordResetCompleteView.
+          Learned how reset tokens are validated, how users set
+          a new password, and how invalid or expired links are handled.
+          Successfully tested password resetting and login.
+
+
+          - Step 34 (Part 4): Configured Gmail SMTP with SSL on port 465.
+          Stored credentials securely in local_secret.py.
+          Resolved SMTP authentication errors and verified real email delivery.

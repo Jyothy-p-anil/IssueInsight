@@ -122,11 +122,36 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
+
+# Email configuration
+
+from .local_secret import (
+    EMAIL_HOST_USER as gmail_sender,
+    EMAIL_HOST_PASSWORD as gmail_app_password,
+)
+
 MAILERS = {
     'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
+        'BACKEND': 'django.core.mail.backends.smtp.EmailBackend',
+        'OPTIONS': {
+            'host': 'smtp.gmail.com',
+            'port': 465,
+            'use_tls': False,
+            'use_ssl': True,
+            'username': gmail_sender,
+            'password': gmail_app_password,
+            'timeout': 15,
+        },
     },
 }
+
+DEFAULT_FROM_EMAIL = gmail_sender
+
+
+
+
+
+
 AUTH_USER_MODEL = 'accounts.User'
 
 LOGIN_URL = 'login'
