@@ -202,3 +202,9 @@
         to Django Admin. Customized the Add User screen to
         collect username, email, role and department without
         requiring an administrator-set password.
+
+
+      - Step 36 (Part 4): Implemented secure initial password setup
+        emails for admin-created Employee and Support Staff accounts.
+        Reused Django password reset tokens and confirmation views.
+        Verified email delivery and password setup.
