@@ -184,3 +184,10 @@
           - Step 34 (Part 4): Configured Gmail SMTP with SSL on port 465.
           Stored credentials securely in local_secret.py.
           Resolved SMTP authentication errors and verified real email delivery.
+
+
+- Step 35: Implemented automatic welcome emails using Django's
+  send_mail() and Gmail SMTP.
+  Verified successful customer registration and welcome
+  email delivery to the registered Gmail inbox.
+  Learned to handle email failures using try/except and logging.
