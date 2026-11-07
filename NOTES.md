@@ -208,3 +208,8 @@
         emails for admin-created Employee and Support Staff accounts.
         Reused Django password reset tokens and confirmation views.
         Verified email delivery and password setup.
+
+
+  - Step 37: Implemented and tested employee account
+  deactivation and reactivation using Django's is_active.
+  Verified login restrictions and both email notifications.

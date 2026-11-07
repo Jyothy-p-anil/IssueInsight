@@ -6,6 +6,7 @@ from .forms import StaffAccountCreationForm
 
 
 
+
 import logging
 
 from django.conf import settings
@@ -38,12 +39,13 @@ class CustomUserAdmin(UserAdmin):
         }),
     )
 
-
+    
     list_display = (
         'username',
         'email',
         'role',
         'department',
+        'is_active',
         'is_staff',
         'is_superuser',
     )
@@ -51,13 +53,25 @@ class CustomUserAdmin(UserAdmin):
     list_filter = (
         'role',
         'department',
+        'is_active',
         'is_staff',
     )
 
 
+
     
+
     def save_model(self, request, obj, form, change):
+        previous_active = None
+
+        if change:
+            previous_active = User.objects.filter(
+                pk=obj.pk
+            ).values_list('is_active', flat=True).first()
+
         super().save_model(request, obj, form, change)
+
+
 
         if not change and obj.role in ('employee', 'support'):
 
@@ -93,3 +107,35 @@ class CustomUserAdmin(UserAdmin):
                     )
 
             transaction.on_commit(send_setup_email)
+
+            
+        if change and previous_active is not None:
+            if previous_active != obj.is_active and obj.email:
+
+                status = (
+                    'reactivated' if obj.is_active
+                    else 'deactivated'
+                )
+
+                def send_status_email():
+                    try:
+                        send_mail(
+                            subject=f'IssueInsight Account {status.title()}',
+                            message=(
+                                f'Hello {obj.username},\n\n'
+                                f'Your IssueInsight account has been '
+                                f'{status}.\n\n'
+                                'Thank you,\nIssueInsight Team'
+                            ),
+                            from_email=settings.DEFAULT_FROM_EMAIL,
+                            recipient_list=[obj.email],
+                            fail_silently=False,
+                        )
+                    except Exception:
+                        logger.exception(
+                            'Account status email failed for user %s',
+                            obj.pk
+                        )
+
+                transaction.on_commit(send_status_email)
+
