@@ -213,3 +213,7 @@
   - Step 37: Implemented and tested employee account
   deactivation and reactivation using Django's is_active.
   Verified login restrictions and both email notifications.
+
+  - Step 38: Improved login error handling by displaying
+  a clear Bootstrap alert when authentication fails.
+  Verified incorrect-password and successful-login behavior.
