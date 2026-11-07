@@ -125,6 +125,16 @@
 
             <!-- Main Content -->
             <main class="col-lg-9 col-xl-10 p-4">
+                
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-{{ message.tags|default:'info' }}{% endif %}"
+                        role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+                {% endif %}
+
 
                 {% block content %}
                 {% endblock %}

@@ -217,3 +217,8 @@
   - Step 38: Improved login error handling by displaying
   a clear Bootstrap alert when authentication fails.
   Verified incorrect-password and successful-login behavior.
+
+  - Step 39 (Part 1): Created a reusable role_required
+  decorator to restrict access by user role.
+  Added permission-error messages to the shared template.
+  Actual role-specific page testing follows in Part 2.
