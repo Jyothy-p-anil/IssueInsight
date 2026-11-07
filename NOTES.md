@@ -234,3 +234,6 @@
   links to the shared sidebar. Employees, Customers,
   Support Staff and Admins now see their respective
   dashboard navigation. Superusers see Admin Dashboard.
+  - Fixed logout navigation so users return to the
+  IssueInsight login page instead of Django Admin's
+  default logged-out page.
