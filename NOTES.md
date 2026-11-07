@@ -229,3 +229,8 @@
   pages and protected them using role_required().
   Verified that unauthorized users cannot open restricted
   pages by entering their URLs directly.
+
+  - Step 39 (Part 3): Connected role-specific dashboard
+  links to the shared sidebar. Employees, Customers,
+  Support Staff and Admins now see their respective
+  dashboard navigation. Superusers see Admin Dashboard.

@@ -83,33 +83,69 @@
 
                     {% if user.is_authenticated %}
 
-                        {% if user.role == 'employee' or user.role == 'customer' %}
+                        
+                        {% if user.is_superuser or user.role == 'admin' %}
+
+                            <a class="nav-link"
+                            href="{% url 'admin_dashboard' %}">
+                                Admin Dashboard
+                            </a>
+
                             <span class="nav-link text-muted">
-                                Dashboard (Coming Soon)
+                                Analytics (Coming Soon)
                             </span>
+
+                        {% elif user.role == 'employee' %}
+
+                            <a class="nav-link"
+                            href="{% url 'employee_dashboard' %}">
+                                Employee Dashboard
+                            </a>
+
                             <span class="nav-link text-muted">
                                 Submit Complaint (Coming Soon)
                             </span>
+
+                            <span class="nav-link text-muted">
+                                My Tickets (Coming Soon)
+                            </span>
+
+                        {% elif user.role == 'customer' %}
+
+                            <a class="nav-link"
+                            href="{% url 'customer_dashboard' %}">
+                                Customer Dashboard
+                            </a>
+
+                            <span class="nav-link text-muted">
+                                Submit Complaint (Coming Soon)
+                            </span>
+
                             <span class="nav-link text-muted">
                                 My Tickets (Coming Soon)
                             </span>
 
                         {% elif user.role == 'support' %}
+
+                            <a class="nav-link"
+                            href="{% url 'support_dashboard' %}">
+                                Support Dashboard
+                            </a>
+
                             <span class="nav-link text-muted">
                                 Department Queue (Coming Soon)
                             </span>
+
                             <span class="nav-link text-muted">
                                 Assigned Tickets (Coming Soon)
                             </span>
+
                             <span class="nav-link text-muted">
                                 Incidents (Coming Soon)
                             </span>
 
-                        {% elif user.role == 'admin' %}
-                            <span class="nav-link text-muted">
-                                Analytics (Coming Soon)
-                            </span>
                         {% endif %}
+
 
                         {% if user.is_staff %}
                             <a class="nav-link"
