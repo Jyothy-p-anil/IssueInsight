@@ -115,4 +115,25 @@ path(
     views.employee_my_tickets,
     name='employee_my_tickets'
 ),
+
+# Customer Complaint Submission and Ticket Viewing URLs 
+
+path(
+    'customer/complaints/new/',
+    views.submit_customer_complaint,
+    name='submit_customer_complaint'
+),
+
+path(
+    'customer/tickets/',
+    views.customer_my_tickets,
+    name='customer_my_tickets'
+),
+
+
+
+
+
+
+
 ]

@@ -277,3 +277,14 @@
   actions and reusable email notifications.
   Verified account status changes, login restrictions,
   and both activation and deactivation emails.
+
+    - Step 41: Implemented Employee complaint submission
+  and My Tickets, including automatic department routing,
+  validation, role protection and ticket listing.
+
+    - Step 42: Implemented Customer complaint submission
+  and My Tickets inside IssueInsight.
+  Added active product selection, unlisted product entry,
+  customer category validation, automatic department
+  routing, submission confirmation and protected ticket
+  lists. Tested valid and invalid complaint submissions.

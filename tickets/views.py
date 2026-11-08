@@ -5,7 +5,7 @@ from accounts.decorators import role_required
 
 
 from django.contrib import messages
-from .forms import EmployeeComplaintForm
+from .forms import EmployeeComplaintForm, CustomerComplaintForm
 from .models import Ticket
 
 
@@ -105,3 +105,55 @@ def employee_my_tickets(request):
     return render(request, 'tickets/employee_my_tickets.html', {
         'tickets': tickets
     })
+
+#function to submit customer complaint and view tickets
+
+@role_required('customer')
+def submit_customer_complaint(request):
+
+    if request.method == 'POST':
+        form = CustomerComplaintForm(request.POST)
+
+        if form.is_valid():
+            ticket = form.save(commit=False)
+
+            ticket.reporter = request.user
+            ticket.division = 'customer'
+            ticket.status = 'submitted'
+
+            ticket.department = ticket.category.department
+
+            ticket.save()
+
+            messages.success(
+                request,
+                f'Complaint #{ticket.pk} submitted successfully.'
+            )
+
+            return redirect('customer_my_tickets')
+
+    else:
+        form = CustomerComplaintForm()
+
+    return render(
+        request,
+        'tickets/customer_complaint_form.html',
+        {'form': form}
+    )
+
+
+@role_required('customer')
+def customer_my_tickets(request):
+
+    tickets = Ticket.objects.filter(
+        reporter=request.user,
+        division='customer'
+    ).select_related(
+        'category', 'department', 'product'
+    ).order_by('-created_at')
+
+    return render(
+        request,
+        'tickets/customer_my_tickets.html',
+        {'tickets': tickets}
+    )
