@@ -11,6 +11,80 @@
 </p>
 
 <div class="card shadow-sm mt-4">
+    
+<form method="get" class="row g-3 mt-2 mb-3">
+
+    <div class="col-md-4">
+        <label class="form-label">Search</label>
+        <input type="text"
+               name="search"
+               value="{{ search }}"
+               placeholder="Username, name or email"
+               class="form-control">
+    </div>
+
+    <div class="col-md-2">
+        <label class="form-label">Role</label>
+        <select name="role" class="form-select">
+            <option value="">All Roles</option>
+            <option value="employee"
+                {% if selected_role == 'employee' %}selected{% endif %}>
+                Employee
+            </option>
+            <option value="customer"
+                {% if selected_role == 'customer' %}selected{% endif %}>
+                Customer
+            </option>
+            <option value="support"
+                {% if selected_role == 'support' %}selected{% endif %}>
+                Support Staff
+            </option>
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label">Department</label>
+        <select name="department" class="form-select">
+            <option value="">All Departments</option>
+            {% for dept in departments %}
+                <option value="{{ dept.name }}"
+                    {% if selected_department == dept.name %}selected{% endif %}>
+                    {{ dept.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="col-md-2">
+        <label class="form-label">Status</label>
+        <select name="status" class="form-select">
+            <option value="">All Statuses</option>
+            <option value="active"
+                {% if selected_status == 'active' %}selected{% endif %}>
+                Active
+            </option>
+            <option value="inactive"
+                {% if selected_status == 'inactive' %}selected{% endif %}>
+                Inactive
+            </option>
+        </select>
+    </div>
+
+    <div class="col-md-1 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary w-100">
+            Go
+        </button>
+    </div>
+
+    <div class="col-12">
+        <a href="{% url 'manage_users' %}"
+           class="btn btn-outline-secondary btn-sm">
+            Clear Filters
+        </a>
+    </div>
+
+</form>
+
     <div class="card-body">
 
         <div class="table-responsive">

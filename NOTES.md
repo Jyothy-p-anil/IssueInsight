@@ -244,3 +244,8 @@
   Displays employee, customer and support staff details,
   including role, department and account status.
   Added sidebar navigation and verified admin-only access.
+
+  - Step 40 (Part 5): Added search and filtering to
+  Admin User Management. Admin can filter by username,
+  name, email, role, department and account status.
+  Supports combined filters and clearing filters.
