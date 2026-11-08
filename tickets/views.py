@@ -9,6 +9,17 @@ from .forms import EmployeeComplaintForm, CustomerComplaintForm
 from .models import Ticket
 
 
+
+from .forms import (
+    EmployeeComplaintForm,
+    CustomerComplaintForm,
+    ManualRoutingForm,
+    TicketMessageForm,
+    SupportMessageForm,
+)
+
+from django.db import transaction
+
 from django.views.decorators.http import require_POST
 
 @login_required
@@ -178,11 +189,26 @@ def ticket_detail(request, ticket_id):
         reporter=request.user
     )
 
+    
+    conversation = ticket.ticket_messages.filter(
+        is_internal=False
+    ).select_related('author')
+
+    can_reply = ticket.status in (
+        'submitted', 'in_progress', 'reopened'
+    )
+
     return render(
         request,
         'tickets/ticket_detail.html',
-        {'ticket': ticket}
+        {
+            'ticket': ticket,
+            'conversation': conversation,
+            'reply_form': TicketMessageForm(),
+            'can_reply': can_reply,
+        }
     )
+
 
 
 # Support Staff: unassigned complaints for their department
@@ -279,14 +305,28 @@ def support_ticket_detail(request, ticket_id):
         and ticket.status in ('submitted', 'reopened')
     )
 
+    
+    conversation = ticket.ticket_messages.select_related(
+        'author'
+    )
+
+    can_reply = (
+        ticket.assigned_to_id == request.user.id
+        and ticket.status in ('in_progress', 'reopened')
+    )
+
     return render(
         request,
         'tickets/support_ticket_detail.html',
         {
             'ticket': ticket,
-            'can_claim': can_claim
+            'can_claim': can_claim,
+            'conversation': conversation,
+            'reply_form': SupportMessageForm(),
+            'can_reply': can_reply,
         }
     )
+
 
 
 # Support Staff: claim an available ticket
@@ -339,3 +379,173 @@ def claim_support_ticket(request, ticket_id):
 
     return redirect('support_department_queue')
 
+
+# Employee / Customer: add public message to own ticket
+
+@role_required('employee', 'customer')
+@require_POST
+def add_reporter_message(request, ticket_id):
+
+    ticket = get_object_or_404(
+        Ticket,
+        pk=ticket_id,
+        reporter=request.user
+    )
+
+    if ticket.status not in (
+        'submitted', 'in_progress', 'reopened'
+    ):
+        messages.error(
+            request,
+            'Replies are not available for this ticket status.'
+        )
+        return redirect('ticket_detail', ticket_id=ticket_id)
+
+    form = TicketMessageForm(request.POST)
+
+    if form.is_valid():
+        message = form.save(commit=False)
+        message.ticket = ticket
+        message.author = request.user
+        message.is_internal = False
+        message.save()
+
+        messages.success(request, 'Message sent successfully.')
+
+    else:
+        messages.error(request, 'Please enter a valid message.')
+
+    return redirect('ticket_detail', ticket_id=ticket_id)
+
+
+# Support Staff: public reply or internal note
+
+@role_required('support')
+@require_POST
+def add_support_message(request, ticket_id):
+
+    ticket = get_object_or_404(
+        Ticket,
+        pk=ticket_id,
+        department_id=request.user.department_id,
+        assigned_to=request.user
+    )
+
+    if ticket.status not in ('in_progress', 'reopened'):
+        messages.error(
+            request,
+            'Replies are not available for this ticket status.'
+        )
+        return redirect(
+            'support_ticket_detail',
+            ticket_id=ticket_id
+        )
+
+    form = SupportMessageForm(request.POST)
+
+    if form.is_valid():
+
+        with transaction.atomic():
+            message = form.save(commit=False)
+            message.ticket = ticket
+            message.author = request.user
+            message.save()
+
+            # Record only the first PUBLIC Support Staff reply.
+            if not message.is_internal:
+                Ticket.objects.filter(
+                    pk=ticket.pk,
+                    first_response_at__isnull=True
+                ).update(
+                    first_response_at=message.created_at
+                )
+
+        messages.success(
+            request,
+            'Internal note saved.' if message.is_internal
+            else 'Public reply sent successfully.'
+        )
+
+    else:
+        messages.error(request, 'Please enter a valid message.')
+
+    return redirect(
+        'support_ticket_detail',
+        ticket_id=ticket_id
+    )
+
+
+# Step 45: Admin manual complaint routing
+
+@role_required('admin')
+def admin_pending_routing(request):
+
+    tickets = Ticket.objects.filter(
+        department__isnull=True,
+        assigned_to__isnull=True,
+        status__in=['submitted', 'reopened']
+    ).select_related(
+        'reporter', 'category', 'product'
+    ).order_by('created_at')
+
+    return render(
+        request,
+        'tickets/admin_pending_routing.html',
+        {'tickets': tickets}
+    )
+
+
+@role_required('admin')
+def admin_route_ticket(request, ticket_id):
+
+    ticket = get_object_or_404(
+        Ticket.objects.select_related(
+            'reporter', 'category', 'product'
+        ),
+        pk=ticket_id,
+        department__isnull=True,
+        assigned_to__isnull=True,
+        status__in=['submitted', 'reopened']
+    )
+
+    if request.method == 'POST':
+        form = ManualRoutingForm(request.POST)
+
+        if form.is_valid():
+            department = form.cleaned_data['department']
+
+            updated = Ticket.objects.filter(
+                pk=ticket.pk,
+                department__isnull=True,
+                assigned_to__isnull=True,
+                status__in=['submitted', 'reopened']
+            ).update(
+                department_id=department.pk
+            )
+
+            if updated:
+                messages.success(
+                    request,
+                    f'Ticket #{ticket.pk} routed to '
+                    f'{department.name}.'
+                )
+            else:
+                messages.warning(
+                    request,
+                    'This ticket has already been routed '
+                    'or is no longer eligible.'
+                )
+
+            return redirect('admin_pending_routing')
+
+    else:
+        form = ManualRoutingForm()
+
+    return render(
+        request,
+        'tickets/admin_route_ticket.html',
+        {
+            'ticket': ticket,
+            'form': form
+        }
+    )

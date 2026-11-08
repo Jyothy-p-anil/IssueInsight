@@ -51,6 +51,73 @@
                 <p>{{ ticket.category|default:"Not specified" }}</p>
             </div>
 
+<div class="card shadow-sm mb-4">
+    <div class="card-header">
+        <strong>Conversation</strong>
+    </div>
+
+    <div class="card-body">
+
+        <p class="text-muted small">
+            First public support response:
+            {% if ticket.first_response_at %}
+                {{ ticket.first_response_at|date:"d M Y, h:i A" }}
+            {% else %}
+                Awaiting response
+            {% endif %}
+        </p>
+
+        {% for item in conversation %}
+            <div class="border rounded p-3 mb-3">
+                <div class="d-flex justify-content-between
+                            flex-wrap gap-2 mb-2">
+                    <strong>{{ item.author.username }}</strong>
+                    <small class="text-muted">
+                        {{ item.created_at|date:"d M Y, h:i A" }}
+                    </small>
+                </div>
+
+                <div>{{ item.body|linebreaksbr }}</div>
+            </div>
+        {% empty %}
+            <p class="text-muted">
+                No conversation messages yet.
+            </p>
+        {% endfor %}
+
+        {% if can_reply %}
+            <hr>
+
+            <h6>Send a Message</h6>
+
+            <form method="post"
+                  action="{% url 'add_reporter_message' ticket.id %}">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    {{ reply_form.body }}
+                </div>
+
+                <button type="submit"
+                        class="btn btn-primary">
+                    Send Message
+                </button>
+            </form>
+        {% else %}
+            <p class="text-muted mb-0">
+                Replies are unavailable for the current
+                ticket status.
+            </p>
+        {% endif %}
+
+    </div>
+</div>
+
+
+
+
+
+
             {% if ticket.division == 'employee' %}
                 <div class="col-md-6">
                     <strong>Floor / Location</strong>

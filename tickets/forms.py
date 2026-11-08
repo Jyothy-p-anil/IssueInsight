@@ -1,5 +1,10 @@
 from django import forms
 from .models import Ticket, Category, Product
+from .models import Ticket, Category, Product, Department
+
+from .models import (
+    Ticket, Category, Product, Department, TicketMessage
+)
 
 
 class EmployeeComplaintForm(forms.ModelForm):
@@ -101,3 +106,48 @@ class CustomerComplaintForm(forms.ModelForm):
                 field.widget.attrs['class'] = 'form-select'
             else:
                 field.widget.attrs['class'] = 'form-control'
+
+
+# Form for manual routing of complaints to support departments
+class ManualRoutingForm(forms.Form):
+
+    department = forms.ModelChoiceField(
+        queryset=Department.objects.order_by('name'),
+        empty_label='Select a support department',
+        required=True,
+        widget=forms.Select(attrs={
+            'class': 'form-select'
+        })
+    )
+
+
+class TicketMessageForm(forms.ModelForm):
+
+    class Meta:
+        model = TicketMessage
+        fields = ('body',)
+
+        widgets = {
+            'body': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Write your message...'
+            })
+        }
+
+
+class SupportMessageForm(TicketMessageForm):
+
+    class Meta(TicketMessageForm.Meta):
+        fields = ('body', 'is_internal')
+
+        widgets = {
+            **TicketMessageForm.Meta.widgets,
+            'is_internal': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            })
+        }
+
+        labels = {
+            'is_internal': 'Internal note (hidden from reporter)'
+        }

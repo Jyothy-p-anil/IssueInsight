@@ -165,6 +165,33 @@ path(
 ),
 
 
+# Admin: manual complaint routing
+
+path(
+    'management/routing/',
+    views.admin_pending_routing,
+    name='admin_pending_routing'
+),
+
+path(
+    'management/routing/<int:ticket_id>/',
+    views.admin_route_ticket,
+    name='admin_route_ticket'
+),
+
+# Ticket conversation actions
+
+path(
+    'tickets/<int:ticket_id>/reply/',
+    views.add_reporter_message,
+    name='add_reporter_message'
+),
+
+path(
+    'support/tickets/<int:ticket_id>/reply/',
+    views.add_support_message,
+    name='add_support_message'
+),
 
 
 ]
