@@ -9,16 +9,13 @@ from .forms import StaffAccountCreationForm
 
 
 
-import logging
-
-from django.conf import settings
-from django.core.mail import send_mail
-from django.db import transaction
-
-from .services import send_password_setup_email
 
 
-logger = logging.getLogger(__name__)
+from .services import (
+    send_password_setup_email,
+    send_account_status_email,
+)
+
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
@@ -77,13 +74,11 @@ class CustomUserAdmin(UserAdmin):
             send_password_setup_email(request, obj)
 
             
+        
         if change and previous_active is not None:
-            if previous_active != obj.is_active and obj.email:
+            if previous_active != obj.is_active:
+                send_account_status_email(obj)
 
-                status = (
-                    'reactivated' if obj.is_active
-                    else 'deactivated'
-                )
 
                 def send_status_email():
                     try:

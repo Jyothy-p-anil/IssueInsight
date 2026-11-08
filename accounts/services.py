@@ -51,3 +51,40 @@ def send_password_setup_email(request, user):
             )
 
     transaction.on_commit(send_email)
+
+
+def send_account_status_email(user):
+
+    if not user.email:
+        return
+
+    status = (
+        'reactivated' if user.is_active
+        else 'deactivated'
+    )
+
+    username = user.username
+    email = user.email
+    user_id = user.pk
+
+    def send_email():
+        try:
+            send_mail(
+                subject=f'IssueInsight Account {status.title()}',
+                message=(
+                    f'Hello {username},\n\n'
+                    f'Your IssueInsight account has been '
+                    f'{status}.\n\n'
+                    'Thank you,\nIssueInsight Team'
+                ),
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[email],
+                fail_silently=False,
+            )
+        except Exception:
+            logger.exception(
+                'Account status email failed for user %s',
+                user_id
+            )
+
+    transaction.on_commit(send_email)

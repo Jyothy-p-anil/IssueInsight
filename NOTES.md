@@ -266,3 +266,8 @@
   Customer and Support Staff details inside IssueInsight.
   Added duplicate-email validation and role-based
   department handling. Verified the Edit User workflow.
+
+  - Step 40 (Part 8A): Moved account activation and
+  deactivation email notifications into a shared service.
+  Verified that Django Admin still sends both emails.
+  Prepared the service for IssueInsight User Management.
