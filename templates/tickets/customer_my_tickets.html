@@ -27,6 +27,7 @@
                     <th>Department</th>
                     <th>Status</th>
                     <th>Submitted</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
 
@@ -55,6 +56,12 @@
                         <td>
                             {{ ticket.created_at|date:"d M Y, h:i A" }}
                         </td>
+                        <td>
+                        <a href="{% url 'ticket_detail' ticket.id %}"
+                        class="btn btn-outline-primary btn-sm">
+                            View Details
+                        </a>
+                    </td>
                     </tr>
                 {% empty %}
                     <tr>

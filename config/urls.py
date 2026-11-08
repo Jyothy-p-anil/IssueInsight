@@ -130,8 +130,12 @@ path(
     name='customer_my_tickets'
 ),
 
-
-
+# Ticket Detail View URL
+path(
+    'tickets/<int:ticket_id>/',
+    views.ticket_detail,
+    name='ticket_detail'
+),
 
 
 

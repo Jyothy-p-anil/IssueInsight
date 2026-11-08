@@ -288,3 +288,11 @@
   customer category validation, automatic department
   routing, submission confirmation and protected ticket
   lists. Tested valid and invalid complaint submissions.
+
+    - Step 43: Created a reusable Ticket Details page
+  for Employee and Customer complaints.
+  Displays complete complaint information, product
+  or floor details, department, assigned support staff,
+  status and submission date.
+  Added View Details buttons to both My Tickets pages.
+  Enforced ticket ownership to prevent unauthorized access.

@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from accounts.decorators import role_required
 
 
@@ -156,4 +156,28 @@ def customer_my_tickets(request):
         request,
         'tickets/customer_my_tickets.html',
         {'tickets': tickets}
+    )
+
+
+# Employee and Customer ticket detail page
+
+@role_required('employee', 'customer')
+def ticket_detail(request, ticket_id):
+
+    ticket = get_object_or_404(
+        Ticket.objects.select_related(
+            'reporter',
+            'category',
+            'department',
+            'product',
+            'assigned_to'
+        ),
+        pk=ticket_id,
+        reporter=request.user
+    )
+
+    return render(
+        request,
+        'tickets/ticket_detail.html',
+        {'ticket': ticket}
     )
