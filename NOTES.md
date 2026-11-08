@@ -249,3 +249,8 @@
   Admin User Management. Admin can filter by username,
   name, email, role, department and account status.
   Supports combined filters and clearing filters.
+
+  - Step 40 (Part 6A): Moved staff password setup email
+  logic into a reusable service function.
+  Updated Django Admin to use the shared function.
+  Prepared the email workflow for in-app account creation.
