@@ -261,3 +261,8 @@
   form and password setup email service.
   Verified account creation, email delivery, login,
   validation and admin-only access.
+
+  - Step 40 (Parts 7A–7D): Implemented editing Employee,
+  Customer and Support Staff details inside IssueInsight.
+  Added duplicate-email validation and role-based
+  department handling. Verified the Edit User workflow.

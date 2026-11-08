@@ -57,16 +57,21 @@ class StaffAccountCreationForm(forms.ModelForm):
 
         return email
 
+    
     def clean(self):
         data = super().clean()
 
-        if data.get('role') == 'support' and not data.get('department'):
-            self.add_error(
-                'department',
-                'Select a department for support staff.'
-            )
+        if data.get('role') == 'support':
+            if not data.get('department'):
+                self.add_error(
+                    'department',
+                    'Select a department for Support Staff.'
+                )
+        else:
+            data['department'] = None
 
         return data
+
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -77,3 +82,50 @@ class StaffAccountCreationForm(forms.ModelForm):
 
         return user
 
+
+class UserEditForm(forms.ModelForm):
+
+    email = forms.EmailField(required=True)
+
+    role = forms.ChoiceField(choices=[
+        ('employee', 'Employee'),
+        ('customer', 'Customer'),
+        ('support', 'Support Staff'),
+    ])
+
+    class Meta:
+        model = User
+        fields = (
+            'username',
+            'first_name',
+            'last_name',
+            'email',
+            'role',
+            'department',
+        )
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+
+        if User.objects.filter(
+            email__iexact=email
+        ).exclude(pk=self.instance.pk).exists():
+            raise forms.ValidationError(
+                'This email is already registered.'
+            )
+
+        return email
+
+    def clean(self):
+        data = super().clean()
+
+        if data.get('role') == 'support':
+            if not data.get('department'):
+                self.add_error(
+                    'department',
+                    'Select a department for Support Staff.'
+                )
+        else:
+            data['department'] = None
+
+        return data

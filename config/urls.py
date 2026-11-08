@@ -92,5 +92,9 @@ path(
     account_views.create_staff_account,
     name='create_staff_account'
 ),
-
+path(
+    'management/users/<int:user_id>/edit/',
+    account_views.edit_user,
+    name='edit_user'
+),
 ]

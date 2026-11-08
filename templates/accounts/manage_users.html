@@ -101,6 +101,7 @@
                         <th>Role</th>
                         <th>Department</th>
                         <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
 
@@ -122,11 +123,17 @@
                                 </span>
                             {% endif %}
                         </td>
+                        <td>
+                        <a href="{% url 'edit_user' account.id %}"
+                        class="btn btn-outline-primary btn-sm">
+                            Edit
+                        </a>
+                    </td>
                     </tr>
 
                     {% empty %}
                     <tr>
-                        <td colspan="5" class="text-center">
+                        <td colspan="6" class="text-center">
                             No users found.
                         </td>
                     </tr>

@@ -3,7 +3,7 @@ import logging
 
 from django.conf import settings
 from django.core.mail import send_mail
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import User
 from .decorators import role_required
 from django.db.models import Q
@@ -15,7 +15,10 @@ from .services import send_password_setup_email
 
 
 
-from .forms import CustomerRegistrationForm, StaffAccountCreationForm
+
+
+from .forms import CustomerRegistrationForm, StaffAccountCreationForm,UserEditForm
+
 
 logger = logging.getLogger(__name__)
 
@@ -133,3 +136,34 @@ def create_staff_account(request):
         'form': form
     })
 
+
+@role_required('admin')
+def edit_user(request, user_id):
+
+    account = get_object_or_404(
+        User,
+        pk=user_id,
+        role__in=['employee', 'customer', 'support'],
+        is_superuser=False
+    )
+
+    if request.method == 'POST':
+        form = UserEditForm(request.POST, instance=account)
+
+        if form.is_valid():
+            form.save()
+
+            messages.success(
+                request,
+                'User details updated successfully.'
+            )
+
+            return redirect('manage_users')
+
+    else:
+        form = UserEditForm(instance=account)
+
+    return render(request, 'accounts/edit_user.html', {
+        'form': form,
+        'account': account,
+    })
