@@ -254,3 +254,10 @@
   logic into a reusable service function.
   Updated Django Admin to use the shared function.
   Prepared the email workflow for in-app account creation.
+
+
+  - Step 40 (Part 6B): Implemented Admin account creation
+  inside IssueInsight. Reused the existing staff creation
+  form and password setup email service.
+  Verified account creation, email delivery, login,
+  validation and admin-only access.

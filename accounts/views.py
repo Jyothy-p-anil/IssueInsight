@@ -9,11 +9,13 @@ from .decorators import role_required
 from django.db.models import Q
 from tickets.models import Department
 
+from django.contrib import messages
+from .services import send_password_setup_email
 
 
 
-from .forms import CustomerRegistrationForm
 
+from .forms import CustomerRegistrationForm, StaffAccountCreationForm
 
 logger = logging.getLogger(__name__)
 
@@ -103,3 +105,31 @@ def manage_users(request):
         'selected_department': department,
         'selected_status': status,
     })
+
+
+@role_required('admin')
+def create_staff_account(request):
+
+    if request.method == 'POST':
+        form = StaffAccountCreationForm(request.POST)
+
+        if form.is_valid():
+            user = form.save()
+
+            send_password_setup_email(request, user)
+
+            messages.success(
+                request,
+                'Account created. Please verify that the '
+                'password setup email arrives.'
+            )
+
+            return redirect('manage_users')
+
+    else:
+        form = StaffAccountCreationForm()
+
+    return render(request, 'accounts/create_staff_account.html', {
+        'form': form
+    })
+

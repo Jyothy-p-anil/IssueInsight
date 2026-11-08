@@ -1,0 +1,38 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Add User | IssueInsight{% endblock %}
+
+{% block content %}
+
+<h2>Add Employee / Support Staff</h2>
+
+<p class="text-muted">
+    Create a new account. The user will receive
+    an email to set their password.
+</p>
+
+<div class="card shadow-sm mt-4">
+    <div class="card-body">
+
+        <form method="post">
+            {% csrf_token %}
+
+            {{ form.as_p }}
+
+            <button type="submit"
+                    class="btn btn-primary">
+                Create Account
+            </button>
+
+            <a href="{% url 'manage_users' %}"
+               class="btn btn-outline-secondary">
+                Cancel
+            </a>
+
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

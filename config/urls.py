@@ -87,6 +87,10 @@ path(
     account_views.manage_users,
     name='manage_users'
 ),
-
+path(
+    'management/users/add/',
+    account_views.create_staff_account,
+    name='create_staff_account'
+),
 
 ]
