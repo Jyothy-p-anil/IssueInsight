@@ -102,4 +102,17 @@ path(
     account_views.change_user_status,
     name='change_user_status'
 ),
+
+# Employee Complaint Submission and Ticket Viewing URLs
+
+path(
+    'employee/complaints/new/',
+    views.submit_employee_complaint,
+    name='submit_employee_complaint'
+),
+path(
+    'employee/tickets/',
+    views.employee_my_tickets,
+    name='employee_my_tickets'
+),
 ]
