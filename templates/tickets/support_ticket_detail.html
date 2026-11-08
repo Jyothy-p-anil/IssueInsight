@@ -1,0 +1,121 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Ticket #{{ ticket.id }} | IssueInsight{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between
+            align-items-start flex-wrap gap-3 mb-3">
+
+    <div>
+        <p class="text-muted mb-1">
+            Ticket #{{ ticket.id }}
+        </p>
+        <h2>{{ ticket.title }}</h2>
+        <span class="badge bg-secondary">
+            {{ ticket.get_status_display }}
+        </span>
+    </div>
+
+    {% if can_claim %}
+        <form method="post"
+              action="{% url 'claim_support_ticket' ticket.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">
+                Claim Ticket
+            </button>
+        </form>
+    {% endif %}
+
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header">
+        <strong>Complaint Information</strong>
+    </div>
+
+    <div class="card-body">
+        <div class="row g-3">
+
+            <div class="col-md-6">
+                <strong>Reported By</strong>
+                <p>{{ ticket.reporter.username }}</p>
+            </div>
+
+            <div class="col-md-6">
+                <strong>Complaint Type</strong>
+                <p>{{ ticket.get_division_display }}</p>
+            </div>
+
+            <div class="col-md-6">
+                <strong>Category</strong>
+                <p>{{ ticket.category|default:"Not specified" }}</p>
+            </div>
+
+            <div class="col-md-6">
+                <strong>Department</strong>
+                <p>{{ ticket.department }}</p>
+            </div>
+
+            {% if ticket.division == 'employee' %}
+                <div class="col-md-6">
+                    <strong>Floor / Location</strong>
+                    <p>{{ ticket.floor|default:"Not specified" }}</p>
+                </div>
+            {% else %}
+                <div class="col-md-6">
+                    <strong>Product</strong>
+                    <p>
+                        {% if ticket.product %}
+                            {{ ticket.product.name }}
+                        {% else %}
+                            {{ ticket.other_product_name|default:"Not specified" }}
+                        {% endif %}
+                    </p>
+                </div>
+            {% endif %}
+
+            <div class="col-md-6">
+                <strong>Assigned To</strong>
+                <p>
+                    {% if ticket.assigned_to %}
+                        {{ ticket.assigned_to.username }}
+                    {% else %}
+                        Not assigned
+                    {% endif %}
+                </p>
+            </div>
+
+            <div class="col-md-6">
+                <strong>Submitted</strong>
+                <p>{{ ticket.created_at|date:"d M Y, h:i A" }}</p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header">
+        <strong>Description</strong>
+    </div>
+
+    <div class="card-body">
+        {{ ticket.description|linebreaksbr }}
+    </div>
+</div>
+
+{% if ticket.assigned_to_id %}
+    <a href="{% url 'support_assigned_tickets' %}"
+       class="btn btn-outline-secondary">
+        Back to Assigned Tickets
+    </a>
+{% else %}
+    <a href="{% url 'support_department_queue' %}"
+       class="btn btn-outline-secondary">
+        Back to Department Queue
+    </a>
+{% endif %}
+
+{% endblock %}

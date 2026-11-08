@@ -138,6 +138,33 @@ path(
 ),
 
 
+# Support Staff ticket workflows
+
+path(
+    'support/queue/',
+    views.support_department_queue,
+    name='support_department_queue'
+),
+
+path(
+    'support/assigned/',
+    views.support_assigned_tickets,
+    name='support_assigned_tickets'
+),
+
+path(
+    'support/tickets/<int:ticket_id>/',
+    views.support_ticket_detail,
+    name='support_ticket_detail'
+),
+
+path(
+    'support/tickets/<int:ticket_id>/claim/',
+    views.claim_support_ticket,
+    name='claim_support_ticket'
+),
+
+
 
 
 ]

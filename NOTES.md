@@ -296,3 +296,13 @@
   status and submission date.
   Added View Details buttons to both My Tickets pages.
   Enforced ticket ownership to prevent unauthorized access.
+
+
+
+    - Step 44: Implemented Support Staff Department Queue,
+  Assigned Tickets and Support Ticket Details.
+  Restricted ticket access by support department.
+  Added secure ticket claiming with conflict protection.
+  Claiming assigns the staff member and moves the ticket
+  to In Progress without recording a human acknowledgement.
+  Verified department isolation and ticket ownership.
