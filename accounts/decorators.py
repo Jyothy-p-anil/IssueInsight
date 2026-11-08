@@ -24,7 +24,7 @@ def role_required(*allowed_roles):
                 'You do not have permission to access that page.'
             )
 
-            return redirect('home')
+            return redirect('dashboard_redirect')
 
         return wrapped_view
 

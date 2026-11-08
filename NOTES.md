@@ -331,3 +331,46 @@
   Verified existing protected workflows.
   New features will receive additional permission tests
   during their respective module development.
+
+
+
+  =================================================================
+  ## Module 3 — Role Permission Matrix
+
+| Action                              | Employee | Customer | Support | Admin |
+|---------------------------------------------------------------------------------
+| Submit own complaint                | Yes      | Yes      | No      | No    |
+| View own complaints                 | Yes      | Yes      | No      | No    |
+| Send public messages on own tickets | Yes      | Yes      | No      | No    |
+| View department ticket queue        | No       | No       | Yes     | No    |
+| Claim department tickets            | No       | No       | Yes     | No    |
+| Reply to assigned tickets           | No       | No       | Yes     | No    |
+| Write internal ticket notes         | No       | No       | Yes     | No    |
+| Manage user accounts                | No       | No       | No      | Yes   |
+| Route pending complaints            | No       | No       | No      | Yes   |
+
+Rules:
+- All protected pages require authentication.
+- Employees and Customers can access only their own tickets.
+- Support Staff are restricted to their assigned department.
+- Only the assigned Support Staff member can reply or add notes.
+- Internal notes are hidden from complaint reporters.
+- Admin manages users and manually routes pending complaints.
+- Django superusers have elevated access, subject to
+  applicable object-level restrictions.
+
+
+  ==============================================================================
+
+
+    - Step 48: Completed the Module 3 permission review.
+  Documented the four-role permission matrix.
+  Corrected unauthorized redirects to role dashboards.
+  Added tests for identity spoofing, cross-account edits,
+  department routing, assigned-ticket permissions and
+  internal message privacy.
+
+  - Module 3 Completion Review:
+  Verified role-based access for currently implemented
+  workflows. Future features will receive permission
+  tests as they are developed.
