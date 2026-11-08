@@ -4,6 +4,8 @@ import logging
 from django.conf import settings
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect
+from .models import User
+from .decorators import role_required
 
 from .forms import CustomerRegistrationForm
 
@@ -48,4 +50,17 @@ def register(request):
 
     return render(request, 'accounts/register.html', {
         'form': form
+    })
+
+
+@role_required('admin')
+def manage_users(request):
+
+    users = User.objects.filter(
+        role__in=['employee', 'customer', 'support'],
+        is_superuser=False
+    ).select_related('department').order_by('username')
+
+    return render(request, 'accounts/manage_users.html', {
+        'users': users
     })

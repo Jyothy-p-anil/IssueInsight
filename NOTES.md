@@ -237,3 +237,10 @@
   - Fixed logout navigation so users return to the
   IssueInsight login page instead of Django Admin's
   default logged-out page.
+
+
+  - Step 40 (Parts 1–3): Created the IssueInsight Admin
+  User Management page.
+  Displays employee, customer and support staff details,
+  including role, department and account status.
+  Added sidebar navigation and verified admin-only access.

@@ -82,7 +82,11 @@ path(
         views.admin_dashboard,
         name='admin_dashboard'
     ),
-
+    path(
+    'management/users/',
+    account_views.manage_users,
+    name='manage_users'
+),
 
 
 ]
