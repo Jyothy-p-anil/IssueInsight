@@ -4,14 +4,22 @@ import logging
 from django.conf import settings
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect, get_object_or_404
+
+
+from .services import (
+    send_password_setup_email,
+    send_account_status_email,
+)
+
 from .models import User
 from .decorators import role_required
 from django.db.models import Q
 from tickets.models import Department
 
 from django.contrib import messages
-from .services import send_password_setup_email
 
+from django.db import transaction
+from django.views.decorators.http import require_POST
 
 
 
@@ -167,3 +175,42 @@ def edit_user(request, user_id):
         'form': form,
         'account': account,
     })
+
+@role_required('admin')
+@require_POST
+def change_user_status(request, user_id):
+
+    action = request.POST.get('action')
+
+    if action not in ('activate', 'deactivate'):
+        messages.error(request, 'Invalid account action.')
+        return redirect('manage_users')
+
+    account = get_object_or_404(
+        User,
+        pk=user_id,
+        role__in=['employee', 'customer', 'support'],
+        is_superuser=False
+    )
+
+    new_status = action == 'activate'
+
+    with transaction.atomic():
+
+        if account.is_active != new_status:
+            account.is_active = new_status
+            account.save(update_fields=['is_active'])
+
+            send_account_status_email(account)
+
+            messages.success(
+                request,
+                'Account status updated successfully.'
+            )
+        else:
+            messages.info(
+                request,
+                'This account already has the selected status.'
+            )
+
+    return redirect('manage_users')

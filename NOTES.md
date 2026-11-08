@@ -271,3 +271,9 @@
   deactivation email notifications into a shared service.
   Verified that Django Admin still sends both emails.
   Prepared the service for IssueInsight User Management.
+
+    - Step 40 (Parts 8B–8C): Completed in-app user
+  activation and deactivation using protected POST
+  actions and reusable email notifications.
+  Verified account status changes, login restrictions,
+  and both activation and deactivation emails.

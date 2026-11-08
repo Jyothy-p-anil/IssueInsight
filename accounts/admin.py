@@ -74,31 +74,9 @@ class CustomUserAdmin(UserAdmin):
             send_password_setup_email(request, obj)
 
             
-        
         if change and previous_active is not None:
             if previous_active != obj.is_active:
                 send_account_status_email(obj)
 
-
-                def send_status_email():
-                    try:
-                        send_mail(
-                            subject=f'IssueInsight Account {status.title()}',
-                            message=(
-                                f'Hello {obj.username},\n\n'
-                                f'Your IssueInsight account has been '
-                                f'{status}.\n\n'
-                                'Thank you,\nIssueInsight Team'
-                            ),
-                            from_email=settings.DEFAULT_FROM_EMAIL,
-                            recipient_list=[obj.email],
-                            fail_silently=False,
-                        )
-                    except Exception:
-                        logger.exception(
-                            'Account status email failed for user %s',
-                            obj.pk
-                        )
-
-                transaction.on_commit(send_status_email)
-
+        
+        

@@ -97,4 +97,9 @@ path(
     account_views.edit_user,
     name='edit_user'
 ),
+path(
+    'management/users/<int:user_id>/status/',
+    account_views.change_user_status,
+    name='change_user_status'
+),
 ]

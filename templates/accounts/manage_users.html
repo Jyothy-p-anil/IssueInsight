@@ -128,8 +128,37 @@
                         class="btn btn-outline-primary btn-sm">
                             Edit
                         </a>
+
+                    <!--add buttons in User Management page to activate/deactivate user accounts-->
+                            <form method="post"
+                                action="{% url 'change_user_status' account.id %}"
+                                class="d-inline">
+
+                                {% csrf_token %}
+
+                                {% if account.is_active %}
+                                    <input type="hidden" name="action" value="deactivate">
+
+                                    <button type="submit"
+                                            class="btn btn-outline-danger btn-sm"
+                                            onclick="return confirm('Deactivate this account?')">
+                                        Deactivate
+                                    </button>
+
+                                {% else %}
+                                    <input type="hidden" name="action" value="activate">
+
+                                    <button type="submit"
+                                            class="btn btn-outline-success btn-sm">
+                                        Activate
+                                    </button>
+                                {% endif %}
+
+                            </form>
+
                     </td>
                     </tr>
+
 
                     {% empty %}
                     <tr>
