@@ -192,6 +192,12 @@ path(
     views.add_support_message,
     name='add_support_message'
 ),
+# Admin: Department Management
 
+path(
+    'management/departments/',
+    views.manage_departments,
+    name='manage_departments'
+),
 
 ]

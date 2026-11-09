@@ -1,0 +1,89 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Departments | IssueInsight{% endblock %}
+
+{% block content %}
+
+<h2>Department Management</h2>
+
+<p class="text-muted">
+    View and add support departments.
+</p>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+
+        <h5 class="card-title mb-3">
+            Add Department
+        </h5>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="{{ form.name.id_for_label }}"
+                       class="form-label">
+                    Department Name
+                </label>
+
+                {{ form.name }}
+
+                {% for error in form.name.errors %}
+                    <div class="text-danger small mt-1">
+                        {{ error }}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <button type="submit"
+                    class="btn btn-primary">
+                Add Department
+            </button>
+        </form>
+
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+
+        <h5 class="card-title mb-3">
+            Existing Departments
+        </h5>
+
+        <div class="table-responsive">
+            <table class="table table-striped align-middle">
+
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Department Name</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for department in departments %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ department.name }}</td>
+                        </tr>
+
+                    {% empty %}
+                        <tr>
+                            <td colspan="2" class="text-center">
+                                No departments found.
+                            </td>
+                        </tr>
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

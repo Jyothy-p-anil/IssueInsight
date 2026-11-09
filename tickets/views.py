@@ -6,9 +6,9 @@ from accounts.decorators import role_required
 
 from django.contrib import messages
 from .forms import EmployeeComplaintForm, CustomerComplaintForm
-from .models import Ticket
 
 
+from .models import Ticket, Department
 
 from .forms import (
     EmployeeComplaintForm,
@@ -16,6 +16,7 @@ from .forms import (
     ManualRoutingForm,
     TicketMessageForm,
     SupportMessageForm,
+    DepartmentForm,
 )
 
 from django.db import transaction
@@ -547,5 +548,37 @@ def admin_route_ticket(request, ticket_id):
         {
             'ticket': ticket,
             'form': form
+        }
+    )
+
+# Module 4: Admin department management
+
+@role_required('admin')
+def manage_departments(request):
+
+    if request.method == 'POST':
+        form = DepartmentForm(request.POST)
+
+        if form.is_valid():
+            department = form.save()
+
+            messages.success(
+                request,
+                f'{department.name} added successfully.'
+            )
+
+            return redirect('manage_departments')
+
+    else:
+        form = DepartmentForm()
+
+    departments = Department.objects.order_by('name')
+
+    return render(
+        request,
+        'tickets/admin_departments.html',
+        {
+            'departments': departments,
+            'form': form,
         }
     )

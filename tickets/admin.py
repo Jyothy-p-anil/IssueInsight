@@ -1,9 +1,17 @@
 
 from django.contrib import admin
 from .models import Department, Category, Product, Ticket
+from .forms import DepartmentForm
 
 
-admin.site.register(Department)
+@admin.register(Department)
+class DepartmentAdmin(admin.ModelAdmin):
+
+    form = DepartmentForm
+    list_display = ('name',)
+    search_fields = ('name',)
+
+from .forms import DepartmentForm
 
 
 

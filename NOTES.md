@@ -334,6 +334,9 @@
 
 
 
+
+
+
   =================================================================
   ## Module 3 — Role Permission Matrix
 
@@ -374,3 +377,20 @@ Rules:
   Verified role-based access for currently implemented
   workflows. Future features will receive permission
   tests as they are developed.
+
+
+    - Step 49: Organized the existing IssueInsight
+  development history by creating MODULE_INDEX.md.
+  Mapped all 15 modules to their relevant files,
+  functions, classes and Git commits.
+  Recorded module completion statuses to support
+  structured learning in the Module Understanding chat.
+  Preserved the existing Git history and project structure.
+
+------------------------------------------------------------------
+
+    - Step 50 (Module 4): Implemented Admin-only
+  Department Management with department listing,
+  creation, duplicate-name validation and role protection.
+  Added four automated tests and verified the interface.
+  Department editing and safe deletion remain pending.

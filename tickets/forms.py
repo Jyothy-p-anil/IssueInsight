@@ -151,3 +151,30 @@ class SupportMessageForm(TicketMessageForm):
         labels = {
             'is_internal': 'Internal note (hidden from reporter)'
         }
+
+
+# Form for creating and editing support departments
+class DepartmentForm(forms.ModelForm):
+
+    class Meta:
+        model = Department
+        fields = ('name',)
+
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter department name'
+            })
+        }
+
+    def clean_name(self):
+        name = ' '.join(self.cleaned_data['name'].split())
+
+        if Department.objects.filter(
+            name__iexact=name
+        ).exclude(pk=self.instance.pk).exists():
+            raise forms.ValidationError(
+                'A department with this name already exists.'
+            )
+
+        return name
