@@ -1,0 +1,145 @@
+# Module 04 — Master Data Management
+
+## Software products and active status
+
+### Before we begin
+
+Customer complaints should identify the product affected, including cases where the product is not in the dropdown.
+
+### What we worked on
+
+Product stores the name and active flag. CustomerComplaintForm displays active products and permits a separate unlisted product name.
+
+### Picture it this way
+
+Follow one real request or data change through the functions shown below. Notice which fields come from the user and which are set by the server.
+
+### Important Django concepts
+
+`BooleanField`, `ModelChoiceField`, `active/inactive data`, `foreign-key history`.
+
+### Actual code from the committed project
+
+Source revision: [`02a68f05b7ab`](https://github.com/Jyothy-p-anil/IssueInsight/commit/02a68f05b7ab83749791ab60b9cf2245a201c26d) on `master`. The excerpts are current code, not invented historical versions.
+
+#### `tickets/models.py` → `Product`
+
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/tickets/models.py#L39-L49)
+
+```python
+class Product(models.Model):
+
+    name = models.CharField(
+        max_length=100,
+        unique=True
+    )
+
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+```
+
+#### `tickets/forms.py` → `CustomerComplaintForm`
+
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/tickets/forms.py#L41-L108)
+
+```python
+class CustomerComplaintForm(forms.ModelForm):
+
+    category = forms.ModelChoiceField(
+        queryset=Category.objects.filter(
+            division='customer'
+        ).order_by('name'),
+        empty_label='Select an issue category',
+        required=True
+    )
+
+    product = forms.ModelChoiceField(
+        queryset=Product.objects.filter(
+            is_active=True
+        ).order_by('name'),
+        empty_label='Other / Product not listed',
+        required=False,
+        label='Software Product'
+    )
+
+    class Meta:
+        model = Ticket
+        fields = (
+            'title',
+            'description',
+            'product',
+            'other_product_name',
+            'category',
+        )
+
+        widgets = {
+            'description': forms.Textarea(attrs={
+                'rows': 5
+            }),
+            'other_product_name': forms.TextInput(attrs={
+                'placeholder': 'Only if your product is not listed'
+            }),
+        }
+
+    def clean(self):
+        data = super().clean()
+
+        product = data.get('product')
+        other_name = (
+            data.get('other_product_name') or ''
+        ).strip()
+
+        if not product and not other_name:
+            self.add_error(
+                'other_product_name',
+                'Enter the name of your unlisted product.'
+            )
+
+        if product and other_name:
+            self.add_error(
+                'other_product_name',
+                'Leave this empty when selecting a listed product.'
+            )
+
+        return data
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for field in self.fields.values():
+            if isinstance(field.widget, forms.Select):
+                field.widget.attrs['class'] = 'form-select'
+            else:
+                field.widget.attrs['class'] = 'form-control'
+```
+
+**Verified references in this chapter:** 2/2.
+
+### Related development commits
+
+- [2f8f46bb3d](https://github.com/Jyothy-p-anil/IssueInsight/commit/2f8f46bb3d1160f78902d8657b39d03452619968) — feat: create software product model (2026-11-04)
+- [67d4f75d55](https://github.com/Jyothy-p-anil/IssueInsight/commit/67d4f75d55377472f716645288ee2a2dc335e91d) — feat: implement customer complaint submission and my tickets (2026-11-08)
+
+*These links show historical changes. A commit may touch several modules; inspect its diff before attributing every edit to this chapter.*
+
+### How we checked it
+
+The source code and test definitions were inspected from Git. **This journal generator does not run Django tests** and cannot prove that every workflow works.
+
+### Explain it independently
+
+1. What existed before this feature?
+2. Which file handles the incoming request or data?
+3. Which checks protect the operation?
+4. How do the results reach the next page or database record?
+
+### Teacher / interview questions
+
+- Why might a product be made inactive instead of deleted?
+- How does the form handle an unlisted product?
+
+### Connections
+
+Back to [this module's chapter list](README.md), or view the [complete source module map](../MODULE_INDEX.md).

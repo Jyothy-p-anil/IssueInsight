@@ -1,0 +1,101 @@
+module,module_title,chapter,file,symbol,source_status
+1,Project Setup and Database,Django project and application setup,manage.py,,present
+1,Project Setup and Database,Django project and application setup,accounts/apps.py,,present
+1,Project Setup and Database,Django project and application setup,tickets/apps.py,,present
+1,Project Setup and Database,Django project and application setup,config/settings.py,AUTH_USER_MODEL,present
+1,Project Setup and Database,Django project and application setup,config/settings.py,INSTALLED_APPS,present
+1,Project Setup and Database,"Users, departments, categories, products and tickets",accounts/models.py,User,present
+1,Project Setup and Database,"Users, departments, categories, products and tickets",tickets/models.py,Department,present
+1,Project Setup and Database,"Users, departments, categories, products and tickets",tickets/models.py,Category,present
+1,Project Setup and Database,"Users, departments, categories, products and tickets",tickets/models.py,Product,present
+1,Project Setup and Database,"Users, departments, categories, products and tickets",tickets/models.py,Ticket,present
+1,Project Setup and Database,"Django Admin, migrations and starter records",tickets/admin.py,TicketAdmin,present
+1,Project Setup and Database,"Django Admin, migrations and starter records",tickets/admin.py,CategoryAdmin,present
+1,Project Setup and Database,"Django Admin, migrations and starter records",accounts/admin.py,CustomUserAdmin,present
+1,Project Setup and Database,"Django Admin, migrations and starter records",tickets/management/commands/seed_initial_data.py,Command,present
+2,Initial UI and Authentication,Base template and navigation,templates/base.html,,present
+2,Initial UI and Authentication,Base template and navigation,templates/home.html,,present
+2,Initial UI and Authentication,Base template and navigation,static/css/style.css,,present
+2,Initial UI and Authentication,"Login, logout and customer registration",accounts/views.py,register,present
+2,Initial UI and Authentication,"Login, logout and customer registration",accounts/forms.py,CustomerRegistrationForm,present
+2,Initial UI and Authentication,"Login, logout and customer registration",tickets/views.py,dashboard_redirect,present
+2,Initial UI and Authentication,"Login, logout and customer registration",config/urls.py,login,present
+2,Initial UI and Authentication,"Login, logout and customer registration",config/urls.py,logout,present
+2,Initial UI and Authentication,"Login, logout and customer registration",config/urls.py,register,present
+2,Initial UI and Authentication,"Password reset, staff setup and account notifications",accounts/forms.py,StaffAccountCreationForm,present
+2,Initial UI and Authentication,"Password reset, staff setup and account notifications",accounts/services.py,send_password_setup_email,present
+2,Initial UI and Authentication,"Password reset, staff setup and account notifications",accounts/services.py,send_account_status_email,present
+2,Initial UI and Authentication,"Password reset, staff setup and account notifications",config/urls.py,password_reset,present
+2,Initial UI and Authentication,"Password reset, staff setup and account notifications",config/urls.py,password_reset_confirm,present
+3,Role-Based Permissions and Account Access,Role decorator and dashboard routing,accounts/decorators.py,role_required,present
+3,Role-Based Permissions and Account Access,Role decorator and dashboard routing,tickets/views.py,dashboard_redirect,present
+3,Role-Based Permissions and Account Access,Role decorator and dashboard routing,tickets/views.py,employee_dashboard,present
+3,Role-Based Permissions and Account Access,Role decorator and dashboard routing,tickets/views.py,customer_dashboard,present
+3,Role-Based Permissions and Account Access,Role decorator and dashboard routing,tickets/views.py,support_dashboard,present
+3,Role-Based Permissions and Account Access,Role decorator and dashboard routing,tickets/views.py,admin_dashboard,present
+3,Role-Based Permissions and Account Access,"Ticket ownership, department isolation and Admin actions",tickets/views.py,ticket_detail,present
+3,Role-Based Permissions and Account Access,"Ticket ownership, department isolation and Admin actions",tickets/views.py,support_ticket_detail,present
+3,Role-Based Permissions and Account Access,"Ticket ownership, department isolation and Admin actions",tickets/views.py,claim_support_ticket,present
+3,Role-Based Permissions and Account Access,"Ticket ownership, department isolation and Admin actions",tickets/views.py,add_support_message,present
+3,Role-Based Permissions and Account Access,"Ticket ownership, department isolation and Admin actions",accounts/views.py,manage_users,present
+3,Role-Based Permissions and Account Access,"Ticket ownership, department isolation and Admin actions",accounts/views.py,edit_user,present
+3,Role-Based Permissions and Account Access,"Ticket ownership, department isolation and Admin actions",accounts/views.py,change_user_status,present
+3,Role-Based Permissions and Account Access,Automated security tests,accounts/tests.py,RolePermissionTests,present
+3,Role-Based Permissions and Account Access,Automated security tests,accounts/test_module3_security.py,Module3SecurityTests,present
+3,Role-Based Permissions and Account Access,Auto-discovered,templates/base.html,,commit 6885ea66b8d3
+3,Role-Based Permissions and Account Access,Auto-discovered,templates/tickets/support_ticket_detail.html,,commit 6885ea66b8d3
+3,Role-Based Permissions and Account Access,Auto-discovered,templates/tickets/ticket_detail.html,,commit 6885ea66b8d3
+3,Role-Based Permissions and Account Access,Auto-discovered,tickets/forms.py,ManualRoutingForm,commit 6885ea66b8d3
+3,Role-Based Permissions and Account Access,Auto-discovered,tickets/forms.py,SupportMessageForm,commit 6885ea66b8d3
+3,Role-Based Permissions and Account Access,Auto-discovered,tickets/forms.py,TicketMessageForm,commit 6885ea66b8d3
+3,Role-Based Permissions and Account Access,Auto-discovered,tickets/models.py,TicketMessage,commit 6885ea66b8d3
+3,Role-Based Permissions and Account Access,Auto-discovered,tickets/views.py,add_reporter_message,commit 6885ea66b8d3
+3,Role-Based Permissions and Account Access,Auto-discovered,tickets/views.py,admin_pending_routing,commit 6885ea66b8d3
+3,Role-Based Permissions and Account Access,Auto-discovered,tickets/views.py,admin_route_ticket,commit 6885ea66b8d3
+4,Master Data Management,Department and category reference data,tickets/models.py,Department,present
+4,Master Data Management,Department and category reference data,tickets/models.py,Category,present
+4,Master Data Management,Department and category reference data,tickets/admin.py,CategoryAdmin,present
+4,Master Data Management,Department and category reference data,tickets/management/commands/seed_initial_data.py,Command,present
+4,Master Data Management,Software products and active status,tickets/models.py,Product,present
+4,Master Data Management,Software products and active status,tickets/forms.py,CustomerComplaintForm,present
+5,Employee Complaint Submission,Employee complaint form and save workflow,tickets/forms.py,EmployeeComplaintForm,present
+5,Employee Complaint Submission,Employee complaint form and save workflow,tickets/views.py,submit_employee_complaint,present
+5,Employee Complaint Submission,Employee complaint form and save workflow,templates/tickets/employee_complaint_form.html,,present
+5,Employee Complaint Submission,Employee My Tickets,tickets/views.py,employee_my_tickets,present
+5,Employee Complaint Submission,Employee My Tickets,templates/tickets/employee_my_tickets.html,,present
+6,Customer Complaint Submission,Customer product and category validation,tickets/forms.py,CustomerComplaintForm,present
+6,Customer Complaint Submission,Customer product and category validation,templates/tickets/customer_complaint_form.html,,present
+6,Customer Complaint Submission,Customer submission and My Tickets,tickets/views.py,submit_customer_complaint,present
+6,Customer Complaint Submission,Customer submission and My Tickets,tickets/views.py,customer_my_tickets,present
+6,Customer Complaint Submission,Customer submission and My Tickets,templates/tickets/customer_my_tickets.html,,present
+7,My Tickets and Complaint Details,Private ticket details and public conversation,tickets/views.py,ticket_detail,present
+7,My Tickets and Complaint Details,Private ticket details and public conversation,templates/tickets/ticket_detail.html,,present
+8,Complaint Routing and Support Workflows,"Department queue, assigned tickets and claiming",tickets/views.py,support_department_queue,present
+8,Complaint Routing and Support Workflows,"Department queue, assigned tickets and claiming",tickets/views.py,support_assigned_tickets,present
+8,Complaint Routing and Support Workflows,"Department queue, assigned tickets and claiming",tickets/views.py,support_ticket_detail,present
+8,Complaint Routing and Support Workflows,"Department queue, assigned tickets and claiming",tickets/views.py,claim_support_ticket,present
+8,Complaint Routing and Support Workflows,"Department queue, assigned tickets and claiming",templates/tickets/support_ticket_list.html,,present
+8,Complaint Routing and Support Workflows,Admin routing of complaints without departments,tickets/forms.py,ManualRoutingForm,present
+8,Complaint Routing and Support Workflows,Admin routing of complaints without departments,tickets/views.py,admin_pending_routing,present
+8,Complaint Routing and Support Workflows,Admin routing of complaints without departments,tickets/views.py,admin_route_ticket,present
+8,Complaint Routing and Support Workflows,Admin routing of complaints without departments,templates/tickets/admin_pending_routing.html,,present
+9,Communication and Notifications,Public replies and internal support notes,tickets/models.py,TicketMessage,present
+9,Communication and Notifications,Public replies and internal support notes,tickets/forms.py,TicketMessageForm,present
+9,Communication and Notifications,Public replies and internal support notes,tickets/forms.py,SupportMessageForm,present
+9,Communication and Notifications,Public replies and internal support notes,tickets/views.py,add_reporter_message,present
+9,Communication and Notifications,Public replies and internal support notes,tickets/views.py,add_support_message,present
+9,Communication and Notifications,First public Support Staff response,tickets/models.py,Ticket,present
+9,Communication and Notifications,First public Support Staff response,tickets/views.py,add_support_message,present
+12,Dashboards and Analytics,Initial dashboards and role routing,tickets/views.py,employee_dashboard,present
+12,Dashboards and Analytics,Initial dashboards and role routing,tickets/views.py,customer_dashboard,present
+12,Dashboards and Analytics,Initial dashboards and role routing,tickets/views.py,support_dashboard,present
+12,Dashboards and Analytics,Initial dashboards and role routing,tickets/views.py,admin_dashboard,present
+12,Dashboards and Analytics,Initial dashboards and role routing,templates/role_dashboard.html,,present
+13,"Search, Filtering and Reporting",Filtering users in Admin management,accounts/views.py,manage_users,present
+13,"Search, Filtering and Reporting",Filtering users in Admin management,templates/accounts/manage_users.html,,present
+14,User Interface Completion,Bootstrap layout and shared CSS,templates/base.html,,present
+14,User Interface Completion,Bootstrap layout and shared CSS,static/css/style.css,,present
+14,User Interface Completion,Bootstrap layout and shared CSS,templates/role_dashboard.html,,present
+15,"Integration Testing, Final Delivery and Documentation",Current automated tests and documentation,accounts/tests.py,RolePermissionTests,present
+15,"Integration Testing, Final Delivery and Documentation",Current automated tests and documentation,accounts/test_module3_security.py,Module3SecurityTests,present
+15,"Integration Testing, Final Delivery and Documentation",Current automated tests and documentation,tickets/tests.py,,present

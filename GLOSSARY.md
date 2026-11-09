@@ -1,0 +1,23 @@
+# IssueInsight Glossary
+
+- **AbstractUser:** Django's built-in user model class; IssueInsight extends it with role and department fields.
+- **Authentication:** Checking who is signed in, usually through credentials and a session.
+- **Authorization:** Checking whether that signed-in user may perform a specific action on a specific record.
+- **commit=False:** Builds a model instance from a valid form without saving it yet, so the view can fill protected fields.
+- **Decorator:** A Python wrapper that adds behavior around a function, such as a role check before a Django view.
+- **ForeignKey:** A database relation pointing from one model to another model's record.
+- **Form / ModelForm:** Django utilities for receiving input, validating it and, for ModelForm, saving it to a model.
+- **get_object_or_404:** Fetches a database object that meets all filters, or returns HTTP 404.
+- **Git branch:** A movable name referring to a line of commits. This journal branch remains separate from master.
+- **Git commit:** A saved snapshot of changes with an identifier, author and message.
+- **Migration:** A versioned database schema change generated from Django models and applied with migrate.
+- **ORM:** Django's database interface, allowing Python queryset operations instead of handwritten SQL for common tasks.
+- **Queryset:** A lazily evaluated selection of database records that can be filtered or ordered.
+- **redirect:** Returns an HTTP response asking the browser to visit another URL.
+- **render:** Combines a Django template with a context dictionary into an HTTP response.
+- **request.user:** The user associated with the current authenticated web request.
+- **Role:** The user's application-level category, such as employee, customer, support or admin.
+- **select_related:** An ORM optimization for loading ForeignKey-related data in the same SQL query.
+- **Session:** Server-managed state that allows Django to recognize a user across multiple requests.
+- **TestCase:** Django's database-aware test class, running tests in an isolated test environment.
+- **Transaction:** A group of database operations treated as one unit; transaction.atomic can roll them back together.
