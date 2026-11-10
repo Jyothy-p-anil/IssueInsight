@@ -404,3 +404,12 @@ Rules:
   or tickets cannot be deleted.
   Disabled department deletion through Django Admin.
   Added five automated tests and verified the workflows.
+
+  - Step 52 (Module 4): Implemented Admin-only
+  Category Management with category listing,
+  creation, division selection and department mapping.
+  Added duplicate-category validation within each
+  division and preserved manual routing for Other.
+  Applied the same form validation in Django Admin.
+  Added seven automated tests and verified the page.
+  Category editing and safe deletion remain pending.

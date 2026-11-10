@@ -178,3 +178,95 @@ class DepartmentForm(forms.ModelForm):
             )
 
         return name
+
+
+
+
+
+# Module 4: Category management
+
+class CategoryForm(forms.ModelForm):
+
+    class Meta:
+        model = Category
+
+        fields = (
+            'name',
+            'division',
+            'department',
+        )
+
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter category name'
+            }),
+            'division': forms.Select(attrs={
+                'class': 'form-select'
+            }),
+            'department': forms.Select(attrs={
+                'class': 'form-select'
+            }),
+        }
+
+        labels = {
+            'name': 'Category Name',
+            'division': 'Complaint Type',
+            'department': 'Support Department',
+        }
+
+    def clean_name(self):
+
+        name = ' '.join(
+            self.cleaned_data['name'].split()
+        )
+
+        return name
+
+    def clean(self):
+
+        cleaned_data = super().clean()
+
+        name = cleaned_data.get('name')
+        division = cleaned_data.get('division')
+        department = cleaned_data.get('department')
+
+        # Category names must be unique within a division.
+        # The same name can exist once for Employee
+        # and once for Customer complaints.
+
+        if name and division:
+
+            duplicate = Category.objects.filter(
+                name__iexact=name,
+                division=division
+            ).exclude(pk=self.instance.pk).exists()
+
+            if duplicate:
+                self.add_error(
+                    'name',
+                    'This category already exists '
+                    'for the selected complaint type.'
+                )
+
+        # Other complaints require manual routing.
+
+        if name:
+
+            if name.casefold() == 'other':
+
+                if department:
+                    self.add_error(
+                        'department',
+                        'The Other category must not have '
+                        'a department. It uses manual routing.'
+                    )
+
+            elif not department:
+                self.add_error(
+                    'department',
+                    'Select a support department '
+                    'for this category.'
+                )
+
+        return cleaned_data

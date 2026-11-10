@@ -212,4 +212,12 @@ path(
     views.delete_department,
     name='delete_department'
 ),
+
+
+# Module 4: Category Management
+path(
+    'management/categories/',
+    views.manage_categories,
+    name='manage_categories'
+),
 ]

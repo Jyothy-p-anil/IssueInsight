@@ -1,8 +1,7 @@
 
 from django.contrib import admin
 from .models import Department, Category, Product, Ticket
-from .forms import DepartmentForm
-
+from .forms import DepartmentForm, CategoryForm 
 
 @admin.register(Department)
 class DepartmentAdmin(admin.ModelAdmin):
@@ -37,6 +36,8 @@ class CategoryAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
     ordering = ('division', 'name')
+
+    form = CategoryForm
 
 
 

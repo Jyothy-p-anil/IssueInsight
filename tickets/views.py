@@ -8,7 +8,7 @@ from django.contrib import messages
 from .forms import EmployeeComplaintForm, CustomerComplaintForm
 
 
-from .models import Ticket, Department
+from .models import Ticket, Department, Category
 
 from .forms import (
     EmployeeComplaintForm,
@@ -17,6 +17,7 @@ from .forms import (
     TicketMessageForm,
     SupportMessageForm,
     DepartmentForm,
+    CategoryForm,
 )
 
 from django.db import transaction
@@ -678,3 +679,44 @@ def delete_department(request, department_id):
             'has_dependencies': has_dependencies,
         }
     )
+
+
+
+# Module 4: Admin category management
+
+@role_required('admin')
+def manage_categories(request):
+
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+
+        if form.is_valid():
+            category = form.save()
+
+            messages.success(
+                request,
+                f'{category.name} category added successfully.'
+            )
+
+            return redirect('manage_categories')
+
+    else:
+        form = CategoryForm()
+
+    categories = Category.objects.select_related(
+        'department'
+    ).order_by(
+        'division',
+        'name',
+        'pk'
+    )
+
+    return render(
+        request,
+        'tickets/admin_categories.html',
+        {
+            'categories': categories,
+            'form': form,
+        }
+    )
+

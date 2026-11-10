@@ -268,3 +268,197 @@ class DepartmentManagementTests(TestCase):
             ).exists()
         )
 
+
+class CategoryManagementTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+
+        cls.admin = User.objects.create_user(
+            username='category_admin',
+            password='TestPass123!',
+            role='admin'
+        )
+
+        cls.employee = User.objects.create_user(
+            username='category_employee',
+            password='TestPass123!',
+            role='employee'
+        )
+
+        cls.facilities = Department.objects.create(
+            name='Facilities Support'
+        )
+
+        cls.product_support = Department.objects.create(
+            name='Product Support'
+        )
+
+    def test_only_admin_can_manage_categories(self):
+
+        url = reverse('manage_categories')
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('login', response.url)
+
+        self.client.force_login(self.employee)
+
+        response = self.client.get(url)
+        self.assertRedirects(
+            response,
+            reverse('dashboard_redirect'),
+            fetch_redirect_response=False
+        )
+
+        self.client.force_login(self.admin)
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_admin_can_create_category(self):
+
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse('manage_categories'),
+            {
+                'name': 'Printer Issues',
+                'division': 'employee',
+                'department': self.facilities.pk,
+            }
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        self.assertTrue(
+            Category.objects.filter(
+                name='Printer Issues',
+                division='employee',
+                department=self.facilities
+            ).exists()
+        )
+
+    def test_duplicate_category_rejected(self):
+
+        Category.objects.create(
+            name='IT Issues',
+            division='employee',
+            department=self.facilities
+        )
+
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse('manage_categories'),
+            {
+                'name': 'it issues',
+                'division': 'employee',
+                'department': self.facilities.pk,
+            }
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(
+            Category.objects.filter(
+                division='employee',
+                name__iexact='IT Issues'
+            ).count(),
+            1
+        )
+
+        self.assertTrue(response.context['form'].errors)
+
+    def test_same_name_allowed_for_different_divisions(self):
+
+        Category.objects.create(
+            name='Connection Issues',
+            division='employee',
+            department=self.facilities
+        )
+
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse('manage_categories'),
+            {
+                'name': 'Connection Issues',
+                'division': 'customer',
+                'department': self.product_support.pk,
+            }
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        self.assertEqual(
+            Category.objects.filter(
+                name='Connection Issues'
+            ).count(),
+            2
+        )
+
+    def test_other_category_has_manual_routing(self):
+
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse('manage_categories'),
+            {
+                'name': 'Other',
+                'division': 'employee',
+                'department': '',
+            }
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        category = Category.objects.get(
+            name='Other',
+            division='employee'
+        )
+
+        self.assertIsNone(category.department)
+
+    def test_normal_category_requires_department(self):
+
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse('manage_categories'),
+            {
+                'name': 'Printer Issues',
+                'division': 'employee',
+                'department': '',
+            }
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertFalse(
+            Category.objects.filter(
+                name='Printer Issues'
+            ).exists()
+        )
+
+    def test_other_cannot_have_department(self):
+
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse('manage_categories'),
+            {
+                'name': 'Other',
+                'division': 'customer',
+                'department': self.product_support.pk,
+            }
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertFalse(
+            Category.objects.filter(
+                name='Other',
+                division='customer'
+            ).exists()
+        )
