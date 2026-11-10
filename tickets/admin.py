@@ -1,7 +1,10 @@
 
 from django.contrib import admin
 from .models import Department, Category, Product, Ticket
-from .forms import DepartmentForm, CategoryForm 
+
+
+from .forms import DepartmentForm, CategoryForm, ProductForm
+
 
 @admin.register(Department)
 class DepartmentAdmin(admin.ModelAdmin):
@@ -46,7 +49,16 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 
-admin.site.register(Product)
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+
+    form = ProductForm
+
+    list_display = ('name', 'is_active')
+
+    list_filter = ('is_active',)
+
+    search_fields = ('name',)
 
 @admin.register(Ticket)
 class TicketAdmin(admin.ModelAdmin):

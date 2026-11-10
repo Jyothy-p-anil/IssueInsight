@@ -8,7 +8,8 @@ from django.contrib import messages
 from .forms import EmployeeComplaintForm, CustomerComplaintForm
 
 
-from .models import Ticket, Department, Category
+from .models import Ticket, Department, Category, Product
+
 
 from .forms import (
     EmployeeComplaintForm,
@@ -18,6 +19,7 @@ from .forms import (
     SupportMessageForm,
     DepartmentForm,
     CategoryForm,
+    ProductForm,
 )
 
 from django.db import transaction
@@ -811,5 +813,41 @@ def delete_category(request, category_id):
             'ticket_count': ticket_count,
             'is_system_category': is_system_category,
             'can_delete': can_delete,
+        }
+    )
+
+
+# Step 54: Admin software product management
+
+@role_required('admin')
+def manage_products(request):
+
+    if request.method == 'POST':
+        form = ProductForm(request.POST)
+
+        if form.is_valid():
+            product = form.save()
+
+            messages.success(
+                request,
+                f'{product.name} added successfully.'
+            )
+
+            return redirect('manage_products')
+
+    else:
+        form = ProductForm()
+
+    products = Product.objects.order_by(
+        'name',
+        'pk'
+    )
+
+    return render(
+        request,
+        'tickets/admin_products.html',
+        {
+            'form': form,
+            'products': products,
         }
     )

@@ -3,7 +3,8 @@ from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 
-from .models import Department, Category, Ticket
+from .models import Department, Category, Ticket, Product
+from .forms import CustomerComplaintForm
 
 User = get_user_model()
 
@@ -684,3 +685,115 @@ class CategoryManagementTests(TestCase):
             category.name,
             'Protected Category'
         )
+
+
+class ProductManagementTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+
+        cls.admin = User.objects.create_user(
+            username='product_admin',
+            password='TestPass123!',
+            role='admin'
+        )
+
+        cls.employee = User.objects.create_user(
+            username='product_employee',
+            password='TestPass123!',
+            role='employee'
+        )
+
+    def test_only_admin_can_manage_products(self):
+
+        url = reverse('manage_products')
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('login', response.url)
+
+        self.client.force_login(self.employee)
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+
+        response = self.client.post(
+            url,
+            {'name': 'Unauthorized Product'}
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        self.assertFalse(
+            Product.objects.filter(
+                name='Unauthorized Product'
+            ).exists()
+        )
+
+        self.client.force_login(self.admin)
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_admin_can_create_active_product(self):
+
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse('manage_products'),
+            {'name': 'DemoFlow'}
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        product = Product.objects.get(name='DemoFlow')
+
+        self.assertTrue(product.is_active)
+
+    def test_duplicate_product_rejected(self):
+
+        Product.objects.create(name='PayrollPro')
+
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse('manage_products'),
+            {'name': 'payrollpro'}
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['form'].errors)
+
+        self.assertEqual(Product.objects.count(), 1)
+
+    def test_empty_product_name_rejected(self):
+
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse('manage_products'),
+            {'name': '   '}
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Product.objects.count(), 0)
+
+    def test_only_active_products_are_selectable(self):
+
+        active_product = Product.objects.create(
+            name='ActiveDemo',
+            is_active=True
+        )
+
+        inactive_product = Product.objects.create(
+            name='InactiveDemo',
+            is_active=False
+        )
+
+        form = CustomerComplaintForm()
+
+        queryset = form.fields['product'].queryset
+
+        self.assertIn(active_product, queryset)
+        self.assertNotIn(inactive_product, queryset)

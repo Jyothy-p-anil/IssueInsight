@@ -234,4 +234,13 @@ path(
     views.delete_category,
     name='delete_category'
 ),
+
+
+# Module 4: Software Product Management
+
+path(
+    'management/products/',
+    views.manage_products,
+    name='manage_products'
+),
 ]

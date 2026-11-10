@@ -305,3 +305,38 @@ class CategoryForm(forms.ModelForm):
 
 
         return cleaned_data
+
+
+# Step 54: Software product creation
+
+class ProductForm(forms.ModelForm):
+
+    class Meta:
+        model = Product
+        fields = ('name',)
+
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter software product name'
+            })
+        }
+
+    def clean_name(self):
+
+        name = ' '.join(
+            self.cleaned_data['name'].split()
+        )
+
+        if Product.objects.filter(
+            name__iexact=name
+        ).exclude(
+            pk=self.instance.pk
+        ).exists():
+
+            raise forms.ValidationError(
+                'A software product with this name '
+                'already exists.'
+            )
+
+        return name
