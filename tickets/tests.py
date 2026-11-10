@@ -462,3 +462,225 @@ class CategoryManagementTests(TestCase):
                 division='customer'
             ).exists()
         )
+
+
+
+    def test_admin_can_edit_category(self):
+
+        category = Category.objects.create(
+            name='Printer Issues',
+            division='employee',
+            department=self.facilities
+        )
+
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse('edit_category', args=[category.pk]),
+            {
+                'name': 'Office Printer Issues',
+                'division': 'employee',
+                'department': self.product_support.pk,
+            }
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        category.refresh_from_db()
+
+        self.assertEqual(
+            category.name,
+            'Office Printer Issues'
+        )
+        self.assertEqual(
+            category.department,
+            self.product_support
+        )
+
+    def test_edit_rejects_duplicate_category(self):
+
+        Category.objects.create(
+            name='IT Issues',
+            division='employee',
+            department=self.facilities
+        )
+
+        category = Category.objects.create(
+            name='Printer Issues',
+            division='employee',
+            department=self.facilities
+        )
+
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse('edit_category', args=[category.pk]),
+            {
+                'name': 'it issues',
+                'division': 'employee',
+                'department': self.facilities.pk,
+            }
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        category.refresh_from_db()
+        self.assertEqual(category.name, 'Printer Issues')
+
+    def test_used_category_cannot_change_division(self):
+
+        category = Category.objects.create(
+            name='Printer Issues',
+            division='employee',
+            department=self.facilities
+        )
+
+        Ticket.objects.create(
+            reporter=self.employee,
+            division='employee',
+            title='Printer not working',
+            description='Office printer issue.',
+            category=category,
+            department=self.facilities
+        )
+
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse('edit_category', args=[category.pk]),
+            {
+                'name': 'Printer Issues',
+                'division': 'customer',
+                'department': self.product_support.pk,
+            }
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        category.refresh_from_db()
+        self.assertEqual(category.division, 'employee')
+        self.assertTrue(response.context['form'].errors)
+
+    def test_cannot_delete_used_category(self):
+
+        category = Category.objects.create(
+            name='IT Issues',
+            division='employee',
+            department=self.facilities
+        )
+
+        Ticket.objects.create(
+            reporter=self.employee,
+            division='employee',
+            title='Computer issue',
+            description='Computer is not working.',
+            category=category,
+            department=self.facilities
+        )
+
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse('delete_category', args=[category.pk])
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        self.assertTrue(
+            Category.objects.filter(pk=category.pk).exists()
+        )
+
+    def test_admin_can_delete_unused_category(self):
+
+        category = Category.objects.create(
+            name='Temporary Category',
+            division='employee',
+            department=self.facilities
+        )
+
+        category_id = category.pk
+
+        self.client.force_login(self.admin)
+
+        url = reverse('delete_category', args=[category_id])
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        self.assertTrue(
+            Category.objects.filter(pk=category_id).exists()
+        )
+
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 302)
+
+        self.assertFalse(
+            Category.objects.filter(pk=category_id).exists()
+        )
+
+    def test_other_category_is_protected(self):
+
+        category = Category.objects.create(
+            name='Other',
+            division='employee',
+            department=None
+        )
+
+        self.client.force_login(self.admin)
+
+        edit_response = self.client.post(
+            reverse('edit_category', args=[category.pk]),
+            {
+                'name': 'Miscellaneous',
+                'division': 'customer',
+                'department': self.product_support.pk,
+            }
+        )
+
+        self.assertEqual(edit_response.status_code, 200)
+
+        category.refresh_from_db()
+        self.assertEqual(category.name, 'Other')
+        self.assertEqual(category.division, 'employee')
+
+        delete_response = self.client.post(
+            reverse('delete_category', args=[category.pk])
+        )
+
+        self.assertEqual(delete_response.status_code, 302)
+
+        self.assertTrue(
+            Category.objects.filter(pk=category.pk).exists()
+        )
+
+    def test_employee_cannot_edit_or_delete_category(self):
+
+        category = Category.objects.create(
+            name='Protected Category',
+            division='employee',
+            department=self.facilities
+        )
+
+        self.client.force_login(self.employee)
+
+        edit_response = self.client.post(
+            reverse('edit_category', args=[category.pk]),
+            {
+                'name': 'Unauthorized Change',
+                'division': 'employee',
+                'department': self.facilities.pk,
+            }
+        )
+
+        delete_response = self.client.post(
+            reverse('delete_category', args=[category.pk])
+        )
+
+        self.assertEqual(edit_response.status_code, 302)
+        self.assertEqual(delete_response.status_code, 302)
+
+        category.refresh_from_db()
+        self.assertEqual(
+            category.name,
+            'Protected Category'
+        )

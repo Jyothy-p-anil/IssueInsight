@@ -220,4 +220,18 @@ path(
     views.manage_categories,
     name='manage_categories'
 ),
+
+# Module 4: Category editing and deletion
+
+path(
+    'management/categories/<int:category_id>/edit/',
+    views.edit_category,
+    name='edit_category'
+),
+
+path(
+    'management/categories/<int:category_id>/delete/',
+    views.delete_category,
+    name='delete_category'
+),
 ]

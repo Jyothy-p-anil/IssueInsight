@@ -720,3 +720,96 @@ def manage_categories(request):
         }
     )
 
+
+
+# Step 53: Edit category
+
+@role_required('admin')
+def edit_category(request, category_id):
+
+    category = get_object_or_404(
+        Category,
+        pk=category_id
+    )
+
+    if request.method == 'POST':
+        form = CategoryForm(
+            request.POST,
+            instance=category
+        )
+
+        if form.is_valid():
+            form.save()
+
+            messages.success(
+                request,
+                'Category updated successfully.'
+            )
+
+            return redirect('manage_categories')
+
+    else:
+        form = CategoryForm(instance=category)
+
+    return render(
+        request,
+        'tickets/admin_category_edit.html',
+        {
+            'form': form,
+            'category': category,
+        }
+    )
+
+
+#Delete unused categories only
+
+@role_required('admin')
+def delete_category(request, category_id):
+
+    category = get_object_or_404(
+        Category,
+        pk=category_id
+    )
+
+    ticket_count = category.ticket_set.count()
+    is_system_category = (
+        category.name.casefold() == 'other'
+    )
+
+    can_delete = (
+        ticket_count == 0
+        and not is_system_category
+    )
+
+    if request.method == 'POST':
+
+        if not can_delete:
+            messages.error(
+                request,
+                'This category cannot be deleted. '
+                'It is either used by existing tickets '
+                'or required for manual routing.'
+            )
+
+            return redirect('manage_categories')
+
+        category_name = category.name
+        category.delete()
+
+        messages.success(
+            request,
+            f'{category_name} deleted successfully.'
+        )
+
+        return redirect('manage_categories')
+
+    return render(
+        request,
+        'tickets/admin_category_confirm_delete.html',
+        {
+            'category': category,
+            'ticket_count': ticket_count,
+            'is_system_category': is_system_category,
+            'can_delete': can_delete,
+        }
+    )

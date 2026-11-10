@@ -269,4 +269,39 @@ class CategoryForm(forms.ModelForm):
                     'for this category.'
                 )
 
+            # Protect categories used by existing complaints
+        if self.instance.pk and division:
+
+            original = Category.objects.get(
+                pk=self.instance.pk
+            )
+
+            if original.name.casefold() == 'other':
+
+                if name and name.casefold() != 'other':
+                    self.add_error(
+                        'name',
+                        'The Other category cannot be renamed.'
+                    )
+
+                if division != original.division:
+                    self.add_error(
+                        'division',
+                        'The Other category cannot change '
+                        'complaint type.'
+                    )
+
+            elif (
+                division != original.division
+                and Ticket.objects.filter(
+                    category_id=self.instance.pk
+                ).exists()
+            ):
+                self.add_error(
+                    'division',
+                    'Cannot change the complaint type '
+                    'because existing tickets use this category.'
+                )
+
+
         return cleaned_data

@@ -1,0 +1,65 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Delete Category | IssueInsight{% endblock %}
+
+{% block content %}
+
+<h2>Delete Category</h2>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+
+        <h5>{{ category.name }}</h5>
+
+        <p>
+            Complaint Type:
+            {{ category.get_division_display }}
+        </p>
+
+        <p>
+            Existing Tickets:
+            {{ ticket_count }}
+        </p>
+
+        {% if is_system_category %}
+
+            <div class="alert alert-warning">
+                The Other category is required for manual
+                complaint routing and cannot be deleted.
+            </div>
+
+        {% elif ticket_count > 0 %}
+
+            <div class="alert alert-warning">
+                This category is used by existing complaints
+                and cannot be deleted.
+            </div>
+
+        {% else %}
+
+            <div class="alert alert-danger">
+                Are you sure you want to permanently
+                delete this category?
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <button type="submit"
+                        class="btn btn-danger">
+                    Confirm Delete
+                </button>
+            </form>
+
+        {% endif %}
+
+        <a href="{% url 'manage_categories' %}"
+           class="btn btn-outline-secondary mt-3">
+            Back to Categories
+        </a>
+
+    </div>
+</div>
+
+{% endblock %}

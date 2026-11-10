@@ -80,6 +80,7 @@
                         <th>Category Name</th>
                         <th>Complaint Type</th>
                         <th>Support Department</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
 
@@ -105,12 +106,23 @@
                                     </span>
                                 {% endif %}
                             </td>
+                            <td>
+                                <a href="{% url 'edit_category' category.pk %}"
+                                class="btn btn-sm btn-outline-primary">
+                                    Edit
+                                </a>
+
+                                <a href="{% url 'delete_category' category.pk %}"
+                                class="btn btn-sm btn-outline-danger">
+                                    Delete
+                                </a>
+                            </td>
                         </tr>
 
                     {% empty %}
 
                         <tr>
-                            <td colspan="4"
+                            <td colspan="5"
                                 class="text-center">
                                 No categories found.
                             </td>
