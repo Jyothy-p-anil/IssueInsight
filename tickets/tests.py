@@ -1001,3 +1001,294 @@ class ProductUpdateTests(TestCase):
                 obj=product
             )
         )
+
+
+# Step 57: Employee complaint submission tests
+
+class EmployeeComplaintSubmissionTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+
+        cls.employee = User.objects.create_user(
+            username='complaint_employee',
+            password='TestPass123!',
+            role='employee'
+        )
+
+        cls.other_employee = User.objects.create_user(
+            username='another_employee',
+            password='TestPass123!',
+            role='employee'
+        )
+
+        cls.customer = User.objects.create_user(
+            username='complaint_customer',
+            password='TestPass123!',
+            role='customer'
+        )
+
+        cls.department = Department.objects.create(
+            name='Facilities Support'
+        )
+
+        cls.employee_category = Category.objects.create(
+            name='Facilities Issues',
+            division='employee',
+            department=cls.department
+        )
+
+        cls.other_category = Category.objects.create(
+            name='Other',
+            division='employee',
+            department=None
+        )
+
+        cls.customer_category = Category.objects.create(
+            name='Login & Access',
+            division='customer',
+            department=cls.department
+        )
+
+    def complaint_data(self, **overrides):
+
+        data = {
+            'title': 'Office AC not working',
+            'description': 'The AC is not cooling.',
+            'floor': 'Floor 2',
+            'category': self.employee_category.pk,
+        }
+
+        data.update(overrides)
+        return data
+
+    def test_guest_cannot_submit_complaint(self):
+
+        url = reverse('submit_employee_complaint')
+
+        get_response = self.client.get(url)
+
+        post_response = self.client.post(
+            url,
+            self.complaint_data()
+        )
+
+        self.assertEqual(get_response.status_code, 302)
+        self.assertEqual(post_response.status_code, 302)
+        self.assertEqual(Ticket.objects.count(), 0)
+
+    def test_customer_cannot_submit_employee_complaint(self):
+
+        self.client.force_login(self.customer)
+
+        response = self.client.post(
+            reverse('submit_employee_complaint'),
+            self.complaint_data()
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Ticket.objects.count(), 0)
+
+    def test_form_shows_only_employee_categories(self):
+
+        self.client.force_login(self.employee)
+
+        response = self.client.get(
+            reverse('submit_employee_complaint')
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        categories = (
+            response.context['form']
+            .fields['category']
+            .queryset
+        )
+
+        self.assertIn(self.employee_category, categories)
+        self.assertIn(self.other_category, categories)
+        self.assertNotIn(self.customer_category, categories)
+
+    def test_submission_uses_server_controlled_fields(self):
+
+        self.client.force_login(self.employee)
+
+        data = self.complaint_data(
+            reporter=self.other_employee.pk,
+            division='customer',
+            status='closed',
+            department=99999,
+            assigned_to=self.customer.pk
+        )
+
+        response = self.client.post(
+            reverse('submit_employee_complaint'),
+            data
+        )
+
+        self.assertRedirects(
+            response,
+            reverse('employee_my_tickets'),
+            fetch_redirect_response=False
+        )
+
+        ticket = Ticket.objects.get()
+
+        self.assertEqual(ticket.reporter, self.employee)
+        self.assertEqual(ticket.division, 'employee')
+        self.assertEqual(ticket.status, 'submitted')
+        self.assertEqual(
+            ticket.department,
+            self.department
+        )
+        self.assertEqual(
+            ticket.category,
+            self.employee_category
+        )
+        self.assertEqual(ticket.floor, 'Floor 2')
+        self.assertIsNone(ticket.assigned_to)
+
+    def test_other_category_requires_manual_routing(self):
+
+        self.client.force_login(self.employee)
+
+        response = self.client.post(
+            reverse('submit_employee_complaint'),
+            self.complaint_data(
+                category=self.other_category.pk
+            )
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        ticket = Ticket.objects.get()
+
+        self.assertEqual(ticket.category, self.other_category)
+        self.assertIsNone(ticket.department)
+        self.assertEqual(ticket.status, 'submitted')
+
+    def test_customer_category_is_rejected(self):
+
+        self.client.force_login(self.employee)
+
+        response = self.client.post(
+            reverse('submit_employee_complaint'),
+            self.complaint_data(
+                category=self.customer_category.pk
+            )
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertIn(
+            'category',
+            response.context['form'].errors
+        )
+
+        self.assertEqual(Ticket.objects.count(), 0)
+
+    def test_required_fields_are_validated(self):
+
+        self.client.force_login(self.employee)
+
+        for field_name in (
+            'title',
+            'description',
+            'category'
+        ):
+
+            with self.subTest(field=field_name):
+
+                response = self.client.post(
+                    reverse('submit_employee_complaint'),
+                    self.complaint_data(
+                        **{field_name: ''}
+                    )
+                )
+
+                self.assertEqual(
+                    response.status_code,
+                    200
+                )
+
+                self.assertIn(
+                    field_name,
+                    response.context['form'].errors
+                )
+
+        self.assertEqual(Ticket.objects.count(), 0)
+
+    def test_floor_is_optional(self):
+
+        self.client.force_login(self.employee)
+
+        response = self.client.post(
+            reverse('submit_employee_complaint'),
+            self.complaint_data(floor='')
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        ticket = Ticket.objects.get()
+
+        self.assertEqual(ticket.floor, '')
+
+    def test_employee_sees_only_own_complaints(self):
+
+        own_ticket = Ticket.objects.create(
+            reporter=self.employee,
+            division='employee',
+            title='My AC complaint',
+            description='AC problem.',
+            category=self.employee_category,
+            department=self.department
+        )
+
+        Ticket.objects.create(
+            reporter=self.other_employee,
+            division='employee',
+            title='Private employee complaint',
+            description='Another issue.',
+            category=self.employee_category,
+            department=self.department
+        )
+
+        self.client.force_login(self.employee)
+
+        response = self.client.get(
+            reverse('employee_my_tickets')
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        tickets = list(response.context['tickets'])
+
+        self.assertEqual(tickets, [own_ticket])
+
+        self.assertContains(
+            response,
+            'My AC complaint'
+        )
+
+        self.assertNotContains(
+            response,
+            'Private employee complaint'
+        )
+
+    def test_customer_cannot_view_employee_ticket_list(self):
+
+        self.client.force_login(self.customer)
+
+        response = self.client.get(
+            reverse('employee_my_tickets')
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        self.client.logout()
+
+        guest_response = self.client.get(
+            reverse('employee_my_tickets')
+        )
+
+        self.assertEqual(guest_response.status_code, 302)

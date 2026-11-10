@@ -460,3 +460,21 @@ Rules:
   Admin complaint visibility remains planned
   for Module 8, with search and filtering
   coordinated with Module 13.
+
+
+    - Step 57 (Module 5): Completed Employee Complaint
+  Submission review. Verified role protection,
+  required-field validation, category restrictions,
+  server-controlled ticket fields, automatic
+  department routing and manual routing for Other.
+  Corrected Employee My Tickets HTML structure.
+  Added ten automated tests and verified
+  the browser workflow.
+
+  - Module 5 Completion Review:
+  Employee Complaint Submission is complete
+  for its current approved scope.
+  Shared workplace issue verification remains
+  scheduled for Module 10.
+  Future ticket lifecycle features remain
+  in their designated modules.
