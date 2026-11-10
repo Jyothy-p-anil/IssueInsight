@@ -478,3 +478,11 @@ Rules:
   scheduled for Module 10.
   Future ticket lifecycle features remain
   in their designated modules.
+
+    - Step 58 (Module 5): Addressed Employee Complaint
+  Submission checklist gaps. Added floor/location
+  validation, category suggestion integration preparation,
+  invalid/unmapped category handling tests, and
+  shared-facilities and personal-device routing tests.
+  Added eight automated tests.
+  Final checklist verification pending Step 59.

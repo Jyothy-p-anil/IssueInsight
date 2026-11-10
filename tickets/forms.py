@@ -1,15 +1,15 @@
+from math import floor
+
 from django import forms
 from .models import Ticket, Category, Product, Department, TicketMessage
 
 
-
+from .services.category_suggestions import get_suggestion_candidates
 
 class EmployeeComplaintForm(forms.ModelForm):
 
     category = forms.ModelChoiceField(
-        queryset=Category.objects.filter(
-            division='employee'
-        ).order_by('name'),
+        queryset=Category.objects.none(),
         empty_label='Select a category',
         required=True
     )
@@ -25,8 +25,15 @@ class EmployeeComplaintForm(forms.ModelForm):
             }),
         }
 
+    def clean_floor(self):
+        floor = self.cleaned_data.get('floor') or ''
+        return ' '.join(floor.split())
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['category'].queryset = (
+        get_suggestion_candidates('employee')
+        )
 
         for field in self.fields.values():
             if isinstance(field.widget, forms.Select):

@@ -9,6 +9,8 @@ from .forms import CustomerComplaintForm
 User = get_user_model()
 
 
+from .services.category_suggestions import get_suggestion_candidates
+
 class DepartmentManagementTests(TestCase):
 
     @classmethod
@@ -1292,3 +1294,228 @@ class EmployeeComplaintSubmissionTests(TestCase):
         )
 
         self.assertEqual(guest_response.status_code, 302)
+
+    
+    # Step 58: Floor/location validation
+
+    def test_floor_extra_spaces_are_normalized(self):
+
+        self.client.force_login(self.employee)
+
+        response = self.client.post(
+            reverse('submit_employee_complaint'),
+            self.complaint_data(
+                floor='  Floor    2 / West Wing  '
+            )
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        ticket = Ticket.objects.get()
+
+        self.assertEqual(
+            ticket.floor,
+            'Floor 2 / West Wing'
+        )
+
+    def test_floor_exceeding_30_characters_is_rejected(self):
+
+        self.client.force_login(self.employee)
+
+        response = self.client.post(
+            reverse('submit_employee_complaint'),
+            self.complaint_data(
+                floor='X' * 31
+            )
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertIn(
+            'floor',
+            response.context['form'].errors
+        )
+
+        self.assertEqual(Ticket.objects.count(), 0)
+
+    def test_floor_accepts_maximum_allowed_length(self):
+
+        self.client.force_login(self.employee)
+
+        response = self.client.post(
+            reverse('submit_employee_complaint'),
+            self.complaint_data(
+                floor='X' * 30
+            )
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        ticket = Ticket.objects.get()
+        self.assertEqual(len(ticket.floor), 30)
+
+    # Step 58: Invalid and unmapped categories
+
+    def test_nonexistent_category_is_rejected(self):
+
+        self.client.force_login(self.employee)
+
+        response = self.client.post(
+            reverse('submit_employee_complaint'),
+            self.complaint_data(
+                category=999999
+            )
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertIn(
+            'category',
+            response.context['form'].errors
+        )
+
+        self.assertEqual(Ticket.objects.count(), 0)
+
+    def test_unmapped_category_enters_admin_routing_queue(self):
+
+        legacy_category = Category.objects.create(
+            name='Legacy Unmapped Issue',
+            division='employee',
+            department=None
+        )
+
+        self.client.force_login(self.employee)
+
+        response = self.client.post(
+            reverse('submit_employee_complaint'),
+            self.complaint_data(
+                category=legacy_category.pk
+            )
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        ticket = Ticket.objects.get()
+
+        self.assertIsNone(ticket.department)
+        self.assertEqual(ticket.status, 'submitted')
+
+        admin_user = User.objects.create_user(
+            username='routing_review_admin',
+            password='TestPass123!',
+            role='admin'
+        )
+
+        self.client.force_login(admin_user)
+
+        response = self.client.get(
+            reverse('admin_pending_routing')
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertIn(
+            ticket,
+            list(response.context['tickets'])
+        )
+
+    # Step 58: Real workplace scenarios
+
+    def test_shared_facilities_complaint_routes_correctly(self):
+
+        self.client.force_login(self.employee)
+
+        response = self.client.post(
+            reverse('submit_employee_complaint'),
+            self.complaint_data(
+                title='Shared office AC issue',
+                description='The common office AC is broken.',
+                category=self.employee_category.pk
+            )
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        ticket = Ticket.objects.get()
+
+        self.assertEqual(
+            ticket.department,
+            self.department
+        )
+
+        self.assertEqual(
+            ticket.category.name,
+            'Facilities Issues'
+        )
+
+    def test_personal_device_complaint_routes_to_it(self):
+
+        it_department = Department.objects.create(
+            name='Internal IT Support'
+        )
+
+        it_category = Category.objects.create(
+            name='IT Issues',
+            division='employee',
+            department=it_department
+        )
+
+        self.client.force_login(self.employee)
+
+        response = self.client.post(
+            reverse('submit_employee_complaint'),
+            self.complaint_data(
+                title='My assigned laptop is not charging',
+                description='My laptop charger is not working.',
+                category=it_category.pk
+            )
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        ticket = Ticket.objects.get()
+
+        self.assertEqual(
+            ticket.department,
+            it_department
+        )
+
+        self.assertEqual(ticket.category, it_category)
+
+    # Step 58: Future category suggestion integration
+
+    def test_suggestion_candidates_respect_division(self):
+
+        employee_candidates = list(
+            get_suggestion_candidates('employee')
+        )
+
+        customer_candidates = list(
+            get_suggestion_candidates('customer')
+        )
+
+        invalid_candidates = list(
+            get_suggestion_candidates('invalid')
+        )
+
+        self.assertIn(
+            self.employee_category,
+            employee_candidates
+        )
+
+        self.assertNotIn(
+            self.customer_category,
+            employee_candidates
+        )
+
+        self.assertIn(
+            self.customer_category,
+            customer_candidates
+        )
+
+        self.assertNotIn(
+            self.employee_category,
+            customer_candidates
+        )
+
+        self.assertEqual(invalid_candidates, [])
