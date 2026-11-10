@@ -64,6 +64,7 @@
                         <th>#</th>
                         <th>Product Name</th>
                         <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
 
@@ -87,12 +88,48 @@
                                     </span>
                                 {% endif %}
                             </td>
+                        
+                            <td>
+
+                                <a href="{% url 'edit_product' product.pk %}"
+                                class="btn btn-sm btn-outline-primary">
+                                    Edit
+                                </a>
+
+                                <form method="post"
+                                    action="{% url 'toggle_product_status' product.pk %}"
+                                    class="d-inline">
+
+                                    {% csrf_token %}
+
+                                    {% if product.is_active %}
+
+                                        <button type="submit"
+                                                class="btn btn-sm btn-outline-danger">
+                                            Deactivate
+                                        </button>
+
+                                    {% else %}
+
+                                        <button type="submit"
+                                                class="btn btn-sm btn-outline-success">
+                                            Activate
+                                        </button>
+
+                                    {% endif %}
+
+                                </form>
+
+                            </td>
+
+
+
                         </tr>
 
                     {% empty %}
 
                         <tr>
-                            <td colspan="3" class="text-center">
+                            <td colspan="4" class="text-center">
                                 No software products found.
                             </td>
                         </tr>

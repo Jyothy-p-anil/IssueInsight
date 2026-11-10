@@ -797,3 +797,207 @@ class ProductManagementTests(TestCase):
 
         self.assertIn(active_product, queryset)
         self.assertNotIn(inactive_product, queryset)
+
+
+class ProductUpdateTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+
+        cls.admin = User.objects.create_user(
+            username='product_update_admin',
+            password='TestPass123!',
+            role='admin'
+        )
+
+        cls.employee = User.objects.create_user(
+            username='product_update_employee',
+            password='TestPass123!',
+            role='employee'
+        )
+
+    def test_admin_can_edit_product_name(self):
+
+        product = Product.objects.create(
+            name='DemoFlow',
+            is_active=False
+        )
+
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse('edit_product', args=[product.pk]),
+            {'name': 'DemoFlow Suite'}
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        product.refresh_from_db()
+
+        self.assertEqual(
+            product.name,
+            'DemoFlow Suite'
+        )
+        self.assertFalse(product.is_active)
+
+    def test_duplicate_product_rename_rejected(self):
+
+        Product.objects.create(name='PayrollPro')
+
+        product = Product.objects.create(
+            name='DemoFlow'
+        )
+
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse('edit_product', args=[product.pk]),
+            {'name': 'payrollpro'}
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        product.refresh_from_db()
+        self.assertEqual(product.name, 'DemoFlow')
+        self.assertTrue(response.context['form'].errors)
+
+    def test_admin_can_deactivate_and_reactivate_product(self):
+
+        product = Product.objects.create(
+            name='DemoFlow'
+        )
+
+        self.client.force_login(self.admin)
+
+        url = reverse(
+            'toggle_product_status',
+            args=[product.pk]
+        )
+
+        response = self.client.post(url)
+
+        self.assertEqual(response.status_code, 302)
+
+        product.refresh_from_db()
+        self.assertFalse(product.is_active)
+
+        response = self.client.post(url)
+
+        self.assertEqual(response.status_code, 302)
+
+        product.refresh_from_db()
+        self.assertTrue(product.is_active)
+
+    def test_inactive_product_preserves_existing_ticket(self):
+
+        product = Product.objects.create(
+            name='LegacyProduct'
+        )
+
+        customer = User.objects.create_user(
+            username='product_history_customer',
+            password='TestPass123!',
+            role='customer'
+        )
+
+        ticket = Ticket.objects.create(
+            reporter=customer,
+            division='customer',
+            title='Existing software issue',
+            description='Historical complaint.',
+            product=product
+        )
+
+        self.client.force_login(self.admin)
+
+        self.client.post(
+            reverse(
+                'toggle_product_status',
+                args=[product.pk]
+            )
+        )
+
+        product.refresh_from_db()
+        ticket.refresh_from_db()
+
+        self.assertFalse(product.is_active)
+        self.assertEqual(ticket.product, product)
+
+        form = CustomerComplaintForm()
+
+        self.assertNotIn(
+            product,
+            form.fields['product'].queryset
+        )
+
+    def test_employee_cannot_edit_or_toggle_product(self):
+
+        product = Product.objects.create(
+            name='ProtectedProduct'
+        )
+
+        self.client.force_login(self.employee)
+
+        edit_response = self.client.post(
+            reverse('edit_product', args=[product.pk]),
+            {'name': 'Unauthorized Name'}
+        )
+
+        toggle_response = self.client.post(
+            reverse(
+                'toggle_product_status',
+                args=[product.pk]
+            )
+        )
+
+        self.assertEqual(edit_response.status_code, 302)
+        self.assertEqual(toggle_response.status_code, 302)
+
+        product.refresh_from_db()
+
+        self.assertEqual(
+            product.name,
+            'ProtectedProduct'
+        )
+        self.assertTrue(product.is_active)
+
+    def test_status_change_requires_post(self):
+
+        product = Product.objects.create(
+            name='DemoFlow'
+        )
+
+        self.client.force_login(self.admin)
+
+        response = self.client.get(
+            reverse(
+                'toggle_product_status',
+                args=[product.pk]
+            )
+        )
+
+        self.assertEqual(response.status_code, 405)
+
+        product.refresh_from_db()
+        self.assertTrue(product.is_active)
+
+    def test_product_deletion_disabled_in_django_admin(self):
+
+        from django.contrib import admin
+        from .admin import ProductAdmin
+
+        product = Product.objects.create(
+            name='ProtectedHistoryProduct'
+        )
+
+        product_admin = ProductAdmin(
+            Product,
+            admin.site
+        )
+
+        self.assertFalse(
+            product_admin.has_delete_permission(
+                None,
+                obj=product
+            )
+        )

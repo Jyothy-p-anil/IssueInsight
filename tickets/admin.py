@@ -60,6 +60,10 @@ class ProductAdmin(admin.ModelAdmin):
 
     search_fields = ('name',)
 
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
 @admin.register(Ticket)
 class TicketAdmin(admin.ModelAdmin):
 

@@ -243,4 +243,21 @@ path(
     views.manage_products,
     name='manage_products'
 ),
+
+# Step 55: Product editing and activation
+
+path(
+    'management/products/<int:product_id>/edit/',
+    views.edit_product,
+    name='edit_product'
+),
+
+path(
+    'management/products/<int:product_id>/toggle/',
+    views.toggle_product_status,
+    name='toggle_product_status'
+),
+
+
+
 ]

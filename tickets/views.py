@@ -851,3 +851,73 @@ def manage_products(request):
             'products': products,
         }
     )
+
+
+# Step 55: Edit software product
+
+@role_required('admin')
+def edit_product(request, product_id):
+
+    product = get_object_or_404(
+        Product,
+        pk=product_id
+    )
+
+    if request.method == 'POST':
+        form = ProductForm(
+            request.POST,
+            instance=product
+        )
+
+        if form.is_valid():
+            form.save()
+
+            messages.success(
+                request,
+                'Software product updated successfully.'
+            )
+
+            return redirect('manage_products')
+
+    else:
+        form = ProductForm(instance=product)
+
+    return render(
+        request,
+        'tickets/admin_product_edit.html',
+        {
+            'form': form,
+            'product': product,
+        }
+    )
+
+
+# Step 55: Activate or deactivate product
+
+@role_required('admin')
+@require_POST
+def toggle_product_status(request, product_id):
+
+    product = get_object_or_404(
+        Product,
+        pk=product_id
+    )
+
+    product.is_active = not product.is_active
+
+    product.save(
+        update_fields=['is_active']
+    )
+
+    status = (
+        'activated'
+        if product.is_active
+        else 'deactivated'
+    )
+
+    messages.success(
+        request,
+        f'{product.name} {status} successfully.'
+    )
+
+    return redirect('manage_products')
