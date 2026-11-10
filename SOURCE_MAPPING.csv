@@ -90,6 +90,7 @@ module,module_title,chapter,file,symbol,source_status
 5,Employee Complaint Submission,Employee complaint form and save workflow,templates/tickets/employee_complaint_form.html,,present
 5,Employee Complaint Submission,Employee My Tickets,tickets/views.py,employee_my_tickets,present
 5,Employee Complaint Submission,Employee My Tickets,templates/tickets/employee_my_tickets.html,,present
+5,Employee Complaint Submission,Auto-discovered,tickets/tests.py,EmployeeComplaintSubmissionTests,commit 8aa5fec6ff3d
 6,Customer Complaint Submission,Customer product and category validation,tickets/forms.py,CustomerComplaintForm,present
 6,Customer Complaint Submission,Customer product and category validation,templates/tickets/customer_complaint_form.html,,present
 6,Customer Complaint Submission,Customer submission and My Tickets,tickets/views.py,submit_customer_complaint,present

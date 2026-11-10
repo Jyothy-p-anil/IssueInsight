@@ -1,6 +1,6 @@
 # Module 05 — Employee Complaint Submission
 
-**Status:** Substantial existing implementation; final module review pending
+**Status:** Complete for implemented scope; ten submission and privacy tests added in Step 57
 
 An Employee reports a workplace problem and sees it in their own ticket list.
 
@@ -10,6 +10,7 @@ An Employee reports a workplace problem and sees it in their own ticket list.
 
 - [Employee complaint form and save workflow](01-employee-form-and-submission.md)
 - [Employee My Tickets](02-employee-ticket-list.md)
+- [New code discovered from module-tagged commits](new-committed-changes.md)
 
 ## What the study chat should do
 

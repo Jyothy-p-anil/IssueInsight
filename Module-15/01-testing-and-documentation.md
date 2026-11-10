@@ -20,11 +20,11 @@ Follow one real request or data change through the functions shown below. Notice
 
 ### Actual code from the committed project
 
-Source revision: [`b1b1f5e53a80`](https://github.com/Jyothy-p-anil/IssueInsight/commit/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6) on `master`. The excerpts are current code, not invented historical versions.
+Source revision: [`8aa5fec6ff3d`](https://github.com/Jyothy-p-anil/IssueInsight/commit/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a) on `master`. The excerpts are current code, not invented historical versions.
 
 #### `accounts/tests.py` → `RolePermissionTests`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/accounts/tests.py#L12-L273)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a/accounts/tests.py#L12-L273)
 
 ```python
 class RolePermissionTests(TestCase):
@@ -183,7 +183,7 @@ class RolePermissionTests(TestCase):
 
 #### `accounts/test_module3_security.py` → `Module3SecurityTests`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/accounts/test_module3_security.py#L17-L257)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a/accounts/test_module3_security.py#L17-L257)
 
 ```python
 class Module3SecurityTests(TestCase):
@@ -342,7 +342,7 @@ class Module3SecurityTests(TestCase):
 
 #### `tickets/tests.py`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/tickets/tests.py#L1-L1003)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a/tickets/tests.py#L1-L1294)
 
 ```python
 
@@ -497,7 +497,7 @@ class DepartmentManagementTests(TestCase):
             'Testing Department'
 ```
 
-*Showing the first 150 of 1003 lines. Open the source link for the remainder.*
+*Showing the first 150 of 1294 lines. Open the source link for the remainder.*
 
 **Verified references in this chapter:** 3/3.
 

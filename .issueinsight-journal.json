@@ -2,7 +2,7 @@
   "tool": "IssueInsight journal.py",
   "branch": "module-study-journal",
   "source_branch": "master",
-  "source_commit": "b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6",
+  "source_commit": "8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a",
   "files": [
     ".issueinsight-journal.json",
     "DEVELOPMENT_HISTORY.md",
@@ -31,6 +31,7 @@
     "Module-05/01-employee-form-and-submission.md",
     "Module-05/02-employee-ticket-list.md",
     "Module-05/README.md",
+    "Module-05/new-committed-changes.md",
     "Module-06/01-customer-form.md",
     "Module-06/02-customer-submission.md",
     "Module-06/README.md",

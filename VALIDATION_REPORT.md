@@ -1,8 +1,8 @@
 # Journal validation report
 
-Committed source revision: `b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6`
-Git commits indexed: **67**
-Original NOTES.md step references found: **70**
+Committed source revision: `8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a`
+Git commits indexed: **68**
+Original NOTES.md step references found: **71**
 Code references located: **90/90**
 
 ## What was NOT verified
