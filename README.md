@@ -4,7 +4,7 @@
 
 **Source repository:** https://github.com/Jyothy-p-anil/IssueInsight
 **Source branch:** `master`
-**Source commit:** `9d0620abbb2df25ca00a4301a4a2318325521dbe`
+**Source commit:** `b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6`
 **Journal branch:** `module-study-journal`
 
 Start with [HOW_TO_STUDY.md](HOW_TO_STUDY.md). Browse [DEVELOPMENT_HISTORY.md](DEVELOPMENT_HISTORY.md) for commit chronology, [NOTES_INDEX.md](NOTES_INDEX.md) for the chronological development notes, and [SOURCE_MAPPING.csv](SOURCE_MAPPING.csv) for file-to-module associations.
@@ -16,7 +16,7 @@ Start with [HOW_TO_STUDY.md](HOW_TO_STUDY.md). Browse [DEVELOPMENT_HISTORY.md](D
 | 01. Project Setup and Database | Core complete; later model extensions ongoing | [Open](Module-01/README.md) |
 | 02. Initial UI and Authentication | Core complete | [Open](Module-02/README.md) |
 | 03. Role-Based Permissions and Account Access | Core complete for features implemented so far; extend tests as new features arrive | [Open](Module-03/README.md) |
-| 04. Master Data Management | Partial — models, starter data and Django Admin exist | [Open](Module-04/README.md) |
+| 04. Master Data Management | Complete for implemented scope: Department CRUD with safe deletion; Category CRUD, division and department mapping, Other protection; Product creation, editing and activation/deactivation; Admin-only permissions and tests | [Open](Module-04/README.md) |
 | 05. Employee Complaint Submission | Substantial existing implementation; final module review pending | [Open](Module-05/README.md) |
 | 06. Customer Complaint Submission | Substantial existing implementation; final module review pending | [Open](Module-06/README.md) |
 | 07. My Tickets and Complaint Details | Partial | [Open](Module-07/README.md) |

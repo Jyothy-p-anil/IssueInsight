@@ -1,6 +1,6 @@
 # Module 04 — Master Data Management
 
-**Status:** Partial — models, starter data and Django Admin exist
+**Status:** Complete for implemented scope: Department CRUD with safe deletion; Category CRUD, division and department mapping, Other protection; Product creation, editing and activation/deactivation; Admin-only permissions and tests
 
 The support departments, complaint categories and software products used throughout IssueInsight.
 

@@ -20,11 +20,11 @@ Follow one real request or data change through the functions shown below. Notice
 
 ### Actual code from the committed project
 
-Source revision: [`9d0620abbb2d`](https://github.com/Jyothy-p-anil/IssueInsight/commit/9d0620abbb2df25ca00a4301a4a2318325521dbe) on `master`. The excerpts are current code, not invented historical versions.
+Source revision: [`b1b1f5e53a80`](https://github.com/Jyothy-p-anil/IssueInsight/commit/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6) on `master`. The excerpts are current code, not invented historical versions.
 
 #### `tickets/models.py` → `Department`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/models.py#L7-L11)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/tickets/models.py#L7-L11)
 
 ```python
 class Department(models.Model):
@@ -36,7 +36,7 @@ class Department(models.Model):
 
 #### `tickets/models.py` → `Category`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/models.py#L14-L36)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/tickets/models.py#L14-L36)
 
 ```python
 class Category(models.Model):
@@ -66,7 +66,7 @@ class Category(models.Model):
 
 #### `tickets/admin.py` → `CategoryAdmin`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/admin.py#L28-L42)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/tickets/admin.py#L28-L42)
 
 ```python
 @admin.register(Category)
@@ -88,7 +88,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 #### `tickets/management/commands/seed_initial_data.py` → `Command`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/management/commands/seed_initial_data.py#L6-L63)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/tickets/management/commands/seed_initial_data.py#L6-L63)
 
 ```python
 class Command(BaseCommand):
@@ -158,6 +158,7 @@ class Command(BaseCommand):
 - [b5f9735905](https://github.com/Jyothy-p-anil/IssueInsight/commit/b5f973590511d5365b60f0504a03e9db45c9afea) — docs: record initial support departments (2026-11-04)
 - [3c0363e0ad](https://github.com/Jyothy-p-anil/IssueInsight/commit/3c0363e0ad78b2dcf7f2dde61001595e46240a51) — feat: create complaint category model (2026-11-04)
 - [0fce6059da](https://github.com/Jyothy-p-anil/IssueInsight/commit/0fce6059da2d94006e4d4b83936acb9a66b4c266) — feat: improve category admin display (2026-11-04)
+- [b1b1f5e53a](https://github.com/Jyothy-p-anil/IssueInsight/commit/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6) — docs: fix module 4 index row (2026-11-10)
 - [9d0620abbb](https://github.com/Jyothy-p-anil/IssueInsight/commit/9d0620abbb2df25ca00a4301a4a2318325521dbe) — test(module-4): complete master data management review (2026-11-10)
 - [0cd5801c70](https://github.com/Jyothy-p-anil/IssueInsight/commit/0cd5801c70835ff6709c5156cc8478906f67573d) — feat(module-4): add product editing and activation controls (2026-11-10)
 - [7e3f46e319](https://github.com/Jyothy-p-anil/IssueInsight/commit/7e3f46e319c60e257fa46980a0972e2b6bcc36ec) — feat(module-4): add software product listing and creation (2026-11-10)

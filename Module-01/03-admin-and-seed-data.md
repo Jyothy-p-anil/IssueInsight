@@ -20,11 +20,11 @@ Follow one real request or data change through the functions shown below. Notice
 
 ### Actual code from the committed project
 
-Source revision: [`9d0620abbb2d`](https://github.com/Jyothy-p-anil/IssueInsight/commit/9d0620abbb2df25ca00a4301a4a2318325521dbe) on `master`. The excerpts are current code, not invented historical versions.
+Source revision: [`b1b1f5e53a80`](https://github.com/Jyothy-p-anil/IssueInsight/commit/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6) on `master`. The excerpts are current code, not invented historical versions.
 
 #### `tickets/admin.py` → `TicketAdmin`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/admin.py#L63-L88)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/tickets/admin.py#L63-L88)
 
 ```python
 @admin.register(Ticket)
@@ -57,7 +57,7 @@ class TicketAdmin(admin.ModelAdmin):
 
 #### `tickets/admin.py` → `CategoryAdmin`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/admin.py#L28-L42)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/tickets/admin.py#L28-L42)
 
 ```python
 @admin.register(Category)
@@ -79,7 +79,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 #### `accounts/admin.py` → `CustomUserAdmin`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/accounts/admin.py#L20-L79)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/accounts/admin.py#L20-L79)
 
 ```python
 @admin.register(User)
@@ -146,7 +146,7 @@ class CustomUserAdmin(UserAdmin):
 
 #### `tickets/management/commands/seed_initial_data.py` → `Command`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/management/commands/seed_initial_data.py#L6-L63)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/tickets/management/commands/seed_initial_data.py#L6-L63)
 
 ```python
 class Command(BaseCommand):

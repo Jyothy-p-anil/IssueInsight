@@ -20,11 +20,11 @@ Follow one real request or data change through the functions shown below. Notice
 
 ### Actual code from the committed project
 
-Source revision: [`9d0620abbb2d`](https://github.com/Jyothy-p-anil/IssueInsight/commit/9d0620abbb2df25ca00a4301a4a2318325521dbe) on `master`. The excerpts are current code, not invented historical versions.
+Source revision: [`b1b1f5e53a80`](https://github.com/Jyothy-p-anil/IssueInsight/commit/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6) on `master`. The excerpts are current code, not invented historical versions.
 
 #### `accounts/views.py` → `manage_users`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/accounts/views.py#L75-L118)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/accounts/views.py#L75-L118)
 
 ```python
 @role_required('admin')
@@ -75,7 +75,7 @@ def manage_users(request):
 
 #### `templates/accounts/manage_users.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/templates/accounts/manage_users.html#L1-L178)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/templates/accounts/manage_users.html#L1-L178)
 
 ```html
 

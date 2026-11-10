@@ -8,7 +8,7 @@ Introduced or changed in [7e3f46e319](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `templates/base.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/templates/base.html#L1-L212)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/templates/base.html#L1-L212)
 
 ```html
 
@@ -171,7 +171,7 @@ Introduced or changed in [06ddc706c9](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `templates/tickets/admin_categories.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/templates/tickets/admin_categories.html#L1-L142)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/templates/tickets/admin_categories.html#L1-L142)
 
 ```html
 
@@ -324,7 +324,7 @@ Introduced or changed in [06ddc706c9](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `templates/tickets/admin_category_confirm_delete.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/templates/tickets/admin_category_confirm_delete.html#L1-L65)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/templates/tickets/admin_category_confirm_delete.html#L1-L65)
 
 ```html
 
@@ -400,7 +400,7 @@ Introduced or changed in [06ddc706c9](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `templates/tickets/admin_category_edit.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/templates/tickets/admin_category_edit.html#L1-L64)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/templates/tickets/admin_category_edit.html#L1-L64)
 
 ```html
 
@@ -475,7 +475,7 @@ Introduced or changed in [ead7bbac4a](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `templates/tickets/admin_department_confirm_delete.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/templates/tickets/admin_department_confirm_delete.html#L1-L71)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/templates/tickets/admin_department_confirm_delete.html#L1-L71)
 
 ```html
 
@@ -557,7 +557,7 @@ Introduced or changed in [ead7bbac4a](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `templates/tickets/admin_department_edit.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/templates/tickets/admin_department_edit.html#L1-L52)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/templates/tickets/admin_department_edit.html#L1-L52)
 
 ```html
 
@@ -620,7 +620,7 @@ Introduced or changed in [ead7bbac4a](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `templates/tickets/admin_departments.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/templates/tickets/admin_departments.html#L1-L101)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/templates/tickets/admin_departments.html#L1-L101)
 
 ```html
 
@@ -732,7 +732,7 @@ Introduced or changed in [0cd5801c70](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `templates/tickets/admin_product_edit.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/templates/tickets/admin_product_edit.html#L1-L61)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/templates/tickets/admin_product_edit.html#L1-L61)
 
 ```html
 
@@ -804,7 +804,7 @@ Introduced or changed in [0cd5801c70](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `templates/tickets/admin_products.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/templates/tickets/admin_products.html#L1-L147)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/templates/tickets/admin_products.html#L1-L147)
 
 ```html
 
@@ -962,7 +962,7 @@ Introduced or changed in [5e16387502](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/admin.py` → `DepartmentAdmin`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/admin.py#L9-L21)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/tickets/admin.py#L9-L21)
 
 ```python
 @admin.register(Department)
@@ -986,7 +986,7 @@ Introduced or changed in [7e3f46e319](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/admin.py` → `ProductAdmin`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/admin.py#L48-L60)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/tickets/admin.py#L48-L60)
 
 ```python
 @admin.register(Product)
@@ -1010,7 +1010,7 @@ Introduced or changed in [5d8f56c9d6](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/forms.py` → `CategoryForm`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/forms.py#L185-L304)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/tickets/forms.py#L185-L304)
 
 ```python
 class CategoryForm(forms.ModelForm):
@@ -1141,7 +1141,7 @@ Introduced or changed in [5e16387502](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/forms.py` → `DepartmentForm`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/forms.py#L154-L177)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/tickets/forms.py#L154-L177)
 
 ```python
 class DepartmentForm(forms.ModelForm):
@@ -1176,7 +1176,7 @@ Introduced or changed in [7e3f46e319](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/forms.py` → `ProductForm`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/forms.py#L309-L339)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/tickets/forms.py#L309-L339)
 
 ```python
 class ProductForm(forms.ModelForm):
@@ -1218,7 +1218,7 @@ Introduced or changed in [5d8f56c9d6](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/tests.py` → `CategoryManagementTests`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/tests.py#L273-L687)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/tickets/tests.py#L273-L687)
 
 ```python
 class CategoryManagementTests(TestCase):
@@ -1381,7 +1381,7 @@ Introduced or changed in [5e16387502](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/tests.py` → `DepartmentManagementTests`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/tests.py#L12-L270)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/tickets/tests.py#L12-L270)
 
 ```python
 class DepartmentManagementTests(TestCase):
@@ -1544,7 +1544,7 @@ Introduced or changed in [7e3f46e319](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/tests.py` → `ProductManagementTests`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/tests.py#L690-L799)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/tickets/tests.py#L690-L799)
 
 ```python
 class ProductManagementTests(TestCase):
@@ -1665,7 +1665,7 @@ Introduced or changed in [0cd5801c70](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/tests.py` → `ProductUpdateTests`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/tests.py#L802-L1003)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/tickets/tests.py#L802-L1003)
 
 ```python
 class ProductUpdateTests(TestCase):
@@ -1828,7 +1828,7 @@ Introduced or changed in [06ddc706c9](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/views.py` → `delete_category`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/views.py#L767-L816)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/tickets/views.py#L767-L816)
 
 ```python
 @role_required('admin')
@@ -1889,7 +1889,7 @@ Introduced or changed in [ead7bbac4a](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/views.py` → `delete_department`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/views.py#L633-L682)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/tickets/views.py#L633-L682)
 
 ```python
 @role_required('admin')
@@ -1950,7 +1950,7 @@ Introduced or changed in [06ddc706c9](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/views.py` → `edit_category`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/views.py#L728-L762)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/tickets/views.py#L728-L762)
 
 ```python
 @role_required('admin')
@@ -1996,7 +1996,7 @@ Introduced or changed in [ead7bbac4a](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/views.py` → `edit_department`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/views.py#L594-L628)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/tickets/views.py#L594-L628)
 
 ```python
 @role_required('admin')
@@ -2042,7 +2042,7 @@ Introduced or changed in [0cd5801c70](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/views.py` → `edit_product`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/views.py#L857-L891)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/tickets/views.py#L857-L891)
 
 ```python
 @role_required('admin')
@@ -2088,7 +2088,7 @@ Introduced or changed in [5d8f56c9d6](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/views.py` → `manage_categories`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/views.py#L688-L722)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/tickets/views.py#L688-L722)
 
 ```python
 @role_required('admin')
@@ -2134,7 +2134,7 @@ Introduced or changed in [5e16387502](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/views.py` → `manage_departments`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/views.py#L558-L586)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/tickets/views.py#L558-L586)
 
 ```python
 @role_required('admin')
@@ -2174,7 +2174,7 @@ Introduced or changed in [7e3f46e319](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/views.py` → `manage_products`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/views.py#L821-L852)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/tickets/views.py#L821-L852)
 
 ```python
 @role_required('admin')
@@ -2217,7 +2217,7 @@ Introduced or changed in [0cd5801c70](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/views.py` → `toggle_product_status`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/views.py#L896-L922)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b1b1f5e53a80b8dfaec25fd31ce2e9d337258fb6/tickets/views.py#L896-L922)
 
 ```python
 @role_required('admin')
