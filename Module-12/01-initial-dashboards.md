@@ -20,11 +20,11 @@ Follow one real request or data change through the functions shown below. Notice
 
 ### Actual code from the committed project
 
-Source revision: [`02a68f05b7ab`](https://github.com/Jyothy-p-anil/IssueInsight/commit/02a68f05b7ab83749791ab60b9cf2245a201c26d) on `master`. The excerpts are current code, not invented historical versions.
+Source revision: [`9d0620abbb2d`](https://github.com/Jyothy-p-anil/IssueInsight/commit/9d0620abbb2df25ca00a4301a4a2318325521dbe) on `master`. The excerpts are current code, not invented historical versions.
 
 #### `tickets/views.py` → `employee_dashboard`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/tickets/views.py#L29-L33)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/views.py#L32-L36)
 
 ```python
 @role_required('employee')
@@ -36,7 +36,7 @@ def employee_dashboard(request):
 
 #### `tickets/views.py` → `customer_dashboard`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/tickets/views.py#L36-L40)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/views.py#L39-L43)
 
 ```python
 @role_required('customer')
@@ -48,7 +48,7 @@ def customer_dashboard(request):
 
 #### `tickets/views.py` → `support_dashboard`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/tickets/views.py#L43-L47)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/views.py#L46-L50)
 
 ```python
 @role_required('support')
@@ -60,7 +60,7 @@ def support_dashboard(request):
 
 #### `tickets/views.py` → `admin_dashboard`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/tickets/views.py#L50-L54)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/views.py#L53-L57)
 
 ```python
 @role_required('admin')
@@ -72,7 +72,7 @@ def admin_dashboard(request):
 
 #### `templates/role_dashboard.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/templates/role_dashboard.html#L1-L18)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/templates/role_dashboard.html#L1-L18)
 
 ```html
 

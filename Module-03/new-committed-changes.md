@@ -8,7 +8,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `templates/base.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/templates/base.html#L1-L199)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/templates/base.html#L1-L212)
 
 ```html
 
@@ -109,8 +109,21 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
                             User Management
                             </a>
                             <a class="nav-link"
+                                href="{% url 'manage_departments' %}">
+                                    Departments
+                                </a>
+                                <a class="nav-link"
                                 href="{% url 'admin_pending_routing' %}">
                                 Pending Routing
+                            </a>
+
+                            <a class="nav-link"
+                            href="{% url 'manage_categories' %}">
+                                Categories
+                            </a>
+                            <a class="nav-link"
+                            href="{% url 'manage_products' %}">
+                                Software Products
                             </a>
 
                             <span class="nav-link text-muted">
@@ -148,22 +161,9 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
                                 <a class="nav-link"
                                 href="{% url 'customer_my_tickets' %}">
-                                    My Tickets
-                                </a>
-
-                        {% elif user.role == 'support' %}
-
-                            <a class="nav-link"
-                            href="{% url 'support_dashboard' %}">
-                                Support Dashboard
-                            </a>
-
-                            <a class="nav-link"
-                            href="{% url 'support_department_queue' %}">
-                                Department Queue
 ```
 
-*Showing the first 150 of 199 lines. Open the source link for the remainder.*
+*Showing the first 150 of 212 lines. Open the source link for the remainder.*
 
 ### templates/tickets/support_ticket_detail.html
 
@@ -171,7 +171,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `templates/tickets/support_ticket_detail.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/templates/tickets/support_ticket_detail.html#L1-L210)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/templates/tickets/support_ticket_detail.html#L1-L210)
 
 ```html
 
@@ -334,7 +334,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `templates/tickets/ticket_detail.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/templates/tickets/ticket_detail.html#L1-L195)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/templates/tickets/ticket_detail.html#L1-L195)
 
 ```html
 
@@ -497,7 +497,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/forms.py` → `ManualRoutingForm`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/tickets/forms.py#L112-L121)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/forms.py#L109-L118)
 
 ```python
 class ManualRoutingForm(forms.Form):
@@ -518,7 +518,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/forms.py` → `SupportMessageForm`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/tickets/forms.py#L139-L153)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/forms.py#L136-L150)
 
 ```python
 class SupportMessageForm(TicketMessageForm):
@@ -544,7 +544,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/forms.py` → `TicketMessageForm`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/tickets/forms.py#L124-L136)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/forms.py#L121-L133)
 
 ```python
 class TicketMessageForm(forms.ModelForm):
@@ -568,7 +568,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/models.py` → `TicketMessage`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/tickets/models.py#L137-L161)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/models.py#L137-L161)
 
 ```python
 class TicketMessage(models.Model):
@@ -604,7 +604,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/views.py` → `add_reporter_message`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/tickets/views.py#L385-L418)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/views.py#L388-L421)
 
 ```python
 @role_required('employee', 'customer')
@@ -649,7 +649,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/views.py` → `admin_pending_routing`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/tickets/views.py#L480-L495)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/views.py#L483-L498)
 
 ```python
 @role_required('admin')
@@ -676,7 +676,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/views.py` → `admin_route_ticket`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/tickets/views.py#L498-L551)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/views.py#L501-L554)
 
 ```python
 @role_required('admin')

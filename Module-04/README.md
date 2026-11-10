@@ -1,6 +1,6 @@
 # Module 04 — Master Data Management
 
-**Status:** Partial: models, Django Admin and starter data exist; complete the approved management workflows in this module
+**Status:** Partial — models, starter data and Django Admin exist
 
 The support departments, complaint categories and software products used throughout IssueInsight.
 
@@ -10,6 +10,7 @@ The support departments, complaint categories and software products used through
 
 - [Department and category reference data](01-departments-and-categories.md)
 - [Software products and active status](02-products.md)
+- [New code discovered from module-tagged commits](new-committed-changes.md)
 
 ## What the study chat should do
 

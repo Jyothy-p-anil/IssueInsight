@@ -20,11 +20,11 @@ Follow one real request or data change through the functions shown below. Notice
 
 ### Actual code from the committed project
 
-Source revision: [`02a68f05b7ab`](https://github.com/Jyothy-p-anil/IssueInsight/commit/02a68f05b7ab83749791ab60b9cf2245a201c26d) on `master`. The excerpts are current code, not invented historical versions.
+Source revision: [`9d0620abbb2d`](https://github.com/Jyothy-p-anil/IssueInsight/commit/9d0620abbb2df25ca00a4301a4a2318325521dbe) on `master`. The excerpts are current code, not invented historical versions.
 
 #### `accounts/views.py` → `register`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/accounts/views.py#L34-L71)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/accounts/views.py#L34-L71)
 
 ```python
 def register(request):
@@ -69,7 +69,7 @@ def register(request):
 
 #### `accounts/forms.py` → `CustomerRegistrationForm`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/accounts/forms.py#L7-L32)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/accounts/forms.py#L7-L32)
 
 ```python
 class CustomerRegistrationForm(UserCreationForm):
@@ -102,7 +102,7 @@ class CustomerRegistrationForm(UserCreationForm):
 
 #### `tickets/views.py` → `dashboard_redirect`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/tickets/views.py#L56-L71)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/views.py#L59-L74)
 
 ```python
 @login_required
@@ -125,7 +125,7 @@ def dashboard_redirect(request):
 
 #### `config/urls.py` → `login`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/config/urls.py#L16-L23)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/config/urls.py#L16-L23)
 
 ```python
     path(
@@ -140,7 +140,7 @@ def dashboard_redirect(request):
 
 #### `config/urls.py` → `logout`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/config/urls.py#L24-L28)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/config/urls.py#L24-L28)
 
 ```python
    path(
@@ -152,7 +152,7 @@ def dashboard_redirect(request):
 
 #### `config/urls.py` → `register`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/config/urls.py#L29)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/config/urls.py#L29)
 
 ```python
     path('register/', account_views.register, name='register'),

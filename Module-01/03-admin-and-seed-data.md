@@ -20,11 +20,11 @@ Follow one real request or data change through the functions shown below. Notice
 
 ### Actual code from the committed project
 
-Source revision: [`02a68f05b7ab`](https://github.com/Jyothy-p-anil/IssueInsight/commit/02a68f05b7ab83749791ab60b9cf2245a201c26d) on `master`. The excerpts are current code, not invented historical versions.
+Source revision: [`9d0620abbb2d`](https://github.com/Jyothy-p-anil/IssueInsight/commit/9d0620abbb2df25ca00a4301a4a2318325521dbe) on `master`. The excerpts are current code, not invented historical versions.
 
 #### `tickets/admin.py` → `TicketAdmin`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/tickets/admin.py#L27-L52)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/admin.py#L63-L88)
 
 ```python
 @admin.register(Ticket)
@@ -57,7 +57,7 @@ class TicketAdmin(admin.ModelAdmin):
 
 #### `tickets/admin.py` → `CategoryAdmin`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/tickets/admin.py#L10-L19)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/admin.py#L28-L42)
 
 ```python
 @admin.register(Category)
@@ -70,11 +70,16 @@ class CategoryAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
     ordering = ('division', 'name')
+
+    form = CategoryForm
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 ```
 
 #### `accounts/admin.py` → `CustomUserAdmin`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/accounts/admin.py#L20-L79)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/accounts/admin.py#L20-L79)
 
 ```python
 @admin.register(User)
@@ -141,7 +146,7 @@ class CustomUserAdmin(UserAdmin):
 
 #### `tickets/management/commands/seed_initial_data.py` → `Command`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/tickets/management/commands/seed_initial_data.py#L6-L63)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/management/commands/seed_initial_data.py#L6-L63)
 
 ```python
 class Command(BaseCommand):

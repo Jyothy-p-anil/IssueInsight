@@ -20,11 +20,11 @@ Follow one real request or data change through the functions shown below. Notice
 
 ### Actual code from the committed project
 
-Source revision: [`02a68f05b7ab`](https://github.com/Jyothy-p-anil/IssueInsight/commit/02a68f05b7ab83749791ab60b9cf2245a201c26d) on `master`. The excerpts are current code, not invented historical versions.
+Source revision: [`9d0620abbb2d`](https://github.com/Jyothy-p-anil/IssueInsight/commit/9d0620abbb2df25ca00a4301a4a2318325521dbe) on `master`. The excerpts are current code, not invented historical versions.
 
 #### `templates/base.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/templates/base.html#L1-L199)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/templates/base.html#L1-L212)
 
 ```html
 
@@ -125,8 +125,21 @@ Source revision: [`02a68f05b7ab`](https://github.com/Jyothy-p-anil/IssueInsight/
                             User Management
                             </a>
                             <a class="nav-link"
+                                href="{% url 'manage_departments' %}">
+                                    Departments
+                                </a>
+                                <a class="nav-link"
                                 href="{% url 'admin_pending_routing' %}">
                                 Pending Routing
+                            </a>
+
+                            <a class="nav-link"
+                            href="{% url 'manage_categories' %}">
+                                Categories
+                            </a>
+                            <a class="nav-link"
+                            href="{% url 'manage_products' %}">
+                                Software Products
                             </a>
 
                             <span class="nav-link text-muted">
@@ -164,26 +177,13 @@ Source revision: [`02a68f05b7ab`](https://github.com/Jyothy-p-anil/IssueInsight/
 
                                 <a class="nav-link"
                                 href="{% url 'customer_my_tickets' %}">
-                                    My Tickets
-                                </a>
-
-                        {% elif user.role == 'support' %}
-
-                            <a class="nav-link"
-                            href="{% url 'support_dashboard' %}">
-                                Support Dashboard
-                            </a>
-
-                            <a class="nav-link"
-                            href="{% url 'support_department_queue' %}">
-                                Department Queue
 ```
 
-*Showing the first 150 of 199 lines. Open the source link for the remainder.*
+*Showing the first 150 of 212 lines. Open the source link for the remainder.*
 
 #### `static/css/style.css`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/static/css/style.css#L1-L11)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/static/css/style.css#L1-L11)
 
 ```css
 
@@ -201,7 +201,7 @@ body {
 
 #### `templates/role_dashboard.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/templates/role_dashboard.html#L1-L18)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/templates/role_dashboard.html#L1-L18)
 
 ```html
 

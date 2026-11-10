@@ -58,6 +58,33 @@ module,module_title,chapter,file,symbol,source_status
 4,Master Data Management,Department and category reference data,tickets/management/commands/seed_initial_data.py,Command,present
 4,Master Data Management,Software products and active status,tickets/models.py,Product,present
 4,Master Data Management,Software products and active status,tickets/forms.py,CustomerComplaintForm,present
+4,Master Data Management,Auto-discovered,templates/base.html,,commit 7e3f46e319c6
+4,Master Data Management,Auto-discovered,templates/tickets/admin_categories.html,,commit 06ddc706c95a
+4,Master Data Management,Auto-discovered,templates/tickets/admin_category_confirm_delete.html,,commit 06ddc706c95a
+4,Master Data Management,Auto-discovered,templates/tickets/admin_category_edit.html,,commit 06ddc706c95a
+4,Master Data Management,Auto-discovered,templates/tickets/admin_department_confirm_delete.html,,commit ead7bbac4a54
+4,Master Data Management,Auto-discovered,templates/tickets/admin_department_edit.html,,commit ead7bbac4a54
+4,Master Data Management,Auto-discovered,templates/tickets/admin_departments.html,,commit ead7bbac4a54
+4,Master Data Management,Auto-discovered,templates/tickets/admin_product_edit.html,,commit 0cd5801c7083
+4,Master Data Management,Auto-discovered,templates/tickets/admin_products.html,,commit 0cd5801c7083
+4,Master Data Management,Auto-discovered,tickets/admin.py,DepartmentAdmin,commit 5e16387502ad
+4,Master Data Management,Auto-discovered,tickets/admin.py,ProductAdmin,commit 7e3f46e319c6
+4,Master Data Management,Auto-discovered,tickets/forms.py,CategoryForm,commit 5d8f56c9d6f3
+4,Master Data Management,Auto-discovered,tickets/forms.py,DepartmentForm,commit 5e16387502ad
+4,Master Data Management,Auto-discovered,tickets/forms.py,ProductForm,commit 7e3f46e319c6
+4,Master Data Management,Auto-discovered,tickets/tests.py,CategoryManagementTests,commit 5d8f56c9d6f3
+4,Master Data Management,Auto-discovered,tickets/tests.py,DepartmentManagementTests,commit 5e16387502ad
+4,Master Data Management,Auto-discovered,tickets/tests.py,ProductManagementTests,commit 7e3f46e319c6
+4,Master Data Management,Auto-discovered,tickets/tests.py,ProductUpdateTests,commit 0cd5801c7083
+4,Master Data Management,Auto-discovered,tickets/views.py,delete_category,commit 06ddc706c95a
+4,Master Data Management,Auto-discovered,tickets/views.py,delete_department,commit ead7bbac4a54
+4,Master Data Management,Auto-discovered,tickets/views.py,edit_category,commit 06ddc706c95a
+4,Master Data Management,Auto-discovered,tickets/views.py,edit_department,commit ead7bbac4a54
+4,Master Data Management,Auto-discovered,tickets/views.py,edit_product,commit 0cd5801c7083
+4,Master Data Management,Auto-discovered,tickets/views.py,manage_categories,commit 5d8f56c9d6f3
+4,Master Data Management,Auto-discovered,tickets/views.py,manage_departments,commit 5e16387502ad
+4,Master Data Management,Auto-discovered,tickets/views.py,manage_products,commit 7e3f46e319c6
+4,Master Data Management,Auto-discovered,tickets/views.py,toggle_product_status,commit 0cd5801c7083
 5,Employee Complaint Submission,Employee complaint form and save workflow,tickets/forms.py,EmployeeComplaintForm,present
 5,Employee Complaint Submission,Employee complaint form and save workflow,tickets/views.py,submit_employee_complaint,present
 5,Employee Complaint Submission,Employee complaint form and save workflow,templates/tickets/employee_complaint_form.html,,present

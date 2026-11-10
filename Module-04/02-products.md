@@ -20,11 +20,11 @@ Follow one real request or data change through the functions shown below. Notice
 
 ### Actual code from the committed project
 
-Source revision: [`02a68f05b7ab`](https://github.com/Jyothy-p-anil/IssueInsight/commit/02a68f05b7ab83749791ab60b9cf2245a201c26d) on `master`. The excerpts are current code, not invented historical versions.
+Source revision: [`9d0620abbb2d`](https://github.com/Jyothy-p-anil/IssueInsight/commit/9d0620abbb2df25ca00a4301a4a2318325521dbe) on `master`. The excerpts are current code, not invented historical versions.
 
 #### `tickets/models.py` → `Product`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/tickets/models.py#L39-L49)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/models.py#L39-L49)
 
 ```python
 class Product(models.Model):
@@ -42,7 +42,7 @@ class Product(models.Model):
 
 #### `tickets/forms.py` → `CustomerComplaintForm`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/tickets/forms.py#L41-L108)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/forms.py#L38-L105)
 
 ```python
 class CustomerComplaintForm(forms.ModelForm):
@@ -121,6 +121,13 @@ class CustomerComplaintForm(forms.ModelForm):
 
 - [2f8f46bb3d](https://github.com/Jyothy-p-anil/IssueInsight/commit/2f8f46bb3d1160f78902d8657b39d03452619968) — feat: create software product model (2026-11-04)
 - [67d4f75d55](https://github.com/Jyothy-p-anil/IssueInsight/commit/67d4f75d55377472f716645288ee2a2dc335e91d) — feat: implement customer complaint submission and my tickets (2026-11-08)
+- [9d0620abbb](https://github.com/Jyothy-p-anil/IssueInsight/commit/9d0620abbb2df25ca00a4301a4a2318325521dbe) — test(module-4): complete master data management review (2026-11-10)
+- [0cd5801c70](https://github.com/Jyothy-p-anil/IssueInsight/commit/0cd5801c70835ff6709c5156cc8478906f67573d) — feat(module-4): add product editing and activation controls (2026-11-10)
+- [7e3f46e319](https://github.com/Jyothy-p-anil/IssueInsight/commit/7e3f46e319c60e257fa46980a0972e2b6bcc36ec) — feat(module-4): add software product listing and creation (2026-11-10)
+- [06ddc706c9](https://github.com/Jyothy-p-anil/IssueInsight/commit/06ddc706c95a81ff3daade39c089303bf644e7be) — feat(module-4): add safe category editing and deletion (2026-11-10)
+- [5d8f56c9d6](https://github.com/Jyothy-p-anil/IssueInsight/commit/5d8f56c9d6f3bdd8220d3f9ead176e18bc3d8639) — feat(module-4): add category listing and creation (2026-11-10)
+- [ead7bbac4a](https://github.com/Jyothy-p-anil/IssueInsight/commit/ead7bbac4a54131d9115fdc34f30108950facb33) — feat(module-4): add safe department editing and deletion (2026-11-10)
+- [5e16387502](https://github.com/Jyothy-p-anil/IssueInsight/commit/5e16387502adca96312af28a939ecff4547cf1c6) — feat(module-4): implement department listing and creation (2026-11-10)
 
 *These links show historical changes. A commit may touch several modules; inspect its diff before attributing every edit to this chapter.*
 

@@ -20,11 +20,11 @@ Follow one real request or data change through the functions shown below. Notice
 
 ### Actual code from the committed project
 
-Source revision: [`02a68f05b7ab`](https://github.com/Jyothy-p-anil/IssueInsight/commit/02a68f05b7ab83749791ab60b9cf2245a201c26d) on `master`. The excerpts are current code, not invented historical versions.
+Source revision: [`9d0620abbb2d`](https://github.com/Jyothy-p-anil/IssueInsight/commit/9d0620abbb2df25ca00a4301a4a2318325521dbe) on `master`. The excerpts are current code, not invented historical versions.
 
 #### `accounts/tests.py` → `RolePermissionTests`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/accounts/tests.py#L12-L273)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/accounts/tests.py#L12-L273)
 
 ```python
 class RolePermissionTests(TestCase):
@@ -183,7 +183,7 @@ class RolePermissionTests(TestCase):
 
 #### `accounts/test_module3_security.py` → `Module3SecurityTests`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/accounts/test_module3_security.py#L17-L257)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/accounts/test_module3_security.py#L17-L257)
 
 ```python
 class Module3SecurityTests(TestCase):
@@ -342,13 +342,162 @@ class Module3SecurityTests(TestCase):
 
 #### `tickets/tests.py`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/02a68f05b7ab83749791ab60b9cf2245a201c26d/tickets/tests.py#L1-L3)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/9d0620abbb2df25ca00a4301a4a2318325521dbe/tickets/tests.py#L1-L1003)
 
 ```python
-from django.test import TestCase
 
-# Create your tests here.
+from django.test import TestCase
+from django.urls import reverse
+from django.contrib.auth import get_user_model
+
+from .models import Department, Category, Ticket, Product
+from .forms import CustomerComplaintForm
+
+User = get_user_model()
+
+
+class DepartmentManagementTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+
+        cls.admin = User.objects.create_user(
+            username='department_admin',
+            password='TestPass123!',
+            role='admin'
+        )
+
+        cls.employee = User.objects.create_user(
+            username='department_employee',
+            password='TestPass123!',
+            role='employee'
+        )
+
+    def test_only_admin_can_access_departments(self):
+
+        url = reverse('manage_departments')
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('login', response.url)
+
+        self.client.force_login(self.employee)
+
+        response = self.client.get(url)
+        self.assertRedirects(
+            response,
+            reverse('dashboard_redirect'),
+            fetch_redirect_response=False
+        )
+
+        self.client.force_login(self.admin)
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_admin_can_create_department(self):
+
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse('manage_departments'),
+            {'name': 'Quality Assurance Support'}
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        self.assertTrue(
+            Department.objects.filter(
+                name='Quality Assurance Support'
+            ).exists()
+        )
+
+    def test_duplicate_department_rejected(self):
+
+        Department.objects.create(
+            name='Facilities Support'
+        )
+
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse('manage_departments'),
+            {'name': 'FACILITIES SUPPORT'}
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(
+            Department.objects.filter(
+                name__iexact='Facilities Support'
+            ).count(),
+            1
+        )
+
+        self.assertTrue(
+            response.context['form'].errors
+        )
+
+    def test_empty_department_name_rejected(self):
+
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse('manage_departments'),
+            {'name': '   '}
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Department.objects.count(), 0)
+
+        
+    def test_admin_can_edit_department(self):
+
+        department = Department.objects.create(
+            name='Testing Department'
+        )
+
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse('edit_department', args=[department.pk]),
+            {'name': 'Updated Department'}
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        department.refresh_from_db()
+        self.assertEqual(
+            department.name,
+            'Updated Department'
+        )
+
+    def test_edit_rejects_duplicate_name(self):
+
+        Department.objects.create(
+            name='Internal IT Support'
+        )
+
+        department = Department.objects.create(
+            name='Testing Department'
+        )
+
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse('edit_department', args=[department.pk]),
+            {'name': 'internal it support'}
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        department.refresh_from_db()
+        self.assertEqual(
+            department.name,
+            'Testing Department'
 ```
+
+*Showing the first 150 of 1003 lines. Open the source link for the remainder.*
 
 **Verified references in this chapter:** 3/3.
 
