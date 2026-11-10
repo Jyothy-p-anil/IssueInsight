@@ -1,10 +1,7 @@
 from django import forms
-from .models import Ticket, Category, Product
-from .models import Ticket, Category, Product, Department
+from .models import Ticket, Category, Product, Department, TicketMessage
 
-from .models import (
-    Ticket, Category, Product, Department, TicketMessage
-)
+
 
 
 class EmployeeComplaintForm(forms.ModelForm):

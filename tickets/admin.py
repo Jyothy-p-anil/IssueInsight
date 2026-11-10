@@ -18,14 +18,10 @@ class DepartmentAdmin(admin.ModelAdmin):
 
 
     def has_delete_permission(self, request, obj=None):
-            return False
+        return False
 
 
 
-
-    
-
-from .forms import DepartmentForm
 
 
 
