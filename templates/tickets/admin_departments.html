@@ -59,6 +59,7 @@
                     <tr>
                         <th>#</th>
                         <th>Department Name</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
 
@@ -68,11 +69,22 @@
                         <tr>
                             <td>{{ forloop.counter }}</td>
                             <td>{{ department.name }}</td>
+                            <td>
+                            <a href="{% url 'edit_department' department.pk %}"
+                            class="btn btn-sm btn-outline-primary">
+                                Edit
+                            </a>
+
+                            <a href="{% url 'delete_department' department.pk %}"
+                            class="btn btn-sm btn-outline-danger">
+                                Delete
+                            </a>
+                        </td>
                         </tr>
 
                     {% empty %}
                         <tr>
-                            <td colspan="2" class="text-center">
+                            <td colspan="3" class="text-center">
                                 No departments found.
                             </td>
                         </tr>

@@ -582,3 +582,99 @@ def manage_departments(request):
             'form': form,
         }
     )
+
+
+
+
+
+# Module 4: Edit department
+
+@role_required('admin')
+def edit_department(request, department_id):
+
+    department = get_object_or_404(
+        Department,
+        pk=department_id
+    )
+
+    if request.method == 'POST':
+        form = DepartmentForm(
+            request.POST,
+            instance=department
+        )
+
+        if form.is_valid():
+            form.save()
+
+            messages.success(
+                request,
+                'Department updated successfully.'
+            )
+
+            return redirect('manage_departments')
+
+    else:
+        form = DepartmentForm(instance=department)
+
+    return render(
+        request,
+        'tickets/admin_department_edit.html',
+        {
+            'form': form,
+            'department': department,
+        }
+    )
+
+
+# Module 4: Delete only unused departments
+
+@role_required('admin')
+def delete_department(request, department_id):
+
+    department = get_object_or_404(
+        Department,
+        pk=department_id
+    )
+
+    staff_count = department.staff_members.count()
+    category_count = department.category_set.count()
+    ticket_count = department.ticket_set.count()
+
+    has_dependencies = any((
+        staff_count,
+        category_count,
+        ticket_count
+    ))
+
+    if request.method == 'POST':
+
+        if has_dependencies:
+            messages.error(
+                request,
+                'Cannot delete this department because it '
+                'is linked to staff, categories or tickets.'
+            )
+
+            return redirect('manage_departments')
+
+        department_name = department.name
+        department.delete()
+
+        messages.success(
+            request,
+            f'{department_name} deleted successfully.'
+        )
+
+        return redirect('manage_departments')
+
+    return render(
+        request,
+        'tickets/admin_department_confirm_delete.html',
+        {
+            'department': department,
+            'staff_count': staff_count,
+            'category_count': category_count,
+            'ticket_count': ticket_count,
+            'has_dependencies': has_dependencies,
+        }
+    )

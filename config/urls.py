@@ -200,4 +200,16 @@ path(
     name='manage_departments'
 ),
 
+# Admin: Department CRUD Operations
+path(
+    'management/departments/<int:department_id>/edit/',
+    views.edit_department,
+    name='edit_department'
+),
+
+path(
+    'management/departments/<int:department_id>/delete/',
+    views.delete_department,
+    name='delete_department'
+),
 ]

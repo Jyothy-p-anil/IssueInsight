@@ -7,9 +7,21 @@ from .forms import DepartmentForm
 @admin.register(Department)
 class DepartmentAdmin(admin.ModelAdmin):
 
+   
+
     form = DepartmentForm
     list_display = ('name',)
     search_fields = ('name',)
+
+
+
+    def has_delete_permission(self, request, obj=None):
+            return False
+
+
+
+
+    
 
 from .forms import DepartmentForm
 

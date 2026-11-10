@@ -1,0 +1,71 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Delete Department | IssueInsight{% endblock %}
+
+{% block content %}
+
+<h2>Delete Department</h2>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+
+        <h5>{{ department.name }}</h5>
+
+        <p class="text-muted">
+            Review existing references before deleting
+            this department.
+        </p>
+
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <th>Support Staff</th>
+                    <td>{{ staff_count }}</td>
+                </tr>
+                <tr>
+                    <th>Complaint Categories</th>
+                    <td>{{ category_count }}</td>
+                </tr>
+                <tr>
+                    <th>Tickets</th>
+                    <td>{{ ticket_count }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        {% if has_dependencies %}
+
+            <div class="alert alert-warning">
+                This department cannot be deleted while
+                it has linked records. Reassign those
+                records first.
+            </div>
+
+        {% else %}
+
+            <div class="alert alert-danger">
+                This action permanently deletes the
+                department.
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <button type="submit"
+                        class="btn btn-danger">
+                    Confirm Delete
+                </button>
+            </form>
+
+        {% endif %}
+
+        <a href="{% url 'manage_departments' %}"
+           class="btn btn-outline-secondary mt-3">
+            Back to Departments
+        </a>
+
+    </div>
+</div>
+
+{% endblock %}

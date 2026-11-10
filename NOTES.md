@@ -394,3 +394,13 @@ Rules:
   creation, duplicate-name validation and role protection.
   Added four automated tests and verified the interface.
   Department editing and safe deletion remain pending.
+
+
+    - Step 51 (Module 4): Implemented Admin-only
+  department editing and safe deletion.
+  Added duplicate-name validation during editing,
+  deletion confirmation and dependency checks.
+  Departments linked to Support Staff, categories
+  or tickets cannot be deleted.
+  Disabled department deletion through Django Admin.
+  Added five automated tests and verified the workflows.
