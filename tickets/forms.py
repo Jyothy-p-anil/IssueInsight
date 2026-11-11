@@ -45,12 +45,10 @@ class EmployeeComplaintForm(forms.ModelForm):
 class CustomerComplaintForm(forms.ModelForm):
 
     category = forms.ModelChoiceField(
-        queryset=Category.objects.filter(
-            division='customer'
-        ).order_by('name'),
+        queryset=Category.objects.none(),
         empty_label='Select an issue category',
         required=True
-    )
+    )   
 
     product = forms.ModelChoiceField(
         queryset=Product.objects.filter(

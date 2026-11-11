@@ -1762,3 +1762,279 @@ class CustomerComplaintSubmissionTests(TestCase):
         )
 
         self.assertEqual(Ticket.objects.count(), 0)
+
+
+    # Step 61: Protect server-controlled ticket fields
+
+    def test_forged_server_fields_are_ignored(self):
+
+        another_customer = User.objects.create_user(
+            username='module6_other_customer',
+            password='TestPass123!',
+            role='customer'
+        )
+
+        self.client.force_login(self.customer)
+
+        response = self.client.post(
+            reverse('submit_customer_complaint'),
+            self.complaint_data(
+                reporter=another_customer.pk,
+                division='employee',
+                status='closed',
+                department=999999,
+                assigned_to=another_customer.pk,
+                floor='Floor 20'
+            )
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        ticket = Ticket.objects.get()
+
+        self.assertEqual(ticket.reporter, self.customer)
+        self.assertEqual(ticket.division, 'customer')
+        self.assertEqual(ticket.status, 'submitted')
+        self.assertEqual(ticket.department, self.department)
+        self.assertEqual(ticket.product, self.active_product)
+        self.assertIsNone(ticket.assigned_to)
+        self.assertEqual(ticket.floor, '')
+
+    # Step 61: Reject invalid software products
+
+    def test_inactive_product_submission_is_rejected(self):
+
+        self.client.force_login(self.customer)
+
+        response = self.client.post(
+            reverse('submit_customer_complaint'),
+            self.complaint_data(
+                product=self.inactive_product.pk
+            )
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(
+            'product',
+            response.context['form'].errors
+        )
+        self.assertEqual(Ticket.objects.count(), 0)
+
+    def test_nonexistent_product_id_is_rejected(self):
+
+        self.client.force_login(self.customer)
+
+        response = self.client.post(
+            reverse('submit_customer_complaint'),
+            self.complaint_data(product=999999)
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(
+            'product',
+            response.context['form'].errors
+        )
+        self.assertEqual(Ticket.objects.count(), 0)
+
+    # Step 61: Invalid and unmapped categories
+
+    def test_nonexistent_customer_category_is_rejected(self):
+
+        self.client.force_login(self.customer)
+
+        response = self.client.post(
+            reverse('submit_customer_complaint'),
+            self.complaint_data(category=999999)
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(
+            'category',
+            response.context['form'].errors
+        )
+        self.assertEqual(Ticket.objects.count(), 0)
+
+    def test_customer_other_category_goes_to_admin_routing(self):
+
+        self.client.force_login(self.customer)
+
+        response = self.client.post(
+            reverse('submit_customer_complaint'),
+            self.complaint_data(
+                category=self.other_category.pk
+            )
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        ticket = Ticket.objects.get()
+
+        self.assertEqual(ticket.category, self.other_category)
+        self.assertIsNone(ticket.department)
+        self.assertEqual(ticket.status, 'submitted')
+
+        admin = User.objects.create_user(
+            username='module6_routing_admin',
+            password='TestPass123!',
+            role='admin'
+        )
+
+        self.client.force_login(admin)
+
+        response = self.client.get(
+            reverse('admin_pending_routing')
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(ticket, list(response.context['tickets']))
+
+    def test_unmapped_customer_category_goes_to_admin_routing(self):
+
+        unmapped_category = Category.objects.create(
+            name='Legacy Customer Issue',
+            division='customer',
+            department=None
+        )
+
+        self.client.force_login(self.customer)
+
+        response = self.client.post(
+            reverse('submit_customer_complaint'),
+            self.complaint_data(
+                category=unmapped_category.pk
+            )
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        ticket = Ticket.objects.get()
+
+        self.assertIsNone(ticket.department)
+        self.assertEqual(ticket.status, 'submitted')
+
+        admin = User.objects.create_user(
+            username='module6_legacy_admin',
+            password='TestPass123!',
+            role='admin'
+        )
+
+        self.client.force_login(admin)
+
+        response = self.client.get(
+            reverse('admin_pending_routing')
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(ticket, list(response.context['tickets']))
+
+    # Step 61: Submission confirmation and ticket reference
+
+    def test_submission_confirmation_displays_ticket_reference(self):
+
+        self.client.force_login(self.customer)
+
+        response = self.client.post(
+            reverse('submit_customer_complaint'),
+            self.complaint_data(),
+            follow=True
+        )
+
+        ticket = Ticket.objects.get()
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertContains(
+            response,
+            f'Complaint #{ticket.pk} submitted successfully.'
+        )
+
+        self.assertContains(
+            response,
+            f'#{ticket.pk}'
+        )
+
+    # Step 61: Customer complaint privacy
+
+    def test_customer_my_tickets_is_private(self):
+
+        another_customer = User.objects.create_user(
+            username='module6_private_customer',
+            password='TestPass123!',
+            role='customer'
+        )
+
+        own_ticket = Ticket.objects.create(
+            reporter=self.customer,
+            division='customer',
+            title='My software complaint',
+            description='My application has an error.',
+            product=self.active_product,
+            category=self.customer_category,
+            department=self.department
+        )
+
+        Ticket.objects.create(
+            reporter=another_customer,
+            division='customer',
+            title='Private other customer issue',
+            description='Another customer has an error.',
+            product=self.active_product,
+            category=self.customer_category,
+            department=self.department
+        )
+
+        self.client.force_login(self.customer)
+
+        response = self.client.get(
+            reverse('customer_my_tickets')
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            list(response.context['tickets']),
+            [own_ticket]
+        )
+
+        self.assertContains(response, 'My software complaint')
+        self.assertNotContains(
+            response,
+            'Private other customer issue'
+        )
+
+    def test_customer_cannot_open_another_customer_ticket(self):
+
+        another_customer = User.objects.create_user(
+            username='module6_detail_customer',
+            password='TestPass123!',
+            role='customer'
+        )
+
+        ticket = Ticket.objects.create(
+            reporter=another_customer,
+            division='customer',
+            title='Another customer complaint',
+            description='Private complaint information.',
+            product=self.active_product,
+            category=self.customer_category,
+            department=self.department
+        )
+
+        self.client.force_login(self.customer)
+
+        response = self.client.get(
+            reverse('ticket_detail', args=[ticket.pk])
+        )
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_guest_and_employee_cannot_view_customer_ticket_list(self):
+
+        url = reverse('customer_my_tickets')
+
+        guest_response = self.client.get(url)
+        self.assertEqual(guest_response.status_code, 302)
+
+        self.client.force_login(self.employee)
+
+        employee_response = self.client.get(url)
+        self.assertEqual(employee_response.status_code, 302)

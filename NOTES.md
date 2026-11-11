@@ -501,3 +501,26 @@ Rules:
   All approved Module 5 requirements are complete.
   Shared issue verification remains in Module 10,
   and AI classification remains in Module 11.
+
+    - Step 60 (Module 6): Reviewed Customer complaint
+  form, product selection, category restrictions and
+  required-field validation. Reused the category
+  suggestion candidate provider, corrected Customer
+  My Tickets table structure and added nine tests.
+  Remaining Module 6 security and edge-case checks
+  were pending.
+
+  - Step 61 (Module 6): Verified Customer submission
+  security, server-controlled fields, invalid and inactive
+  products, invalid and unmapped categories, Admin manual
+  routing, ticket confirmation, and Customer privacy.
+  Added ten automated tests.
+  Final Module 6 checklist audit remains pending.
+
+
+    - Step 61 (Module 6): Verified Customer submission
+  security, server-controlled fields, invalid and inactive
+  products, invalid and unmapped categories, Admin manual
+  routing, ticket confirmation, and Customer privacy.
+  Added ten automated tests.
+  Final Module 6 checklist audit remains pending.
