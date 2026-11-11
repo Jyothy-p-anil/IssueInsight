@@ -164,6 +164,12 @@ path(
     name='claim_support_ticket'
 ),
 
+path(
+    'support/tickets/<int:ticket_id>/resolve/',
+    views.resolve_support_ticket,
+    name='resolve_support_ticket'
+),
+
 # Module 8: Admin All Complaints
 
 path(

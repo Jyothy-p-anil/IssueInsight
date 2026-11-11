@@ -4423,3 +4423,186 @@ class FirstPublicAcknowledgementTests(TestCase):
                 ticket=self.ticket
             ).exists()
         )
+
+
+
+# Step 75: Support Staff complaint resolution
+
+class SupportTicketResolutionTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+
+        cls.department = Department.objects.create(
+            name='Resolution Test Facilities'
+        )
+
+        cls.other_department = Department.objects.create(
+            name='Resolution Test IT'
+        )
+
+        cls.employee = User.objects.create_user(
+            username='resolution_employee',
+            password='TestPass123!',
+            role='employee'
+        )
+
+        cls.staff = User.objects.create_user(
+            username='resolution_staff',
+            password='TestPass123!',
+            role='support',
+            department=cls.department
+        )
+
+        cls.other_staff = User.objects.create_user(
+            username='resolution_other_staff',
+            password='TestPass123!',
+            role='support',
+            department=cls.department
+        )
+
+        cls.wrong_department_staff = User.objects.create_user(
+            username='resolution_wrong_department',
+            password='TestPass123!',
+            role='support',
+            department=cls.other_department
+        )
+
+        cls.ticket = Ticket.objects.create(
+            reporter=cls.employee,
+            division='employee',
+            title='Office AC not cooling',
+            description='AC needs repair.',
+            department=cls.department,
+            assigned_to=cls.staff,
+            status='in_progress'
+        )
+
+    def resolve(self, summary):
+        return self.client.post(
+            reverse(
+                'resolve_support_ticket',
+                args=[self.ticket.pk]
+            ),
+            {'resolution_summary': summary}
+        )
+
+    def test_assigned_staff_can_resolve(self):
+
+        self.client.force_login(self.staff)
+
+        response = self.resolve(
+            'Faulty capacitor replaced and AC tested.'
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        self.ticket.refresh_from_db()
+
+        self.assertEqual(self.ticket.status, 'resolved')
+        self.assertEqual(
+            self.ticket.resolution_summary,
+            'Faulty capacitor replaced and AC tested.'
+        )
+        self.assertIsNotNone(self.ticket.resolved_at)
+        self.assertEqual(
+            self.ticket.updated_at,
+            self.ticket.resolved_at
+        )
+
+    def test_blank_summary_is_rejected(self):
+
+        self.client.force_login(self.staff)
+
+        for summary in ('', '   '):
+            with self.subTest(summary=repr(summary)):
+                self.resolve(summary)
+
+                self.ticket.refresh_from_db()
+
+                self.assertEqual(
+                    self.ticket.status,
+                    'in_progress'
+                )
+                self.assertEqual(
+                    self.ticket.resolution_summary,
+                    ''
+                )
+                self.assertIsNone(self.ticket.resolved_at)
+
+    def test_other_staff_cannot_resolve(self):
+
+        self.client.force_login(self.other_staff)
+
+        response = self.resolve('Unauthorized resolution.')
+
+        self.assertEqual(response.status_code, 404)
+
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.status, 'in_progress')
+
+    def test_wrong_department_cannot_resolve(self):
+
+        self.client.force_login(
+            self.wrong_department_staff
+        )
+
+        response = self.resolve('Wrong department.')
+
+        self.assertEqual(response.status_code, 404)
+
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.status, 'in_progress')
+
+    def test_reporter_cannot_resolve(self):
+
+        self.client.force_login(self.employee)
+
+        response = self.resolve('Reporter resolution.')
+
+        self.assertEqual(response.status_code, 302)
+
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.status, 'in_progress')
+
+    def test_duplicate_resolution_is_rejected(self):
+
+        self.client.force_login(self.staff)
+
+        self.resolve('AC repaired successfully.')
+
+        self.ticket.refresh_from_db()
+        original_time = self.ticket.resolved_at
+
+        response = self.resolve('Second resolution attempt.')
+
+        self.assertEqual(response.status_code, 404)
+
+        self.ticket.refresh_from_db()
+
+        self.assertEqual(self.ticket.status, 'resolved')
+        self.assertEqual(
+            self.ticket.resolution_summary,
+            'AC repaired successfully.'
+        )
+        self.assertEqual(
+            self.ticket.resolved_at,
+            original_time
+        )
+
+    def test_reporter_can_view_resolution(self):
+
+        self.client.force_login(self.staff)
+        self.resolve('AC repaired and tested.')
+
+        self.client.force_login(self.employee)
+
+        response = self.client.get(
+            reverse('ticket_detail', args=[self.ticket.pk])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            'AC repaired and tested.'
+        )

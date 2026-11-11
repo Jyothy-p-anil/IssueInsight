@@ -194,6 +194,63 @@
     </div>
 </div>
 
+<!-- Add a section for resolving the ticket if it's in progress and assigned to the current user -->
+
+{% if ticket.status == 'in_progress' and ticket.assigned_to_id == request.user.id %}
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header">
+        <strong>Resolve Complaint</strong>
+    </div>
+
+    <div class="card-body">
+        <form method="post"
+              action="{% url 'resolve_support_ticket' ticket.id %}">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="resolution_summary"
+                       class="form-label">
+                    Resolution Summary
+                </label>
+
+                <textarea
+                    name="resolution_summary"
+                    id="resolution_summary"
+                    class="form-control"
+                    rows="4"
+                    required
+                    placeholder="Explain how the issue was resolved."></textarea>
+            </div>
+
+            <button type="submit"
+                    class="btn btn-success">
+                Mark as Resolved
+            </button>
+        </form>
+    </div>
+</div>
+
+{% endif %}
+
+{% if ticket.status == 'resolved' and ticket.resolution_summary %}
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header">
+        <strong>Resolution Details</strong>
+    </div>
+
+    <div class="card-body">
+        <p>{{ ticket.resolution_summary|linebreaksbr }}</p>
+        <p class="text-muted mb-0">
+            Resolved:
+            {{ ticket.resolved_at|date:"d M Y, h:i A" }}
+        </p>
+    </div>
+</div>
+
+{% endif %}
+
 
 {% if ticket.assigned_to_id %}
     <a href="{% url 'support_assigned_tickets' %}"

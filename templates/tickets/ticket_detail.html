@@ -176,6 +176,29 @@
     </div>
 </div>
 
+
+<!-- Step 75: Display resolution details to reporter -->
+
+{% if ticket.status == 'resolved' and ticket.resolution_summary %}
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header">
+        <strong>Resolution Details</strong>
+    </div>
+
+    <div class="card-body">
+        <p>{{ ticket.resolution_summary|linebreaksbr }}</p>
+
+        <p class="text-muted mb-0">
+            Resolved:
+            {{ ticket.resolved_at|date:"d M Y, h:i A" }}
+        </p>
+    </div>
+</div>
+
+{% endif %}
+
+
 {% if ticket.division == 'employee' %}
     <a href="{% url 'employee_my_tickets' %}"
        class="btn btn-outline-secondary">

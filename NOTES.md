@@ -621,3 +621,28 @@ Rules:
   must be verified before implementing automation.
   No complex SLA engine or specialist escalation system
   is included. Module 8 remains in progress.
+
+
+  - Step 75 (Module 8): Implemented Support Staff
+  complaint resolution using the existing Resolved
+  status. Added mandatory resolution_summary and
+  resolved_at fields to the Ticket model, together
+  with a database migration.
+
+  Added TicketResolutionForm, resolve_support_ticket
+  view, POST-only resolution URL and resolution
+  controls on the Support Staff ticket detail page.
+
+  Restricted resolution to the assigned Support Staff
+  member in the correct department for In Progress
+  tickets. Prevented blank summaries, unauthorized
+  resolution and repeated resolution attempts.
+
+  Added resolution details to the reporter's ticket
+  page. Added seven automated resolution tests.
+  Corrected reporter template rendering after a
+  failed visibility test.
+
+  Reporter confirmation, reopening and the precise
+  72-hour unconfirmed-resolution rule remain pending.
+  Module 8 remains in progress.

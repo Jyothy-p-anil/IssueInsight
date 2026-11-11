@@ -13,6 +13,9 @@ from django.contrib import messages
 from .models import Ticket, Department, Category, Product
 
 
+
+
+
 from .forms import (
     EmployeeComplaintForm,
     CustomerComplaintForm,
@@ -22,6 +25,7 @@ from .forms import (
     DepartmentForm,
     CategoryForm,
     ProductForm,
+    TicketResolutionForm,
 )
 
 from django.db import transaction
@@ -437,6 +441,64 @@ def support_ticket_detail(request, ticket_id):
         }
     )
 
+
+# Step 75: Resolve an assigned complaint
+
+@role_required('support')
+@require_POST
+def resolve_support_ticket(request, ticket_id):
+
+    ticket = get_object_or_404(
+        Ticket,
+        pk=ticket_id,
+        department_id=request.user.department_id,
+        assigned_to=request.user,
+        status='in_progress'
+    )
+
+    form = TicketResolutionForm(request.POST)
+
+    if not form.is_valid():
+        messages.error(
+            request,
+            'Enter a valid resolution summary.'
+        )
+        return redirect(
+            'support_ticket_detail',
+            ticket_id=ticket_id
+        )
+
+    resolved_time = timezone.now()
+
+    updated = Ticket.objects.filter(
+        pk=ticket.pk,
+        department_id=request.user.department_id,
+        assigned_to=request.user,
+        status='in_progress'
+    ).update(
+        status='resolved',
+        resolution_summary=form.cleaned_data[
+            'resolution_summary'
+        ],
+        resolved_at=resolved_time,
+        updated_at=resolved_time
+    )
+
+    if updated:
+        messages.success(
+            request,
+            f'Ticket #{ticket_id} marked as Resolved.'
+        )
+    else:
+        messages.warning(
+            request,
+            'This ticket can no longer be resolved.'
+        )
+
+    return redirect(
+        'support_ticket_detail',
+        ticket_id=ticket_id
+    )
 
 
 # Support Staff: claim an available ticket

@@ -129,6 +129,16 @@ class Ticket(models.Model):
         null=True,
         blank=True
     )
+
+    resolution_summary = models.TextField(
+        blank=True
+    )
+
+    resolved_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
     updated_at = models.DateTimeField(
         auto_now=True,
         null=True,

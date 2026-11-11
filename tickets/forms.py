@@ -158,6 +158,33 @@ class SupportMessageForm(TicketMessageForm):
             'is_internal': 'Internal note (hidden from reporter)'
         }
 
+# Step 75: Mandatory Support Staff resolution summary
+
+class TicketResolutionForm(forms.Form):
+
+    resolution_summary = forms.CharField(
+        required=True,
+        strip=True,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 4,
+            'placeholder': 'Explain how the issue was resolved.'
+        }),
+        label='Resolution Summary'
+    )
+
+    def clean_resolution_summary(self):
+        summary = self.cleaned_data[
+            'resolution_summary'
+        ].strip()
+
+        if not summary:
+            raise forms.ValidationError(
+                'A resolution summary is required.'
+            )
+
+        return summary
+
 
 # Form for creating and editing support departments
 class DepartmentForm(forms.ModelForm):
