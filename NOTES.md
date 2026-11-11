@@ -602,3 +602,22 @@ Rules:
   and does not automatically assign Support Staff.
   Added thirteen automated tests.
   Module 8 remains in progress.
+
+    - Step 74 (Module 8): Reviewed the approved
+  five-status complaint lifecycle without introducing
+  new statuses or automatic transitions.
+  Verified that the first public Support Staff reply
+  records the first human acknowledgement.
+  Confirmed that internal notes, reporter replies,
+  blank messages and unauthorized replies do not
+  record acknowledgement. Verified that later replies
+  preserve the original first-response timestamp.
+  Added nine automated tests.
+
+  - Module 8 lifecycle decisions retained:
+  Resolution must include a summary and history.
+  Reporter confirmation and reopening are required.
+  The precise 72-hour unconfirmed-resolution behavior
+  must be verified before implementing automation.
+  No complex SLA engine or specialist escalation system
+  is included. Module 8 remains in progress.

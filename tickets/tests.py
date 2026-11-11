@@ -4095,3 +4095,331 @@ class AdminManualRoutingTests(TestCase):
             self.employee_pending.department,
             self.facilities
         )
+
+# Step 74: Module 8 - First human acknowledgement
+
+class FirstPublicAcknowledgementTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+
+        cls.facilities = Department.objects.create(
+            name='Module8 Acknowledgement Facilities'
+        )
+
+        cls.other_department = Department.objects.create(
+            name='Module8 Acknowledgement Other'
+        )
+
+        cls.employee = User.objects.create_user(
+            username='m8_ack_employee',
+            password='TestPass123!',
+            role='employee'
+        )
+
+        cls.staff = User.objects.create_user(
+            username='m8_ack_staff',
+            password='TestPass123!',
+            role='support',
+            department=cls.facilities
+        )
+
+        cls.second_staff = User.objects.create_user(
+            username='m8_ack_second_staff',
+            password='TestPass123!',
+            role='support',
+            department=cls.facilities
+        )
+
+        cls.other_staff = User.objects.create_user(
+            username='m8_ack_other_staff',
+            password='TestPass123!',
+            role='support',
+            department=cls.other_department
+        )
+
+        cls.category = Category.objects.create(
+            name='Module8 Acknowledgement AC',
+            division='employee',
+            department=cls.facilities
+        )
+
+        cls.ticket = Ticket.objects.create(
+            reporter=cls.employee,
+            division='employee',
+            title='Office AC needs repair',
+            description='AC is not working.',
+            category=cls.category,
+            department=cls.facilities,
+            assigned_to=cls.staff,
+            status='in_progress'
+        )
+
+        cls.unclaimed_ticket = Ticket.objects.create(
+            reporter=cls.employee,
+            division='employee',
+            title='Unclaimed acknowledgement test',
+            description='Waiting for staff.',
+            category=cls.category,
+            department=cls.facilities,
+            status='submitted'
+        )
+
+        cls.resolved_ticket = Ticket.objects.create(
+            reporter=cls.employee,
+            division='employee',
+            title='Resolved acknowledgement test',
+            description='Already marked resolved.',
+            category=cls.category,
+            department=cls.facilities,
+            assigned_to=cls.staff,
+            status='resolved'
+        )
+
+    def support_reply(self, body, internal=False):
+
+        return self.client.post(
+            reverse(
+                'add_support_message',
+                args=[self.ticket.pk]
+            ),
+            {
+                'body': body,
+                'is_internal': 'on' if internal else ''
+            }
+        )
+
+    def test_first_public_reply_records_acknowledgement(self):
+
+        self.client.force_login(self.staff)
+
+        response = self.support_reply(
+            'We are investigating the AC issue.'
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        message = TicketMessage.objects.get(
+            ticket=self.ticket
+        )
+
+        self.ticket.refresh_from_db()
+
+        self.assertFalse(message.is_internal)
+
+        self.assertEqual(
+            self.ticket.first_response_at,
+            message.created_at
+        )
+
+        self.assertEqual(
+            self.ticket.updated_at,
+            message.created_at
+        )
+
+    def test_internal_note_does_not_acknowledge(self):
+
+        previous_update = timezone.now() - timedelta(days=1)
+
+        Ticket.objects.filter(
+            pk=self.ticket.pk
+        ).update(updated_at=previous_update)
+
+        self.client.force_login(self.staff)
+
+        response = self.support_reply(
+            'Staff-only investigation note.',
+            internal=True
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        self.ticket.refresh_from_db()
+
+        message = TicketMessage.objects.get(
+            ticket=self.ticket
+        )
+
+        self.assertTrue(message.is_internal)
+        self.assertIsNone(self.ticket.first_response_at)
+
+        self.assertEqual(
+            self.ticket.updated_at,
+            previous_update
+        )
+
+    def test_internal_note_after_acknowledgement(self):
+
+        self.client.force_login(self.staff)
+
+        self.support_reply('First public acknowledgement.')
+
+        self.ticket.refresh_from_db()
+
+        first_time = self.ticket.first_response_at
+        public_update = self.ticket.updated_at
+
+        self.support_reply(
+            'Internal staff investigation.',
+            internal=True
+        )
+
+        self.ticket.refresh_from_db()
+
+        self.assertEqual(
+            self.ticket.first_response_at,
+            first_time
+        )
+
+        self.assertEqual(
+            self.ticket.updated_at,
+            public_update
+        )
+
+    def test_later_public_reply_preserves_first_response(self):
+
+        self.client.force_login(self.staff)
+
+        self.support_reply('First public reply.')
+
+        self.ticket.refresh_from_db()
+
+        first_time = self.ticket.first_response_at
+
+        self.support_reply('Second public update.')
+
+        self.ticket.refresh_from_db()
+
+        self.assertEqual(
+            self.ticket.first_response_at,
+            first_time
+        )
+
+        self.assertEqual(
+            TicketMessage.objects.filter(
+                ticket=self.ticket,
+                is_internal=False
+            ).count(),
+            2
+        )
+
+    def test_reporter_reply_is_not_support_acknowledgement(self):
+
+        self.client.force_login(self.employee)
+
+        response = self.client.post(
+            reverse(
+                'add_reporter_message',
+                args=[self.ticket.pk]
+            ),
+            {'body': 'Can you provide an update?'}
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        self.ticket.refresh_from_db()
+
+        self.assertIsNone(self.ticket.first_response_at)
+
+        self.assertEqual(
+            TicketMessage.objects.filter(
+                ticket=self.ticket
+            ).count(),
+            1
+        )
+
+    def test_other_staff_in_same_department_cannot_reply(self):
+
+        self.client.force_login(self.second_staff)
+
+        response = self.support_reply(
+            'Unauthorized acknowledgement.'
+        )
+
+        self.assertEqual(response.status_code, 404)
+
+        self.ticket.refresh_from_db()
+
+        self.assertIsNone(self.ticket.first_response_at)
+
+        self.assertFalse(
+            TicketMessage.objects.filter(
+                ticket=self.ticket
+            ).exists()
+        )
+
+    def test_other_department_cannot_acknowledge(self):
+
+        self.client.force_login(self.other_staff)
+
+        response = self.support_reply(
+            'Wrong department acknowledgement.'
+        )
+
+        self.assertEqual(response.status_code, 404)
+
+        self.ticket.refresh_from_db()
+
+        self.assertIsNone(self.ticket.first_response_at)
+
+    def test_unclaimed_and_resolved_tickets_reject_replies(self):
+
+        self.client.force_login(self.staff)
+
+        unclaimed_response = self.client.post(
+            reverse(
+                'add_support_message',
+                args=[self.unclaimed_ticket.pk]
+            ),
+            {'body': 'Should not be accepted.'}
+        )
+
+        resolved_response = self.client.post(
+            reverse(
+                'add_support_message',
+                args=[self.resolved_ticket.pk]
+            ),
+            {'body': 'Should also be rejected.'}
+        )
+
+        self.assertEqual(
+            unclaimed_response.status_code,
+            404
+        )
+
+        self.assertEqual(
+            resolved_response.status_code,
+            302
+        )
+
+        for ticket in (
+            self.unclaimed_ticket,
+            self.resolved_ticket
+        ):
+            ticket.refresh_from_db()
+
+            self.assertIsNone(ticket.first_response_at)
+
+            self.assertFalse(
+                TicketMessage.objects.filter(
+                    ticket=ticket
+                ).exists()
+            )
+
+    def test_blank_reply_does_not_acknowledge(self):
+
+        self.client.force_login(self.staff)
+
+        response = self.support_reply('')
+
+        self.assertEqual(response.status_code, 302)
+
+        self.ticket.refresh_from_db()
+
+        self.assertIsNone(self.ticket.first_response_at)
+
+        self.assertFalse(
+            TicketMessage.objects.filter(
+                ticket=self.ticket
+            ).exists()
+        )
