@@ -20,11 +20,11 @@ Follow one real request or data change through the functions shown below. Notice
 
 ### Actual code from the committed project
 
-Source revision: [`8aa5fec6ff3d`](https://github.com/Jyothy-p-anil/IssueInsight/commit/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a) on `master`. The excerpts are current code, not invented historical versions.
+Source revision: [`b5fac3135a3b`](https://github.com/Jyothy-p-anil/IssueInsight/commit/b5fac3135a3b92826b80454b47e933eda88b75f7) on `master`. The excerpts are current code, not invented historical versions.
 
 #### `tickets/views.py` → `employee_my_tickets`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a/tickets/views.py#L111-L123)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/tickets/views.py#L111-L123)
 
 ```python
 @role_required('employee')
@@ -44,7 +44,7 @@ def employee_my_tickets(request):
 
 #### `templates/tickets/employee_my_tickets.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a/templates/tickets/employee_my_tickets.html#L1-L71)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/templates/tickets/employee_my_tickets.html#L1-L71)
 
 ```html
 
@@ -125,6 +125,8 @@ def employee_my_tickets(request):
 ### Related development commits
 
 - [734a0417b0](https://github.com/Jyothy-p-anil/IssueInsight/commit/734a0417b0a72dc08f8fabe1a1fb5cc19d0a3d1f) — feat: implement employee complaint submission and my tickets (2026-11-08)
+- [b5fac3135a](https://github.com/Jyothy-p-anil/IssueInsight/commit/b5fac3135a3b92826b80454b47e933eda88b75f7) — test(module-5): finalize all employee submission requirements (2026-11-11)
+- [8ddf5a4945](https://github.com/Jyothy-p-anil/IssueInsight/commit/8ddf5a4945684003c31d54a3bc19af43a53799f3) — test(module-5): close employee submission checklist gaps (2026-11-10)
 - [8aa5fec6ff](https://github.com/Jyothy-p-anil/IssueInsight/commit/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a) — test(module-5): complete employee complaint submission review (2026-11-10)
 
 *These links show historical changes. A commit may touch several modules; inspect its diff before attributing every edit to this chapter.*

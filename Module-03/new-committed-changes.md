@@ -8,7 +8,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `templates/base.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a/templates/base.html#L1-L212)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/templates/base.html#L1-L212)
 
 ```html
 
@@ -171,7 +171,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `templates/tickets/support_ticket_detail.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a/templates/tickets/support_ticket_detail.html#L1-L210)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/templates/tickets/support_ticket_detail.html#L1-L210)
 
 ```html
 
@@ -334,7 +334,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `templates/tickets/ticket_detail.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a/templates/tickets/ticket_detail.html#L1-L195)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/templates/tickets/ticket_detail.html#L1-L195)
 
 ```html
 
@@ -497,7 +497,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/forms.py` → `ManualRoutingForm`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a/tickets/forms.py#L109-L118)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/tickets/forms.py#L116-L125)
 
 ```python
 class ManualRoutingForm(forms.Form):
@@ -518,7 +518,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/forms.py` → `SupportMessageForm`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a/tickets/forms.py#L136-L150)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/tickets/forms.py#L143-L157)
 
 ```python
 class SupportMessageForm(TicketMessageForm):
@@ -544,7 +544,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/forms.py` → `TicketMessageForm`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a/tickets/forms.py#L121-L133)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/tickets/forms.py#L128-L140)
 
 ```python
 class TicketMessageForm(forms.ModelForm):
@@ -568,7 +568,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/models.py` → `TicketMessage`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a/tickets/models.py#L137-L161)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/tickets/models.py#L137-L161)
 
 ```python
 class TicketMessage(models.Model):
@@ -604,7 +604,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/views.py` → `add_reporter_message`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a/tickets/views.py#L388-L421)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/tickets/views.py#L388-L421)
 
 ```python
 @role_required('employee', 'customer')
@@ -649,7 +649,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/views.py` → `admin_pending_routing`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a/tickets/views.py#L483-L498)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/tickets/views.py#L483-L498)
 
 ```python
 @role_required('admin')
@@ -676,7 +676,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/views.py` → `admin_route_ticket`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a/tickets/views.py#L501-L554)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/tickets/views.py#L501-L554)
 
 ```python
 @role_required('admin')

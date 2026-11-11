@@ -4,7 +4,7 @@
 
 **Source repository:** https://github.com/Jyothy-p-anil/IssueInsight
 **Source branch:** `master`
-**Source commit:** `8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a`
+**Source commit:** `b5fac3135a3b92826b80454b47e933eda88b75f7`
 **Journal branch:** `module-study-journal`
 
 Start with [HOW_TO_STUDY.md](HOW_TO_STUDY.md). Browse [DEVELOPMENT_HISTORY.md](DEVELOPMENT_HISTORY.md) for commit chronology, [NOTES_INDEX.md](NOTES_INDEX.md) for the chronological development notes, and [SOURCE_MAPPING.csv](SOURCE_MAPPING.csv) for file-to-module associations.
@@ -17,7 +17,7 @@ Start with [HOW_TO_STUDY.md](HOW_TO_STUDY.md). Browse [DEVELOPMENT_HISTORY.md](D
 | 02. Initial UI and Authentication | Core complete | [Open](Module-02/README.md) |
 | 03. Role-Based Permissions and Account Access | Core complete for features implemented so far; extend tests as new features arrive | [Open](Module-03/README.md) |
 | 04. Master Data Management | Complete for implemented scope: Department CRUD with safe deletion; Category CRUD, division and department mapping, Other protection; Product creation, editing and activation/deactivation; Admin-only permissions and tests | [Open](Module-04/README.md) |
-| 05. Employee Complaint Submission | Complete for implemented scope; ten submission and privacy tests added in Step 57 | [Open](Module-05/README.md) |
+| 05. Employee Complaint Submission | Submission implemented; Complete — all 16 checklist requirements (71–86) verified in Step 59; 65 regression tests passed. | [Open](Module-05/README.md) |
 | 06. Customer Complaint Submission | Substantial existing implementation; final module review pending | [Open](Module-06/README.md) |
 | 07. My Tickets and Complaint Details | Partial | [Open](Module-07/README.md) |
 | 08. Complaint Routing and Support Workflows | Partial | [Open](Module-08/README.md) |

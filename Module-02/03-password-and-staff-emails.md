@@ -20,11 +20,11 @@ Follow one real request or data change through the functions shown below. Notice
 
 ### Actual code from the committed project
 
-Source revision: [`8aa5fec6ff3d`](https://github.com/Jyothy-p-anil/IssueInsight/commit/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a) on `master`. The excerpts are current code, not invented historical versions.
+Source revision: [`b5fac3135a3b`](https://github.com/Jyothy-p-anil/IssueInsight/commit/b5fac3135a3b92826b80454b47e933eda88b75f7) on `master`. The excerpts are current code, not invented historical versions.
 
 #### `accounts/forms.py` → `StaffAccountCreationForm`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a/accounts/forms.py#L37-L83)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/accounts/forms.py#L37-L83)
 
 ```python
 class StaffAccountCreationForm(forms.ModelForm):
@@ -78,7 +78,7 @@ class StaffAccountCreationForm(forms.ModelForm):
 
 #### `accounts/services.py` → `send_password_setup_email`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a/accounts/services.py#L16-L53)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/accounts/services.py#L16-L53)
 
 ```python
 def send_password_setup_email(request, user):
@@ -123,7 +123,7 @@ def send_password_setup_email(request, user):
 
 #### `accounts/services.py` → `send_account_status_email`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a/accounts/services.py#L56-L90)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/accounts/services.py#L56-L90)
 
 ```python
 def send_account_status_email(user):
@@ -165,7 +165,7 @@ def send_account_status_email(user):
 
 #### `config/urls.py` → `password_reset`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a/config/urls.py#L31-L37)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/config/urls.py#L31-L37)
 
 ```python
 path(
@@ -179,7 +179,7 @@ path(
 
 #### `config/urls.py` → `password_reset_confirm`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a/config/urls.py#L48-L54)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/config/urls.py#L48-L54)
 
 ```python
 path(

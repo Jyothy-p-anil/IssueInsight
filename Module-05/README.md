@@ -1,6 +1,6 @@
 # Module 05 — Employee Complaint Submission
 
-**Status:** Complete for implemented scope; ten submission and privacy tests added in Step 57
+**Status:** Submission implemented; Complete — all 16 checklist requirements (71–86) verified in Step 59; 65 regression tests passed.
 
 An Employee reports a workplace problem and sees it in their own ticket list.
 

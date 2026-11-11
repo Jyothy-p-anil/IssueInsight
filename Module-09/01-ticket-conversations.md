@@ -20,11 +20,11 @@ Follow one real request or data change through the functions shown below. Notice
 
 ### Actual code from the committed project
 
-Source revision: [`8aa5fec6ff3d`](https://github.com/Jyothy-p-anil/IssueInsight/commit/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a) on `master`. The excerpts are current code, not invented historical versions.
+Source revision: [`b5fac3135a3b`](https://github.com/Jyothy-p-anil/IssueInsight/commit/b5fac3135a3b92826b80454b47e933eda88b75f7) on `master`. The excerpts are current code, not invented historical versions.
 
 #### `tickets/models.py` → `TicketMessage`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a/tickets/models.py#L137-L161)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/tickets/models.py#L137-L161)
 
 ```python
 class TicketMessage(models.Model):
@@ -56,7 +56,7 @@ class TicketMessage(models.Model):
 
 #### `tickets/forms.py` → `TicketMessageForm`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a/tickets/forms.py#L121-L133)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/tickets/forms.py#L128-L140)
 
 ```python
 class TicketMessageForm(forms.ModelForm):
@@ -76,7 +76,7 @@ class TicketMessageForm(forms.ModelForm):
 
 #### `tickets/forms.py` → `SupportMessageForm`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a/tickets/forms.py#L136-L150)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/tickets/forms.py#L143-L157)
 
 ```python
 class SupportMessageForm(TicketMessageForm):
@@ -98,7 +98,7 @@ class SupportMessageForm(TicketMessageForm):
 
 #### `tickets/views.py` → `add_reporter_message`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a/tickets/views.py#L388-L421)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/tickets/views.py#L388-L421)
 
 ```python
 @role_required('employee', 'customer')
@@ -139,7 +139,7 @@ def add_reporter_message(request, ticket_id):
 
 #### `tickets/views.py` → `add_support_message`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a/tickets/views.py#L426-L478)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/tickets/views.py#L426-L478)
 
 ```python
 @role_required('support')

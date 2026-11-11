@@ -20,19 +20,17 @@ Follow one real request or data change through the functions shown below. Notice
 
 ### Actual code from the committed project
 
-Source revision: [`8aa5fec6ff3d`](https://github.com/Jyothy-p-anil/IssueInsight/commit/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a) on `master`. The excerpts are current code, not invented historical versions.
+Source revision: [`b5fac3135a3b`](https://github.com/Jyothy-p-anil/IssueInsight/commit/b5fac3135a3b92826b80454b47e933eda88b75f7) on `master`. The excerpts are current code, not invented historical versions.
 
 #### `tickets/forms.py` → `EmployeeComplaintForm`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a/tickets/forms.py#L7-L35)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/tickets/forms.py#L9-L42)
 
 ```python
 class EmployeeComplaintForm(forms.ModelForm):
 
     category = forms.ModelChoiceField(
-        queryset=Category.objects.filter(
-            division='employee'
-        ).order_by('name'),
+        queryset=Category.objects.none(),
         empty_label='Select a category',
         required=True
     )
@@ -48,8 +46,15 @@ class EmployeeComplaintForm(forms.ModelForm):
             }),
         }
 
+    def clean_floor(self):
+        floor = self.cleaned_data.get('floor') or ''
+        return ' '.join(floor.split())
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['category'].queryset = (
+        get_suggestion_candidates('employee')
+        )
 
         for field in self.fields.values():
             if isinstance(field.widget, forms.Select):
@@ -60,7 +65,7 @@ class EmployeeComplaintForm(forms.ModelForm):
 
 #### `tickets/views.py` → `submit_employee_complaint`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a/tickets/views.py#L79-L108)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/tickets/views.py#L79-L108)
 
 ```python
 @role_required('employee')
@@ -97,7 +102,7 @@ def submit_employee_complaint(request):
 
 #### `templates/tickets/employee_complaint_form.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a/templates/tickets/employee_complaint_form.html#L1-L50)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/templates/tickets/employee_complaint_form.html#L1-L50)
 
 ```html
 
@@ -157,6 +162,8 @@ def submit_employee_complaint(request):
 ### Related development commits
 
 - [734a0417b0](https://github.com/Jyothy-p-anil/IssueInsight/commit/734a0417b0a72dc08f8fabe1a1fb5cc19d0a3d1f) — feat: implement employee complaint submission and my tickets (2026-11-08)
+- [b5fac3135a](https://github.com/Jyothy-p-anil/IssueInsight/commit/b5fac3135a3b92826b80454b47e933eda88b75f7) — test(module-5): finalize all employee submission requirements (2026-11-11)
+- [8ddf5a4945](https://github.com/Jyothy-p-anil/IssueInsight/commit/8ddf5a4945684003c31d54a3bc19af43a53799f3) — test(module-5): close employee submission checklist gaps (2026-11-10)
 - [8aa5fec6ff](https://github.com/Jyothy-p-anil/IssueInsight/commit/8aa5fec6ff3d8f653abccfbf629f89e92ba1f67a) — test(module-5): complete employee complaint submission review (2026-11-10)
 
 *These links show historical changes. A commit may touch several modules; inspect its diff before attributing every edit to this chapter.*
