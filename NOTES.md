@@ -580,3 +580,13 @@ Rules:
   Preserved Pending Routing and existing Support Staff
   workflows. Added seven security and visibility tests.
   Module 8 remains in progress.
+
+
+    - Step 72 (Module 8): Verified existing Support
+  Staff department queues, assigned-ticket lists,
+  complaint details and safe ticket claiming.
+  Tested department isolation, role restrictions,
+  POST-only claiming, status transitions from
+  Submitted to In Progress, and prevention of
+  duplicate claims. Added twelve automated tests.
+  Module 8 remains in progress.

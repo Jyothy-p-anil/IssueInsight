@@ -3106,3 +3106,471 @@ class AdminAllComplaintsTests(TestCase):
             response,
             'No complaints have been submitted yet.'
         )
+
+
+
+# Step 72: Module 8 - Support queues and safe claiming
+
+class SupportQueueAndClaimTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+
+        cls.facilities = Department.objects.create(
+            name='Module8 Queue Facilities'
+        )
+
+        cls.product_support = Department.objects.create(
+            name='Module8 Queue Product Support'
+        )
+
+        cls.employee = User.objects.create_user(
+            username='m8_queue_employee',
+            password='TestPass123!',
+            role='employee'
+        )
+
+        cls.customer = User.objects.create_user(
+            username='m8_queue_customer',
+            password='TestPass123!',
+            role='customer'
+        )
+
+        cls.admin = User.objects.create_user(
+            username='m8_queue_admin',
+            password='TestPass123!',
+            role='admin'
+        )
+
+        cls.staff_a = User.objects.create_user(
+            username='m8_queue_staff_a',
+            password='TestPass123!',
+            role='support',
+            department=cls.facilities
+        )
+
+        cls.staff_b = User.objects.create_user(
+            username='m8_queue_staff_b',
+            password='TestPass123!',
+            role='support',
+            department=cls.facilities
+        )
+
+        cls.other_staff = User.objects.create_user(
+            username='m8_queue_other_staff',
+            password='TestPass123!',
+            role='support',
+            department=cls.product_support
+        )
+
+        cls.no_department_staff = User.objects.create_user(
+            username='m8_queue_no_department',
+            password='TestPass123!',
+            role='support'
+        )
+
+        cls.facilities_category = Category.objects.create(
+            name='Module8 Queue AC Issues',
+            division='employee',
+            department=cls.facilities
+        )
+
+        cls.customer_category = Category.objects.create(
+            name='Module8 Queue Customer Issues',
+            division='customer',
+            department=cls.facilities
+        )
+
+        cls.product_category = Category.objects.create(
+            name='Module8 Queue Software Issues',
+            division='customer',
+            department=cls.product_support
+        )
+
+        cls.submitted_ticket = Ticket.objects.create(
+            reporter=cls.employee,
+            division='employee',
+            title='Office AC repair required',
+            description='AC not cooling.',
+            category=cls.facilities_category,
+            department=cls.facilities,
+            status='submitted'
+        )
+
+        cls.reopened_ticket = Ticket.objects.create(
+            reporter=cls.customer,
+            division='customer',
+            title='Customer follow-up issue',
+            description='An issue needs another review.',
+            category=cls.customer_category,
+            department=cls.facilities,
+            status='reopened'
+        )
+
+        cls.assigned_a = Ticket.objects.create(
+            reporter=cls.employee,
+            division='employee',
+            title='Assigned to staff A',
+            description='Existing assigned complaint.',
+            category=cls.facilities_category,
+            department=cls.facilities,
+            assigned_to=cls.staff_a,
+            status='in_progress'
+        )
+
+        cls.assigned_b = Ticket.objects.create(
+            reporter=cls.employee,
+            division='employee',
+            title='Assigned to staff B',
+            description='Another assigned complaint.',
+            category=cls.facilities_category,
+            department=cls.facilities,
+            assigned_to=cls.staff_b,
+            status='in_progress'
+        )
+
+        cls.resolved_ticket = Ticket.objects.create(
+            reporter=cls.employee,
+            division='employee',
+            title='Already resolved complaint',
+            description='Work has finished.',
+            category=cls.facilities_category,
+            department=cls.facilities,
+            status='resolved'
+        )
+
+        cls.other_department_ticket = Ticket.objects.create(
+            reporter=cls.customer,
+            division='customer',
+            title='Product support complaint',
+            description='Software issue.',
+            category=cls.product_category,
+            department=cls.product_support,
+            status='submitted'
+        )
+
+        cls.unmapped_ticket = Ticket.objects.create(
+            reporter=cls.employee,
+            division='employee',
+            title='Complaint awaiting routing',
+            description='Department is not yet known.',
+            category=cls.facilities_category,
+            department=None,
+            status='submitted'
+        )
+
+    def test_non_support_roles_cannot_access_support_lists(self):
+
+        for url_name in (
+            'support_department_queue',
+            'support_assigned_tickets'
+        ):
+            with self.subTest(url=url_name):
+
+                url = reverse(url_name)
+
+                self.assertEqual(
+                    self.client.get(url).status_code,
+                    302
+                )
+
+                for user in (
+                    self.employee,
+                    self.customer,
+                    self.admin
+                ):
+                    self.client.force_login(user)
+
+                    response = self.client.get(url)
+
+                    self.assertEqual(response.status_code, 302)
+
+                    self.client.logout()
+
+    def test_queue_contains_only_eligible_department_tickets(self):
+
+        self.client.force_login(self.staff_a)
+
+        response = self.client.get(
+            reverse('support_department_queue')
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(
+            set(response.context['tickets']),
+            {
+                self.submitted_ticket,
+                self.reopened_ticket
+            }
+        )
+
+        self.assertNotContains(
+            response,
+            'Product support complaint'
+        )
+
+        self.assertNotContains(
+            response,
+            'Complaint awaiting routing'
+        )
+
+    def test_assigned_list_shows_only_own_tickets(self):
+
+        self.client.force_login(self.staff_a)
+
+        response = self.client.get(
+            reverse('support_assigned_tickets')
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(
+            list(response.context['tickets']),
+            [self.assigned_a]
+        )
+
+        self.assertNotContains(
+            response,
+            'Assigned to staff B'
+        )
+
+    def test_support_detail_requires_matching_department(self):
+
+        self.client.force_login(self.staff_a)
+
+        own_response = self.client.get(
+            reverse(
+                'support_ticket_detail',
+                args=[self.submitted_ticket.pk]
+            )
+        )
+
+        other_response = self.client.get(
+            reverse(
+                'support_ticket_detail',
+                args=[self.other_department_ticket.pk]
+            )
+        )
+
+        self.assertEqual(own_response.status_code, 200)
+        self.assertEqual(other_response.status_code, 404)
+
+    def test_claim_button_only_for_eligible_ticket(self):
+
+        self.client.force_login(self.staff_a)
+
+        available_response = self.client.get(
+            reverse(
+                'support_ticket_detail',
+                args=[self.submitted_ticket.pk]
+            )
+        )
+
+        assigned_response = self.client.get(
+            reverse(
+                'support_ticket_detail',
+                args=[self.assigned_b.pk]
+            )
+        )
+
+        self.assertTrue(
+            available_response.context['can_claim']
+        )
+
+        self.assertFalse(
+            assigned_response.context['can_claim']
+        )
+
+        self.assertFalse(
+            assigned_response.context['can_reply']
+        )
+
+    def test_claim_requires_post(self):
+
+        self.client.force_login(self.staff_a)
+
+        response = self.client.get(
+            reverse(
+                'claim_support_ticket',
+                args=[self.submitted_ticket.pk]
+            )
+        )
+
+        self.assertEqual(response.status_code, 405)
+
+        self.submitted_ticket.refresh_from_db()
+
+        self.assertIsNone(
+            self.submitted_ticket.assigned_to
+        )
+
+        self.assertEqual(
+            self.submitted_ticket.status,
+            'submitted'
+        )
+
+    def test_successful_claim_updates_owner_status_and_time(self):
+
+        self.client.force_login(self.staff_a)
+
+        response = self.client.post(
+            reverse(
+                'claim_support_ticket',
+                args=[self.submitted_ticket.pk]
+            )
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        self.submitted_ticket.refresh_from_db()
+
+        self.assertEqual(
+            self.submitted_ticket.assigned_to,
+            self.staff_a
+        )
+
+        self.assertEqual(
+            self.submitted_ticket.status,
+            'in_progress'
+        )
+
+        self.assertIsNotNone(
+            self.submitted_ticket.updated_at
+        )
+
+        self.assertRedirects(
+            response,
+            reverse(
+                'support_ticket_detail',
+                args=[self.submitted_ticket.pk]
+            ),
+            fetch_redirect_response=False
+        )
+
+    def test_second_staff_cannot_take_claimed_ticket(self):
+
+        url = reverse(
+            'claim_support_ticket',
+            args=[self.submitted_ticket.pk]
+        )
+
+        self.client.force_login(self.staff_a)
+        first_response = self.client.post(url)
+
+        self.assertEqual(first_response.status_code, 302)
+
+        self.client.force_login(self.staff_b)
+        second_response = self.client.post(url)
+
+        self.assertEqual(second_response.status_code, 302)
+
+        self.submitted_ticket.refresh_from_db()
+
+        self.assertEqual(
+            self.submitted_ticket.assigned_to,
+            self.staff_a
+        )
+
+        self.assertEqual(
+            self.submitted_ticket.status,
+            'in_progress'
+        )
+
+    def test_other_department_cannot_claim_ticket(self):
+
+        self.client.force_login(self.other_staff)
+
+        response = self.client.post(
+            reverse(
+                'claim_support_ticket',
+                args=[self.submitted_ticket.pk]
+            )
+        )
+
+        self.assertEqual(response.status_code, 404)
+
+        self.submitted_ticket.refresh_from_db()
+
+        self.assertIsNone(
+            self.submitted_ticket.assigned_to
+        )
+
+    def test_ineligible_ticket_cannot_be_claimed(self):
+
+        self.client.force_login(self.staff_a)
+
+        response = self.client.post(
+            reverse(
+                'claim_support_ticket',
+                args=[self.resolved_ticket.pk]
+            )
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        self.resolved_ticket.refresh_from_db()
+
+        self.assertIsNone(
+            self.resolved_ticket.assigned_to
+        )
+
+        self.assertEqual(
+            self.resolved_ticket.status,
+            'resolved'
+        )
+
+    def test_staff_without_department_cannot_work_tickets(self):
+
+        self.client.force_login(self.no_department_staff)
+
+        for url_name in (
+            'support_department_queue',
+            'support_assigned_tickets'
+        ):
+            response = self.client.get(reverse(url_name))
+
+            self.assertEqual(response.status_code, 302)
+
+        detail_response = self.client.get(
+            reverse(
+                'support_ticket_detail',
+                args=[self.submitted_ticket.pk]
+            )
+        )
+
+        claim_response = self.client.post(
+            reverse(
+                'claim_support_ticket',
+                args=[self.submitted_ticket.pk]
+            )
+        )
+
+        self.assertEqual(detail_response.status_code, 302)
+        self.assertEqual(claim_response.status_code, 302)
+
+        self.submitted_ticket.refresh_from_db()
+
+        self.assertIsNone(
+            self.submitted_ticket.assigned_to
+        )
+
+    def test_reporter_cannot_claim_support_ticket(self):
+
+        self.client.force_login(self.employee)
+
+        response = self.client.post(
+            reverse(
+                'claim_support_ticket',
+                args=[self.submitted_ticket.pk]
+            )
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        self.submitted_ticket.refresh_from_db()
+
+        self.assertIsNone(
+            self.submitted_ticket.assigned_to
+        )
+
