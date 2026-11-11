@@ -2920,3 +2920,189 @@ class ReporterTicketSearchDateUpdateTests(TestCase):
                 self.assertContains(response, 'name="date_from"')
                 self.assertContains(response, 'name="date_to"')
                 self.assertContains(response, 'name="status"')
+
+
+
+class AdminAllComplaintsTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+
+        cls.admin = User.objects.create_user(
+            username='module8_admin',
+            password='TestPass123!',
+            role='admin'
+        )
+
+        cls.employee = User.objects.create_user(
+            username='module8_employee',
+            password='TestPass123!',
+            role='employee'
+        )
+
+        cls.customer = User.objects.create_user(
+            username='module8_customer',
+            password='TestPass123!',
+            role='customer'
+        )
+
+        cls.department = Department.objects.create(
+            name='Module8 Product Support'
+        )
+
+        cls.support = User.objects.create_user(
+            username='module8_support',
+            password='TestPass123!',
+            role='support',
+            department=cls.department
+        )
+
+        cls.employee_category = Category.objects.create(
+            name='Module8 Other',
+            division='employee',
+            department=None
+        )
+
+        cls.customer_category = Category.objects.create(
+            name='Module8 Software Issues',
+            division='customer',
+            department=cls.department
+        )
+
+        cls.employee_ticket = Ticket.objects.create(
+            reporter=cls.employee,
+            division='employee',
+            title='Module8 Office AC problem',
+            description='Office air conditioning not working.',
+            category=cls.employee_category,
+            status='submitted'
+        )
+
+        cls.customer_ticket = Ticket.objects.create(
+            reporter=cls.customer,
+            division='customer',
+            title='Module8 Payroll error',
+            description='Software shows an error.',
+            category=cls.customer_category,
+            department=cls.department,
+            assigned_to=cls.support,
+            status='in_progress'
+        )
+
+    def test_guest_cannot_view_all_complaints(self):
+
+        response = self.client.get(
+            reverse('admin_all_complaints')
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+    def test_non_admin_roles_cannot_view_all_complaints(self):
+
+        for user in (
+            self.employee,
+            self.customer,
+            self.support
+        ):
+            with self.subTest(role=user.role):
+
+                self.client.force_login(user)
+
+                response = self.client.get(
+                    reverse('admin_all_complaints')
+                )
+
+                self.assertEqual(response.status_code, 302)
+
+    def test_admin_can_view_both_complaint_sources(self):
+
+        self.client.force_login(self.admin)
+
+        response = self.client.get(
+            reverse('admin_all_complaints')
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertContains(
+            response, 'Module8 Office AC problem'
+        )
+
+        self.assertContains(
+            response, 'Module8 Payroll error'
+        )
+
+        self.assertEqual(
+            set(response.context['tickets']),
+            {self.employee_ticket, self.customer_ticket}
+        )
+
+    def test_admin_sees_routing_and_assignment(self):
+
+        self.client.force_login(self.admin)
+
+        response = self.client.get(
+            reverse('admin_all_complaints')
+        )
+
+        self.assertContains(response, 'Pending routing')
+        self.assertContains(response, 'Module8 Product Support')
+        self.assertContains(response, 'module8_support')
+        self.assertContains(response, 'In Progress')
+
+    def test_superuser_can_view_all_complaints(self):
+
+        superuser = User.objects.create_superuser(
+            username='module8_superuser',
+            password='TestPass123!'
+        )
+
+        self.client.force_login(superuser)
+
+        response = self.client.get(
+            reverse('admin_all_complaints')
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_viewing_does_not_change_complaint_data(self):
+
+        self.client.force_login(self.admin)
+
+        self.client.get(reverse('admin_all_complaints'))
+
+        self.employee_ticket.refresh_from_db()
+        self.customer_ticket.refresh_from_db()
+
+        self.assertEqual(
+            self.employee_ticket.status, 'submitted'
+        )
+
+        self.assertIsNone(
+            self.employee_ticket.department
+        )
+
+        self.assertEqual(
+            self.customer_ticket.status, 'in_progress'
+        )
+
+        self.assertEqual(
+            self.customer_ticket.assigned_to, self.support
+        )
+
+    def test_empty_page_has_helpful_message(self):
+
+        Ticket.objects.all().delete()
+
+        self.client.force_login(self.admin)
+
+        response = self.client.get(
+            reverse('admin_all_complaints')
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertContains(
+            response,
+            'No complaints have been submitted yet.'
+        )

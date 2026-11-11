@@ -164,6 +164,14 @@ path(
     name='claim_support_ticket'
 ),
 
+# Module 8: Admin All Complaints
+
+path(
+    'management/complaints/',
+    views.admin_all_complaints,
+    name='admin_all_complaints'
+),
+
 
 # Admin: manual complaint routing
 

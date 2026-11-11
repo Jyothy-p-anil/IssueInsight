@@ -571,3 +571,12 @@ Rules:
   Ticket status-change history, resolution confirmation,
   closing, reopening and escalation remain in their
   designated later modules.
+
+
+    - Step 71 (Module 8): Added the Admin All Complaints
+  overview for Employee and Customer complaints.
+  Displayed reporter, source, category, department,
+  assignment, status and submission date.
+  Preserved Pending Routing and existing Support Staff
+  workflows. Added seven security and visibility tests.
+  Module 8 remains in progress.

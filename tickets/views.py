@@ -594,6 +594,27 @@ def add_support_message(request, ticket_id):
     )
 
 
+# Step 71: Admin overview of all complaints
+
+@role_required('admin')
+def admin_all_complaints(request):
+
+    tickets = Ticket.objects.select_related(
+        'reporter',
+        'category',
+        'department',
+        'assigned_to',
+        'product'
+    ).order_by('-created_at', '-pk')
+
+    return render(
+        request,
+        'tickets/admin_all_complaints.html',
+        {
+            'tickets': tickets,
+        }
+    )
+
 # Step 45: Admin manual complaint routing
 
 @role_required('admin')
