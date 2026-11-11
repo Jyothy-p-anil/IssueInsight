@@ -2,7 +2,7 @@
   "tool": "IssueInsight journal.py",
   "branch": "module-study-journal",
   "source_branch": "master",
-  "source_commit": "a9a40f739d52f68c0d05b37955d53ea1baacecf8",
+  "source_commit": "4c179f64e177a16ce2f536aa4b8c025639566ab9",
   "files": [
     ".issueinsight-journal.json",
     "DEVELOPMENT_HISTORY.md",
@@ -38,6 +38,7 @@
     "Module-06/new-committed-changes.md",
     "Module-07/01-private-ticket-details.md",
     "Module-07/README.md",
+    "Module-07/new-committed-changes.md",
     "Module-08/01-support-queue-and-claim.md",
     "Module-08/02-manual-routing.md",
     "Module-08/README.md",

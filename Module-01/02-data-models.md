@@ -20,11 +20,11 @@ Follow one real request or data change through the functions shown below. Notice
 
 ### Actual code from the committed project
 
-Source revision: [`a9a40f739d52`](https://github.com/Jyothy-p-anil/IssueInsight/commit/a9a40f739d52f68c0d05b37955d53ea1baacecf8) on `master`. The excerpts are current code, not invented historical versions.
+Source revision: [`4c179f64e177`](https://github.com/Jyothy-p-anil/IssueInsight/commit/4c179f64e177a16ce2f536aa4b8c025639566ab9) on `master`. The excerpts are current code, not invented historical versions.
 
 #### `accounts/models.py` → `User`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/accounts/models.py#L5-L27)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/accounts/models.py#L5-L27)
 
 ```python
 class User(AbstractUser):
@@ -54,7 +54,7 @@ class User(AbstractUser):
 
 #### `tickets/models.py` → `Department`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/tickets/models.py#L7-L11)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/models.py#L7-L11)
 
 ```python
 class Department(models.Model):
@@ -66,7 +66,7 @@ class Department(models.Model):
 
 #### `tickets/models.py` → `Category`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/tickets/models.py#L14-L36)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/models.py#L14-L36)
 
 ```python
 class Category(models.Model):
@@ -96,7 +96,7 @@ class Category(models.Model):
 
 #### `tickets/models.py` → `Product`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/tickets/models.py#L39-L49)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/models.py#L39-L49)
 
 ```python
 class Product(models.Model):
@@ -114,7 +114,7 @@ class Product(models.Model):
 
 #### `tickets/models.py` → `Ticket`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/tickets/models.py#L53-L134)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/models.py#L53-L134)
 
 ```python
 class Ticket(models.Model):

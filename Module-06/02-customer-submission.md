@@ -20,11 +20,11 @@ Follow one real request or data change through the functions shown below. Notice
 
 ### Actual code from the committed project
 
-Source revision: [`a9a40f739d52`](https://github.com/Jyothy-p-anil/IssueInsight/commit/a9a40f739d52f68c0d05b37955d53ea1baacecf8) on `master`. The excerpts are current code, not invented historical versions.
+Source revision: [`4c179f64e177`](https://github.com/Jyothy-p-anil/IssueInsight/commit/4c179f64e177a16ce2f536aa4b8c025639566ab9) on `master`. The excerpts are current code, not invented historical versions.
 
 #### `tickets/views.py` → `submit_customer_complaint`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/tickets/views.py#L127-L158)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/views.py#L145-L176)
 
 ```python
 @role_required('customer')
@@ -63,7 +63,7 @@ def submit_customer_complaint(request):
 
 #### `tickets/views.py` → `customer_my_tickets`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/tickets/views.py#L161-L175)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/views.py#L179-L208)
 
 ```python
 @role_required('customer')
@@ -76,16 +76,31 @@ def customer_my_tickets(request):
         'category', 'department', 'product'
     ).order_by('-created_at')
 
+    selected_status = request.GET.get('status', '')
+
+    valid_statuses = {
+        value for value, label in Ticket.STATUS_CHOICES
+    }
+
+    if selected_status in valid_statuses:
+        tickets = tickets.filter(status=selected_status)
+    else:
+        selected_status = ''
+
     return render(
         request,
         'tickets/customer_my_tickets.html',
-        {'tickets': tickets}
+        {
+            'tickets': tickets,
+            'selected_status': selected_status,
+            'status_choices': Ticket.STATUS_CHOICES,
+        }
     )
 ```
 
 #### `templates/tickets/customer_my_tickets.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/templates/tickets/customer_my_tickets.html#L1-L79)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/templates/tickets/customer_my_tickets.html#L1-L124)
 
 ```html
 
@@ -105,6 +120,47 @@ def customer_my_tickets(request):
 </div>
 
 <div class="card shadow-sm">
+    
+<form method="get" class="row g-2 align-items-end mb-3">
+
+    <div class="col-12 col-sm-5 col-md-4">
+        <label for="customer-status-filter" class="form-label">
+            Filter by Status
+        </label>
+
+        <select name="status"
+                id="customer-status-filter"
+                class="form-select">
+
+            <option value="">All Statuses</option>
+
+            {% for value, label in status_choices %}
+                <option value="{{ value }}"
+                    {% if selected_status == value %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+
+        </select>
+    </div>
+
+    <div class="col-12 col-sm-auto">
+        <button type="submit" class="btn btn-primary">
+            Apply Filter
+        </button>
+    </div>
+
+    {% if selected_status %}
+        <div class="col-12 col-sm-auto">
+            <a href="{% url 'customer_my_tickets' %}"
+               class="btn btn-outline-secondary">
+                Show All
+            </a>
+        </div>
+    {% endif %}
+
+</form>
+
     <div class="card-body table-responsive">
 
         <table class="table table-striped align-middle">
@@ -156,7 +212,11 @@ def customer_my_tickets(request):
                 {% empty %}
                     <tr>
                         <td colspan="8" class="text-center">
-                            No complaints submitted yet.
+                           {% if selected_status %}
+                                No complaints found with this status.
+                            {% else %}
+                                No complaints submitted yet.
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}

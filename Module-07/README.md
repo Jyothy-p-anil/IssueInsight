@@ -1,6 +1,6 @@
 # Module 07 — My Tickets and Complaint Details
 
-**Status:** Partial
+**Status:** In progress — Step 64 My Tickets status filtering and privacy verified; 97 tests passed; final checklist review pending.
 
 How the reporter views ticket information and public conversations.
 
@@ -9,6 +9,7 @@ How the reporter views ticket information and public conversations.
 ## Chapters
 
 - [Private ticket details and public conversation](01-private-ticket-details.md)
+- [New code discovered from module-tagged commits](new-committed-changes.md)
 
 ## What the study chat should do
 

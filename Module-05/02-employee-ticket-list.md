@@ -20,11 +20,11 @@ Follow one real request or data change through the functions shown below. Notice
 
 ### Actual code from the committed project
 
-Source revision: [`a9a40f739d52`](https://github.com/Jyothy-p-anil/IssueInsight/commit/a9a40f739d52f68c0d05b37955d53ea1baacecf8) on `master`. The excerpts are current code, not invented historical versions.
+Source revision: [`4c179f64e177`](https://github.com/Jyothy-p-anil/IssueInsight/commit/4c179f64e177a16ce2f536aa4b8c025639566ab9) on `master`. The excerpts are current code, not invented historical versions.
 
 #### `tickets/views.py` → `employee_my_tickets`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/tickets/views.py#L111-L123)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/views.py#L112-L141)
 
 ```python
 @role_required('employee')
@@ -37,14 +37,31 @@ def employee_my_tickets(request):
         'category', 'department'
     ).order_by('-created_at')
 
-    return render(request, 'tickets/employee_my_tickets.html', {
-        'tickets': tickets
-    })
+    selected_status = request.GET.get('status', '')
+
+    valid_statuses = {
+        value for value, label in Ticket.STATUS_CHOICES
+    }
+
+    if selected_status in valid_statuses:
+        tickets = tickets.filter(status=selected_status)
+    else:
+        selected_status = ''
+
+    return render(
+        request,
+        'tickets/employee_my_tickets.html',
+        {
+            'tickets': tickets,
+            'selected_status': selected_status,
+            'status_choices': Ticket.STATUS_CHOICES,
+        }
+    )
 ```
 
 #### `templates/tickets/employee_my_tickets.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/templates/tickets/employee_my_tickets.html#L1-L71)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/templates/tickets/employee_my_tickets.html#L1-L116)
 
 ```html
 
@@ -64,6 +81,47 @@ def employee_my_tickets(request):
 </div>
 
 <div class="card shadow-sm">
+    
+<form method="get" class="row g-2 align-items-end mb-3">
+
+    <div class="col-12 col-sm-5 col-md-4">
+        <label for="employee-status-filter" class="form-label">
+            Filter by Status
+        </label>
+
+        <select name="status"
+                id="employee-status-filter"
+                class="form-select">
+
+            <option value="">All Statuses</option>
+
+            {% for value, label in status_choices %}
+                <option value="{{ value }}"
+                    {% if selected_status == value %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+
+        </select>
+    </div>
+
+    <div class="col-12 col-sm-auto">
+        <button type="submit" class="btn btn-primary">
+            Apply Filter
+        </button>
+    </div>
+
+    {% if selected_status %}
+        <div class="col-12 col-sm-auto">
+            <a href="{% url 'employee_my_tickets' %}"
+               class="btn btn-outline-secondary">
+                Show All
+            </a>
+        </div>
+    {% endif %}
+
+</form>
+
     <div class="card-body table-responsive">
 
         <table class="table table-striped align-middle">
@@ -107,7 +165,11 @@ def employee_my_tickets(request):
                 {% empty %}
                     <tr>
                         <td colspan="7" class="text-center">
-                            You have not submitted any complaints yet.
+                            {% if selected_status %}
+                                    No complaints found with this status.
+                                {% else %}
+                                    You have not submitted any complaints yet.
+                                {% endif %}
                         </td>
                     </tr>
                 {% endfor %}

@@ -8,7 +8,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `templates/base.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/templates/base.html#L1-L212)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/templates/base.html#L1-L212)
 
 ```html
 
@@ -171,7 +171,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `templates/tickets/support_ticket_detail.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/templates/tickets/support_ticket_detail.html#L1-L210)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/templates/tickets/support_ticket_detail.html#L1-L210)
 
 ```html
 
@@ -334,7 +334,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `templates/tickets/ticket_detail.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/templates/tickets/ticket_detail.html#L1-L195)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/templates/tickets/ticket_detail.html#L1-L176)
 
 ```html
 
@@ -344,14 +344,9 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 {% block content %}
 
-<div class="d-flex justify-content-between
-            align-items-start flex-wrap gap-3 mb-4">
-
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
     <div>
-        <p class="text-muted mb-1">
-            Ticket #{{ ticket.id }}
-        </p>
-
+        <p class="text-muted mb-1">Ticket #{{ ticket.id }}</p>
         <h2>{{ ticket.title }}</h2>
     </div>
 
@@ -390,73 +385,6 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
                 <p>{{ ticket.category|default:"Not specified" }}</p>
             </div>
 
-<div class="card shadow-sm mb-4">
-    <div class="card-header">
-        <strong>Conversation</strong>
-    </div>
-
-    <div class="card-body">
-
-        <p class="text-muted small">
-            First public support response:
-            {% if ticket.first_response_at %}
-                {{ ticket.first_response_at|date:"d M Y, h:i A" }}
-            {% else %}
-                Awaiting response
-            {% endif %}
-        </p>
-
-        {% for item in conversation %}
-            <div class="border rounded p-3 mb-3">
-                <div class="d-flex justify-content-between
-                            flex-wrap gap-2 mb-2">
-                    <strong>{{ item.author.username }}</strong>
-                    <small class="text-muted">
-                        {{ item.created_at|date:"d M Y, h:i A" }}
-                    </small>
-                </div>
-
-                <div>{{ item.body|linebreaksbr }}</div>
-            </div>
-        {% empty %}
-            <p class="text-muted">
-                No conversation messages yet.
-            </p>
-        {% endfor %}
-
-        {% if can_reply %}
-            <hr>
-
-            <h6>Send a Message</h6>
-
-            <form method="post"
-                  action="{% url 'add_reporter_message' ticket.id %}">
-                {% csrf_token %}
-
-                <div class="mb-3">
-                    {{ reply_form.body }}
-                </div>
-
-                <button type="submit"
-                        class="btn btn-primary">
-                    Send Message
-                </button>
-            </form>
-        {% else %}
-            <p class="text-muted mb-0">
-                Replies are unavailable for the current
-                ticket status.
-            </p>
-        {% endif %}
-
-    </div>
-</div>
-
-
-
-
-
-
             {% if ticket.division == 'employee' %}
                 <div class="col-md-6">
                     <strong>Floor / Location</strong>
@@ -479,17 +407,89 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
             <div class="col-md-6">
                 <strong>Department</strong>
-                <p>
-                    {{ ticket.department|default:"Pending routing" }}
-                </p>
+                <p>{{ ticket.department|default:"Pending routing" }}</p>
             </div>
 
             <div class="col-md-6">
                 <strong>Assigned Support Staff</strong>
                 <p>
+                    {% if ticket.assigned_to %}
+                        {{ ticket.assigned_to.username }}
+                    {% else %}
+                        Not assigned yet
+                    {% endif %}
+                </p>
+            </div>
+
+            <div class="col-md-6">
+                <strong>Submitted By</strong>
+                <p>{{ ticket.reporter.username }}</p>
+            </div>
+
+            <div class="col-md-6">
+                <strong>Submitted On</strong>
+                <p>{{ ticket.created_at|date:"d M Y, h:i A" }}</p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header">
+        <strong>Complaint Description</strong>
+    </div>
+    <div class="card-body">
+        {{ ticket.description|linebreaksbr }}
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header">
+        <strong>Conversation</strong>
+    </div>
+
+    <div class="card-body">
+        <p class="text-muted small">
+            First public support response:
+            {% if ticket.first_response_at %}
+                {{ ticket.first_response_at|date:"d M Y, h:i A" }}
+            {% else %}
+                Awaiting response
+            {% endif %}
+        </p>
+
+        {% for item in conversation %}
+            <div class="border rounded p-3 mb-3">
+                <div class="d-flex justify-content-between flex-wrap gap-2 mb-2">
+                    <strong>{{ item.author.username }}</strong>
+                    <small class="text-muted">
+                        {{ item.created_at|date:"d M Y, h:i A" }}
+                    </small>
+                </div>
+
+                <div>{{ item.body|linebreaksbr }}</div>
+            </div>
+        {% empty %}
+            <p class="text-muted">
+                No conversation messages yet.
+            </p>
+        {% endfor %}
+
+        {% if can_reply %}
+            <hr>
+            <h6>Send a Message</h6>
+
+            <form method="post"
+                  action="{% url 'add_reporter_message' ticket.id %}">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    {{ reply_form.body }}
+                </div>
 ```
 
-*Showing the first 150 of 195 lines. Open the source link for the remainder.*
+*Showing the first 150 of 176 lines. Open the source link for the remainder.*
 
 ### tickets/forms.py :: ManualRoutingForm
 
@@ -497,7 +497,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/forms.py` → `ManualRoutingForm`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/tickets/forms.py#L118-L127)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/forms.py#L118-L127)
 
 ```python
 class ManualRoutingForm(forms.Form):
@@ -518,7 +518,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/forms.py` → `SupportMessageForm`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/tickets/forms.py#L145-L159)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/forms.py#L145-L159)
 
 ```python
 class SupportMessageForm(TicketMessageForm):
@@ -544,7 +544,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/forms.py` → `TicketMessageForm`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/tickets/forms.py#L130-L142)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/forms.py#L130-L142)
 
 ```python
 class TicketMessageForm(forms.ModelForm):
@@ -568,7 +568,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/models.py` → `TicketMessage`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/tickets/models.py#L137-L161)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/models.py#L137-L161)
 
 ```python
 class TicketMessage(models.Model):
@@ -604,7 +604,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/views.py` → `add_reporter_message`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/tickets/views.py#L388-L421)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/views.py#L422-L455)
 
 ```python
 @role_required('employee', 'customer')
@@ -649,7 +649,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/views.py` → `admin_pending_routing`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/tickets/views.py#L483-L498)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/views.py#L517-L532)
 
 ```python
 @role_required('admin')
@@ -676,7 +676,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/views.py` → `admin_route_ticket`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/tickets/views.py#L501-L554)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/views.py#L535-L588)
 
 ```python
 @role_required('admin')

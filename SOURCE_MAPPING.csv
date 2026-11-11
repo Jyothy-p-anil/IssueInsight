@@ -100,6 +100,10 @@ module,module_title,chapter,file,symbol,source_status
 6,Customer Complaint Submission,Auto-discovered,tickets/tests.py,CustomerComplaintSubmissionTests,commit e92989cc689b
 7,My Tickets and Complaint Details,Private ticket details and public conversation,tickets/views.py,ticket_detail,present
 7,My Tickets and Complaint Details,Private ticket details and public conversation,templates/tickets/ticket_detail.html,,present
+7,My Tickets and Complaint Details,Auto-discovered,templates/tickets/customer_my_tickets.html,,commit 4c179f64e177
+7,My Tickets and Complaint Details,Auto-discovered,templates/tickets/employee_my_tickets.html,,commit 4c179f64e177
+7,My Tickets and Complaint Details,Auto-discovered,tickets/tests.py,ReporterTicketDetailTests,commit 312193a6518f
+7,My Tickets and Complaint Details,Auto-discovered,tickets/tests.py,ReporterTicketListFilterTests,commit 4c179f64e177
 8,Complaint Routing and Support Workflows,"Department queue, assigned tickets and claiming",tickets/views.py,support_department_queue,present
 8,Complaint Routing and Support Workflows,"Department queue, assigned tickets and claiming",tickets/views.py,support_assigned_tickets,present
 8,Complaint Routing and Support Workflows,"Department queue, assigned tickets and claiming",tickets/views.py,support_ticket_detail,present

@@ -20,11 +20,11 @@ Follow one real request or data change through the functions shown below. Notice
 
 ### Actual code from the committed project
 
-Source revision: [`a9a40f739d52`](https://github.com/Jyothy-p-anil/IssueInsight/commit/a9a40f739d52f68c0d05b37955d53ea1baacecf8) on `master`. The excerpts are current code, not invented historical versions.
+Source revision: [`4c179f64e177`](https://github.com/Jyothy-p-anil/IssueInsight/commit/4c179f64e177a16ce2f536aa4b8c025639566ab9) on `master`. The excerpts are current code, not invented historical versions.
 
 #### `accounts/tests.py` → `RolePermissionTests`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/accounts/tests.py#L12-L273)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/accounts/tests.py#L12-L273)
 
 ```python
 class RolePermissionTests(TestCase):
@@ -183,7 +183,7 @@ class RolePermissionTests(TestCase):
 
 #### `accounts/test_module3_security.py` → `Module3SecurityTests`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/accounts/test_module3_security.py#L17-L257)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/accounts/test_module3_security.py#L17-L257)
 
 ```python
 class Module3SecurityTests(TestCase):
@@ -342,7 +342,7 @@ class Module3SecurityTests(TestCase):
 
 #### `tickets/tests.py`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/tickets/tests.py#L1-L2040)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/tests.py#L1-L2504)
 
 ```python
 
@@ -350,8 +350,9 @@ from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 
-from .models import Department, Category, Ticket, Product
 from .forms import CustomerComplaintForm
+
+from .models import Department, Category, Ticket, Product, TicketMessage
 
 User = get_user_model()
 
@@ -494,10 +495,9 @@ class DepartmentManagementTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
         department.refresh_from_db()
-        self.assertEqual(
 ```
 
-*Showing the first 150 of 2040 lines. Open the source link for the remainder.*
+*Showing the first 150 of 2504 lines. Open the source link for the remainder.*
 
 **Verified references in this chapter:** 3/3.
 

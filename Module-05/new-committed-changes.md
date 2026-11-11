@@ -8,7 +8,7 @@ Introduced or changed in [8ddf5a4945](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/services/category_suggestions.py` → `get_suggestion_candidates`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/tickets/services/category_suggestions.py#L4-L17)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/services/category_suggestions.py#L4-L17)
 
 ```python
 def get_suggestion_candidates(division):
@@ -33,7 +33,7 @@ Introduced or changed in [8aa5fec6ff](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/tests.py` → `EmployeeComplaintSubmissionTests`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/tickets/tests.py#L1010-L1521)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/tests.py#L1011-L1522)
 
 ```python
 class EmployeeComplaintSubmissionTests(TestCase):
