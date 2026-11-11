@@ -105,6 +105,10 @@ class CustomerComplaintForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.fields['category'].queryset = (
+        get_suggestion_candidates('customer')
+        )
+
         for field in self.fields.values():
             if isinstance(field.widget, forms.Select):
                 field.widget.attrs['class'] = 'form-select'
