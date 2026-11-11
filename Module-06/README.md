@@ -1,6 +1,6 @@
 # Module 06 — Customer Complaint Submission
 
-**Status:** Substantial existing implementation; final module review pending
+**Status:** Complete — all 16 checklist requirements (87–102) verified in Step 62; 84 regression tests passed.
 
 A Customer reports software issues with product selection and complaint-category validation.
 
@@ -10,6 +10,7 @@ A Customer reports software issues with product selection and complaint-category
 
 - [Customer product and category validation](01-customer-form.md)
 - [Customer submission and My Tickets](02-customer-submission.md)
+- [New code discovered from module-tagged commits](new-committed-changes.md)
 
 ## What the study chat should do
 

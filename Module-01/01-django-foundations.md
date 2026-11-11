@@ -20,11 +20,11 @@ Follow one real request or data change through the functions shown below. Notice
 
 ### Actual code from the committed project
 
-Source revision: [`b5fac3135a3b`](https://github.com/Jyothy-p-anil/IssueInsight/commit/b5fac3135a3b92826b80454b47e933eda88b75f7) on `master`. The excerpts are current code, not invented historical versions.
+Source revision: [`a9a40f739d52`](https://github.com/Jyothy-p-anil/IssueInsight/commit/a9a40f739d52f68c0d05b37955d53ea1baacecf8) on `master`. The excerpts are current code, not invented historical versions.
 
 #### `manage.py`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/manage.py#L1-L22)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/manage.py#L1-L22)
 
 ```python
 #!/usr/bin/env python
@@ -53,7 +53,7 @@ if __name__ == '__main__':
 
 #### `accounts/apps.py`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/accounts/apps.py#L1-L5)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/accounts/apps.py#L1-L5)
 
 ```python
 from django.apps import AppConfig
@@ -65,7 +65,7 @@ class AccountsConfig(AppConfig):
 
 #### `tickets/apps.py`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/tickets/apps.py#L1-L5)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/tickets/apps.py#L1-L5)
 
 ```python
 from django.apps import AppConfig
@@ -77,7 +77,7 @@ class TicketsConfig(AppConfig):
 
 #### `config/settings.py` → `AUTH_USER_MODEL`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/config/settings.py#L155)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/config/settings.py#L155)
 
 ```python
 AUTH_USER_MODEL = 'accounts.User'
@@ -85,7 +85,7 @@ AUTH_USER_MODEL = 'accounts.User'
 
 #### `config/settings.py` → `INSTALLED_APPS`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/config/settings.py#L32-L41)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/config/settings.py#L32-L41)
 
 ```python
 INSTALLED_APPS = [

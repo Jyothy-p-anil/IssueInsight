@@ -20,11 +20,11 @@ Follow one real request or data change through the functions shown below. Notice
 
 ### Actual code from the committed project
 
-Source revision: [`b5fac3135a3b`](https://github.com/Jyothy-p-anil/IssueInsight/commit/b5fac3135a3b92826b80454b47e933eda88b75f7) on `master`. The excerpts are current code, not invented historical versions.
+Source revision: [`a9a40f739d52`](https://github.com/Jyothy-p-anil/IssueInsight/commit/a9a40f739d52f68c0d05b37955d53ea1baacecf8) on `master`. The excerpts are current code, not invented historical versions.
 
 #### `tickets/models.py` → `Product`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/tickets/models.py#L39-L49)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/tickets/models.py#L39-L49)
 
 ```python
 class Product(models.Model):
@@ -42,18 +42,16 @@ class Product(models.Model):
 
 #### `tickets/forms.py` → `CustomerComplaintForm`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/tickets/forms.py#L45-L112)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/tickets/forms.py#L45-L114)
 
 ```python
 class CustomerComplaintForm(forms.ModelForm):
 
     category = forms.ModelChoiceField(
-        queryset=Category.objects.filter(
-            division='customer'
-        ).order_by('name'),
+        queryset=Category.objects.none(),
         empty_label='Select an issue category',
         required=True
-    )
+    )   
 
     product = forms.ModelChoiceField(
         queryset=Product.objects.filter(
@@ -107,6 +105,10 @@ class CustomerComplaintForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.fields['category'].queryset = (
+        get_suggestion_candidates('customer')
+        )
 
         for field in self.fields.values():
             if isinstance(field.widget, forms.Select):

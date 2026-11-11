@@ -20,22 +20,20 @@ Follow one real request or data change through the functions shown below. Notice
 
 ### Actual code from the committed project
 
-Source revision: [`b5fac3135a3b`](https://github.com/Jyothy-p-anil/IssueInsight/commit/b5fac3135a3b92826b80454b47e933eda88b75f7) on `master`. The excerpts are current code, not invented historical versions.
+Source revision: [`a9a40f739d52`](https://github.com/Jyothy-p-anil/IssueInsight/commit/a9a40f739d52f68c0d05b37955d53ea1baacecf8) on `master`. The excerpts are current code, not invented historical versions.
 
 #### `tickets/forms.py` → `CustomerComplaintForm`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/tickets/forms.py#L45-L112)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/tickets/forms.py#L45-L114)
 
 ```python
 class CustomerComplaintForm(forms.ModelForm):
 
     category = forms.ModelChoiceField(
-        queryset=Category.objects.filter(
-            division='customer'
-        ).order_by('name'),
+        queryset=Category.objects.none(),
         empty_label='Select an issue category',
         required=True
-    )
+    )   
 
     product = forms.ModelChoiceField(
         queryset=Product.objects.filter(
@@ -90,6 +88,10 @@ class CustomerComplaintForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.fields['category'].queryset = (
+        get_suggestion_candidates('customer')
+        )
+
         for field in self.fields.values():
             if isinstance(field.widget, forms.Select):
                 field.widget.attrs['class'] = 'form-select'
@@ -99,7 +101,7 @@ class CustomerComplaintForm(forms.ModelForm):
 
 #### `templates/tickets/customer_complaint_form.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/templates/tickets/customer_complaint_form.html#L1-L59)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/templates/tickets/customer_complaint_form.html#L1-L59)
 
 ```html
 
@@ -168,6 +170,9 @@ class CustomerComplaintForm(forms.ModelForm):
 ### Related development commits
 
 - [67d4f75d55](https://github.com/Jyothy-p-anil/IssueInsight/commit/67d4f75d55377472f716645288ee2a2dc335e91d) — feat: implement customer complaint submission and my tickets (2026-11-08)
+- [a9a40f739d](https://github.com/Jyothy-p-anil/IssueInsight/commit/a9a40f739d52f68c0d05b37955d53ea1baacecf8) — test(module-6): finalize all customer submission requirements (2026-11-11)
+- [4f1b228d24](https://github.com/Jyothy-p-anil/IssueInsight/commit/4f1b228d24719cd224b02cd7035a9b0627fccff9) — test(module-6): verify customer submission security and routing (2026-11-11)
+- [e92989cc68](https://github.com/Jyothy-p-anil/IssueInsight/commit/e92989cc689bd476f15dd2dcddd18fdfe37825b8) — test(module-6): review customer complaint form and product selection (2026-11-11)
 
 *These links show historical changes. A commit may touch several modules; inspect its diff before attributing every edit to this chapter.*
 

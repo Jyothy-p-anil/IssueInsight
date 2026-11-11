@@ -20,11 +20,11 @@ Follow one real request or data change through the functions shown below. Notice
 
 ### Actual code from the committed project
 
-Source revision: [`b5fac3135a3b`](https://github.com/Jyothy-p-anil/IssueInsight/commit/b5fac3135a3b92826b80454b47e933eda88b75f7) on `master`. The excerpts are current code, not invented historical versions.
+Source revision: [`a9a40f739d52`](https://github.com/Jyothy-p-anil/IssueInsight/commit/a9a40f739d52f68c0d05b37955d53ea1baacecf8) on `master`. The excerpts are current code, not invented historical versions.
 
 #### `tickets/forms.py` → `ManualRoutingForm`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/tickets/forms.py#L116-L125)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/tickets/forms.py#L118-L127)
 
 ```python
 class ManualRoutingForm(forms.Form):
@@ -41,7 +41,7 @@ class ManualRoutingForm(forms.Form):
 
 #### `tickets/views.py` → `admin_pending_routing`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/tickets/views.py#L483-L498)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/tickets/views.py#L483-L498)
 
 ```python
 @role_required('admin')
@@ -64,7 +64,7 @@ def admin_pending_routing(request):
 
 #### `tickets/views.py` → `admin_route_ticket`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/tickets/views.py#L501-L554)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/tickets/views.py#L501-L554)
 
 ```python
 @role_required('admin')
@@ -125,7 +125,7 @@ def admin_route_ticket(request, ticket_id):
 
 #### `templates/tickets/admin_pending_routing.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/b5fac3135a3b92826b80454b47e933eda88b75f7/templates/tickets/admin_pending_routing.html#L1-L66)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/a9a40f739d52f68c0d05b37955d53ea1baacecf8/templates/tickets/admin_pending_routing.html#L1-L66)
 
 ```html
 
