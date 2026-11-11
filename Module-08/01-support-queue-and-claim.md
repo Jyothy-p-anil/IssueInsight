@@ -20,11 +20,11 @@ Follow one real request or data change through the functions shown below. Notice
 
 ### Actual code from the committed project
 
-Source revision: [`4c179f64e177`](https://github.com/Jyothy-p-anil/IssueInsight/commit/4c179f64e177a16ce2f536aa4b8c025639566ab9) on `master`. The excerpts are current code, not invented historical versions.
+Source revision: [`0f32b2d705eb`](https://github.com/Jyothy-p-anil/IssueInsight/commit/0f32b2d705ebbe252fa5f9726861428f5bb85900) on `master`. The excerpts are current code, not invented historical versions.
 
 #### `tickets/views.py` → `support_department_queue`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/views.py#L253-L282)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/0f32b2d705ebbe252fa5f9726861428f5bb85900/tickets/views.py#L326-L355)
 
 ```python
 @role_required('support')
@@ -61,7 +61,7 @@ def support_department_queue(request):
 
 #### `tickets/views.py` → `support_assigned_tickets`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/views.py#L287-L313)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/0f32b2d705ebbe252fa5f9726861428f5bb85900/tickets/views.py#L360-L386)
 
 ```python
 @role_required('support')
@@ -95,7 +95,7 @@ def support_assigned_tickets(request):
 
 #### `tickets/views.py` → `support_ticket_detail`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/views.py#L318-L365)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/0f32b2d705ebbe252fa5f9726861428f5bb85900/tickets/views.py#L391-L438)
 
 ```python
 @role_required('support')
@@ -150,7 +150,7 @@ def support_ticket_detail(request, ticket_id):
 
 #### `tickets/views.py` → `claim_support_ticket`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/views.py#L371-L417)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/0f32b2d705ebbe252fa5f9726861428f5bb85900/tickets/views.py#L444-L491)
 
 ```python
 @role_required('support')
@@ -174,7 +174,8 @@ def claim_support_ticket(request, ticket_id):
         status__in=['submitted', 'reopened']
     ).update(
         assigned_to=request.user,
-        status='in_progress'
+        status='in_progress',
+        updated_at=timezone.now()
     )
 
     if updated:
@@ -204,7 +205,7 @@ def claim_support_ticket(request, ticket_id):
 
 #### `templates/tickets/support_ticket_list.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/templates/tickets/support_ticket_list.html#L1-L66)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/0f32b2d705ebbe252fa5f9726861428f5bb85900/templates/tickets/support_ticket_list.html#L1-L66)
 
 ```html
 

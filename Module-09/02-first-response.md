@@ -20,11 +20,11 @@ Follow one real request or data change through the functions shown below. Notice
 
 ### Actual code from the committed project
 
-Source revision: [`4c179f64e177`](https://github.com/Jyothy-p-anil/IssueInsight/commit/4c179f64e177a16ce2f536aa4b8c025639566ab9) on `master`. The excerpts are current code, not invented historical versions.
+Source revision: [`0f32b2d705eb`](https://github.com/Jyothy-p-anil/IssueInsight/commit/0f32b2d705ebbe252fa5f9726861428f5bb85900) on `master`. The excerpts are current code, not invented historical versions.
 
 #### `tickets/models.py` → `Ticket`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/models.py#L53-L134)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/0f32b2d705ebbe252fa5f9726861428f5bb85900/tickets/models.py#L53-L138)
 
 ```python
 class Ticket(models.Model):
@@ -106,14 +106,18 @@ class Ticket(models.Model):
         null=True,
         blank=True
     )
-
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        null=True,
+        blank=True
+    )
     def __str__(self):
         return self.title
 ```
 
 #### `tickets/views.py` → `add_support_message`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/views.py#L460-L512)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/0f32b2d705ebbe252fa5f9726861428f5bb85900/tickets/views.py#L538-L594)
 
 ```python
 @role_required('support')
@@ -146,6 +150,10 @@ def add_support_message(request, ticket_id):
             message.ticket = ticket
             message.author = request.user
             message.save()
+            if not message.is_internal:
+                Ticket.objects.filter(pk=ticket.pk).update(
+                    updated_at=message.created_at
+                )
 
             # Record only the first PUBLIC Support Staff reply.
             if not message.is_internal:

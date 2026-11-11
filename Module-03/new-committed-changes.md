@@ -8,7 +8,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `templates/base.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/templates/base.html#L1-L212)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/0f32b2d705ebbe252fa5f9726861428f5bb85900/templates/base.html#L1-L212)
 
 ```html
 
@@ -171,7 +171,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `templates/tickets/support_ticket_detail.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/templates/tickets/support_ticket_detail.html#L1-L210)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/0f32b2d705ebbe252fa5f9726861428f5bb85900/templates/tickets/support_ticket_detail.html#L1-L210)
 
 ```html
 
@@ -334,7 +334,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `templates/tickets/ticket_detail.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/templates/tickets/ticket_detail.html#L1-L176)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/0f32b2d705ebbe252fa5f9726861428f5bb85900/templates/tickets/ticket_detail.html#L1-L191)
 
 ```html
 
@@ -347,7 +347,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
     <div>
         <p class="text-muted mb-1">Ticket #{{ ticket.id }}</p>
-        <h2>{{ ticket.title }}</h2>
+        <h2 class="text-break">{{ ticket.title }}</h2>
     </div>
 
     <div>
@@ -428,6 +428,16 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
             <div class="col-md-6">
                 <strong>Submitted On</strong>
+                <div class="col-md-6">
+                <strong>Latest Update</strong>
+                <p>
+                    {% if ticket.updated_at %}
+                        {{ ticket.updated_at|date:"d M Y, h:i A" }}
+                    {% else %}
+                        Not recorded for this older ticket
+                    {% endif %}
+                </p>
+            </div>
                 <p>{{ ticket.created_at|date:"d M Y, h:i A" }}</p>
             </div>
 
@@ -439,7 +449,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
     <div class="card-header">
         <strong>Complaint Description</strong>
     </div>
-    <div class="card-body">
+    <div class="card-body text-break">
         {{ ticket.description|linebreaksbr }}
     </div>
 </div>
@@ -458,7 +468,12 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
                 Awaiting response
             {% endif %}
         </p>
-
+            <div class="border-start border-2 ps-3 mb-3">
+                 <strong>Complaint Submitted</strong>
+                <div class="text-muted small">
+                    {{ ticket.created_at|date:"d M Y, h:i A" }}
+                </div>
+            </div>
         {% for item in conversation %}
             <div class="border rounded p-3 mb-3">
                 <div class="d-flex justify-content-between flex-wrap gap-2 mb-2">
@@ -472,24 +487,9 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
             </div>
         {% empty %}
             <p class="text-muted">
-                No conversation messages yet.
-            </p>
-        {% endfor %}
-
-        {% if can_reply %}
-            <hr>
-            <h6>Send a Message</h6>
-
-            <form method="post"
-                  action="{% url 'add_reporter_message' ticket.id %}">
-                {% csrf_token %}
-
-                <div class="mb-3">
-                    {{ reply_form.body }}
-                </div>
 ```
 
-*Showing the first 150 of 176 lines. Open the source link for the remainder.*
+*Showing the first 150 of 191 lines. Open the source link for the remainder.*
 
 ### tickets/forms.py :: ManualRoutingForm
 
@@ -497,7 +497,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/forms.py` → `ManualRoutingForm`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/forms.py#L118-L127)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/0f32b2d705ebbe252fa5f9726861428f5bb85900/tickets/forms.py#L118-L127)
 
 ```python
 class ManualRoutingForm(forms.Form):
@@ -518,7 +518,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/forms.py` → `SupportMessageForm`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/forms.py#L145-L159)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/0f32b2d705ebbe252fa5f9726861428f5bb85900/tickets/forms.py#L145-L159)
 
 ```python
 class SupportMessageForm(TicketMessageForm):
@@ -544,7 +544,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/forms.py` → `TicketMessageForm`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/forms.py#L130-L142)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/0f32b2d705ebbe252fa5f9726861428f5bb85900/tickets/forms.py#L130-L142)
 
 ```python
 class TicketMessageForm(forms.ModelForm):
@@ -568,7 +568,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/models.py` → `TicketMessage`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/models.py#L137-L161)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/0f32b2d705ebbe252fa5f9726861428f5bb85900/tickets/models.py#L141-L165)
 
 ```python
 class TicketMessage(models.Model):
@@ -604,7 +604,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/views.py` → `add_reporter_message`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/views.py#L422-L455)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/0f32b2d705ebbe252fa5f9726861428f5bb85900/tickets/views.py#L496-L533)
 
 ```python
 @role_required('employee', 'customer')
@@ -635,6 +635,10 @@ def add_reporter_message(request, ticket_id):
         message.is_internal = False
         message.save()
 
+        Ticket.objects.filter(pk=ticket.pk).update(
+            updated_at=message.created_at
+        )
+
         messages.success(request, 'Message sent successfully.')
 
     else:
@@ -649,7 +653,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/views.py` → `admin_pending_routing`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/views.py#L517-L532)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/0f32b2d705ebbe252fa5f9726861428f5bb85900/tickets/views.py#L599-L614)
 
 ```python
 @role_required('admin')
@@ -676,7 +680,7 @@ Introduced or changed in [6885ea66b8](https://github.com/Jyothy-p-anil/IssueInsi
 
 #### `tickets/views.py` → `admin_route_ticket`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/views.py#L535-L588)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/0f32b2d705ebbe252fa5f9726861428f5bb85900/tickets/views.py#L617-L671)
 
 ```python
 @role_required('admin')
@@ -704,7 +708,8 @@ def admin_route_ticket(request, ticket_id):
                 assigned_to__isnull=True,
                 status__in=['submitted', 'reopened']
             ).update(
-                department_id=department.pk
+                department_id=department.pk,
+                updated_at=timezone.now()
             )
 
             if updated:

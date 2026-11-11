@@ -20,11 +20,11 @@ Follow one real request or data change through the functions shown below. Notice
 
 ### Actual code from the committed project
 
-Source revision: [`4c179f64e177`](https://github.com/Jyothy-p-anil/IssueInsight/commit/4c179f64e177a16ce2f536aa4b8c025639566ab9) on `master`. The excerpts are current code, not invented historical versions.
+Source revision: [`0f32b2d705eb`](https://github.com/Jyothy-p-anil/IssueInsight/commit/0f32b2d705ebbe252fa5f9726861428f5bb85900) on `master`. The excerpts are current code, not invented historical versions.
 
 #### `tickets/views.py` → `ticket_detail`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/views.py#L214-L247)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/0f32b2d705ebbe252fa5f9726861428f5bb85900/tickets/views.py#L287-L320)
 
 ```python
 @role_required('employee', 'customer')
@@ -65,7 +65,7 @@ def ticket_detail(request, ticket_id):
 
 #### `tickets/views.py` → `support_ticket_detail`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/views.py#L318-L365)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/0f32b2d705ebbe252fa5f9726861428f5bb85900/tickets/views.py#L391-L438)
 
 ```python
 @role_required('support')
@@ -120,7 +120,7 @@ def support_ticket_detail(request, ticket_id):
 
 #### `tickets/views.py` → `claim_support_ticket`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/views.py#L371-L417)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/0f32b2d705ebbe252fa5f9726861428f5bb85900/tickets/views.py#L444-L491)
 
 ```python
 @role_required('support')
@@ -144,7 +144,8 @@ def claim_support_ticket(request, ticket_id):
         status__in=['submitted', 'reopened']
     ).update(
         assigned_to=request.user,
-        status='in_progress'
+        status='in_progress',
+        updated_at=timezone.now()
     )
 
     if updated:
@@ -174,7 +175,7 @@ def claim_support_ticket(request, ticket_id):
 
 #### `tickets/views.py` → `add_support_message`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/views.py#L460-L512)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/0f32b2d705ebbe252fa5f9726861428f5bb85900/tickets/views.py#L538-L594)
 
 ```python
 @role_required('support')
@@ -207,6 +208,10 @@ def add_support_message(request, ticket_id):
             message.ticket = ticket
             message.author = request.user
             message.save()
+            if not message.is_internal:
+                Ticket.objects.filter(pk=ticket.pk).update(
+                    updated_at=message.created_at
+                )
 
             # Record only the first PUBLIC Support Staff reply.
             if not message.is_internal:
@@ -234,7 +239,7 @@ def add_support_message(request, ticket_id):
 
 #### `accounts/views.py` → `manage_users`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/accounts/views.py#L75-L118)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/0f32b2d705ebbe252fa5f9726861428f5bb85900/accounts/views.py#L75-L118)
 
 ```python
 @role_required('admin')
@@ -285,7 +290,7 @@ def manage_users(request):
 
 #### `accounts/views.py` → `edit_user`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/accounts/views.py#L148-L177)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/0f32b2d705ebbe252fa5f9726861428f5bb85900/accounts/views.py#L148-L177)
 
 ```python
 @role_required('admin')
@@ -322,7 +327,7 @@ def edit_user(request, user_id):
 
 #### `accounts/views.py` → `change_user_status`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/accounts/views.py#L179-L216)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/0f32b2d705ebbe252fa5f9726861428f5bb85900/accounts/views.py#L179-L216)
 
 ```python
 @role_required('admin')

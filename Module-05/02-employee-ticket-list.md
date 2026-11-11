@@ -20,11 +20,11 @@ Follow one real request or data change through the functions shown below. Notice
 
 ### Actual code from the committed project
 
-Source revision: [`4c179f64e177`](https://github.com/Jyothy-p-anil/IssueInsight/commit/4c179f64e177a16ce2f536aa4b8c025639566ab9) on `master`. The excerpts are current code, not invented historical versions.
+Source revision: [`0f32b2d705eb`](https://github.com/Jyothy-p-anil/IssueInsight/commit/0f32b2d705ebbe252fa5f9726861428f5bb85900) on `master`. The excerpts are current code, not invented historical versions.
 
 #### `tickets/views.py` → `employee_my_tickets`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/tickets/views.py#L112-L141)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/0f32b2d705ebbe252fa5f9726861428f5bb85900/tickets/views.py#L196-L218)
 
 ```python
 @role_required('employee')
@@ -37,31 +37,24 @@ def employee_my_tickets(request):
         'category', 'department'
     ).order_by('-created_at')
 
-    selected_status = request.GET.get('status', '')
-
-    valid_statuses = {
-        value for value, label in Ticket.STATUS_CHOICES
-    }
-
-    if selected_status in valid_statuses:
-        tickets = tickets.filter(status=selected_status)
-    else:
-        selected_status = ''
+    tickets, filters = apply_reporter_ticket_filters(
+        request, tickets
+    )
 
     return render(
         request,
         'tickets/employee_my_tickets.html',
         {
             'tickets': tickets,
-            'selected_status': selected_status,
-            'status_choices': Ticket.STATUS_CHOICES,
+            'reset_url': 'employee_my_tickets',
+            **filters,
         }
     )
 ```
 
 #### `templates/tickets/employee_my_tickets.html`
 
-[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/4c179f64e177a16ce2f536aa4b8c025639566ab9/templates/tickets/employee_my_tickets.html#L1-L116)
+[Open the exact committed source](https://github.com/Jyothy-p-anil/IssueInsight/blob/0f32b2d705ebbe252fa5f9726861428f5bb85900/templates/tickets/employee_my_tickets.html#L1-L86)
 
 ```html
 
@@ -70,6 +63,10 @@ def employee_my_tickets(request):
 {% block title %}My Tickets | IssueInsight{% endblock %}
 
 {% block content %}
+
+
+{% include 'tickets/_reporter_ticket_filters.html' %}
+
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>My Tickets</h2>
@@ -80,48 +77,8 @@ def employee_my_tickets(request):
     </a>
 </div>
 
+
 <div class="card shadow-sm">
-    
-<form method="get" class="row g-2 align-items-end mb-3">
-
-    <div class="col-12 col-sm-5 col-md-4">
-        <label for="employee-status-filter" class="form-label">
-            Filter by Status
-        </label>
-
-        <select name="status"
-                id="employee-status-filter"
-                class="form-select">
-
-            <option value="">All Statuses</option>
-
-            {% for value, label in status_choices %}
-                <option value="{{ value }}"
-                    {% if selected_status == value %}selected{% endif %}>
-                    {{ label }}
-                </option>
-            {% endfor %}
-
-        </select>
-    </div>
-
-    <div class="col-12 col-sm-auto">
-        <button type="submit" class="btn btn-primary">
-            Apply Filter
-        </button>
-    </div>
-
-    {% if selected_status %}
-        <div class="col-12 col-sm-auto">
-            <a href="{% url 'employee_my_tickets' %}"
-               class="btn btn-outline-secondary">
-                Show All
-            </a>
-        </div>
-    {% endif %}
-
-</form>
-
     <div class="card-body table-responsive">
 
         <table class="table table-striped align-middle">
@@ -142,7 +99,9 @@ def employee_my_tickets(request):
                     
                     <tr>
                         <td>#{{ ticket.id }}</td>
-                        <td>{{ ticket.title }}</td>
+                        <td class="text-break" style="min-width: 180px; max-width: 360px;">
+                        {{ ticket.title }}
+                         </td>
                         <td>{{ ticket.category|default:"—" }}</td>
 
                         <td>
@@ -165,11 +124,15 @@ def employee_my_tickets(request):
                 {% empty %}
                     <tr>
                         <td colspan="7" class="text-center">
-                            {% if selected_status %}
+                                {% if filters_applied %}
+                                {% if selected_status and not search_query and not date_from and not date_to %}
                                     No complaints found with this status.
                                 {% else %}
-                                    You have not submitted any complaints yet.
+                                    No complaints match your search or filters.
                                 {% endif %}
+                            {% else %}
+                                You have not submitted any complaints yet.
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}
