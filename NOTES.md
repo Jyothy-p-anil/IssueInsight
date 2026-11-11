@@ -590,3 +590,15 @@ Rules:
   Submitted to In Progress, and prevention of
   duplicate claims. Added twelve automated tests.
   Module 8 remains in progress.
+
+
+    - Step 73 (Module 8): Verified existing Admin
+  manual routing for Employee and Customer complaints.
+  Tested Pending Routing eligibility, valid department
+  assignment, Support Staff queue visibility, invalid
+  department submissions, unauthorized access, forged
+  ticket fields and prevention of repeated routing.
+  Confirmed that routing preserves the complaint status
+  and does not automatically assign Support Staff.
+  Added thirteen automated tests.
+  Module 8 remains in progress.

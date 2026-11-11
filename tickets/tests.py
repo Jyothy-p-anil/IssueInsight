@@ -3574,3 +3574,524 @@ class SupportQueueAndClaimTests(TestCase):
             self.submitted_ticket.assigned_to
         )
 
+
+# Step 73: Module 8 - Admin manual routing security
+
+class AdminManualRoutingTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+
+        cls.facilities = Department.objects.create(
+            name='Module8 Routing Facilities'
+        )
+
+        cls.product_support = Department.objects.create(
+            name='Module8 Routing Product Support'
+        )
+
+        cls.admin = User.objects.create_user(
+            username='m8_route_admin',
+            password='TestPass123!',
+            role='admin'
+        )
+
+        cls.employee = User.objects.create_user(
+            username='m8_route_employee',
+            password='TestPass123!',
+            role='employee'
+        )
+
+        cls.customer = User.objects.create_user(
+            username='m8_route_customer',
+            password='TestPass123!',
+            role='customer'
+        )
+
+        cls.support = User.objects.create_user(
+            username='m8_route_support',
+            password='TestPass123!',
+            role='support',
+            department=cls.product_support
+        )
+
+        cls.employee_other = Category.objects.create(
+            name='Other',
+            division='employee',
+            department=None
+        )
+
+        cls.customer_other = Category.objects.create(
+            name='Other',
+            division='customer',
+            department=None
+        )
+
+        cls.legacy_category = Category.objects.create(
+            name='Module8 Legacy Unmapped',
+            division='employee',
+            department=None
+        )
+
+        cls.mapped_category = Category.objects.create(
+            name='Module8 Mapped Software',
+            division='customer',
+            department=cls.product_support
+        )
+
+        cls.employee_pending = Ticket.objects.create(
+            reporter=cls.employee,
+            division='employee',
+            title='Unknown workplace problem',
+            description='Admin must identify the team.',
+            category=cls.employee_other,
+            status='submitted'
+        )
+
+        cls.customer_pending = Ticket.objects.create(
+            reporter=cls.customer,
+            division='customer',
+            title='Unknown software issue',
+            description='The software is not responding.',
+            other_product_name='Custom Portal',
+            category=cls.customer_other,
+            status='submitted'
+        )
+
+        cls.reopened_pending = Ticket.objects.create(
+            reporter=cls.employee,
+            division='employee',
+            title='Unmapped reopened issue',
+            description='Needs manual routing.',
+            category=cls.legacy_category,
+            status='reopened'
+        )
+
+        cls.already_routed = Ticket.objects.create(
+            reporter=cls.customer,
+            division='customer',
+            title='Already assigned to department',
+            description='Department is already known.',
+            category=cls.mapped_category,
+            department=cls.product_support,
+            status='submitted'
+        )
+
+        cls.assigned_without_department = Ticket.objects.create(
+            reporter=cls.employee,
+            division='employee',
+            title='Legacy assigned complaint',
+            description='Existing assignment must be protected.',
+            category=cls.employee_other,
+            assigned_to=cls.support,
+            status='submitted'
+        )
+
+        cls.resolved_pending = Ticket.objects.create(
+            reporter=cls.employee,
+            division='employee',
+            title='Resolved legacy complaint',
+            description='Not eligible for routing.',
+            category=cls.legacy_category,
+            status='resolved'
+        )
+
+        cls.in_progress_pending = Ticket.objects.create(
+            reporter=cls.employee,
+            division='employee',
+            title='In progress legacy complaint',
+            description='Not eligible for routing.',
+            category=cls.legacy_category,
+            status='in_progress'
+        )
+
+    def test_guest_cannot_access_manual_routing(self):
+
+        list_response = self.client.get(
+            reverse('admin_pending_routing')
+        )
+
+        detail_response = self.client.get(
+            reverse(
+                'admin_route_ticket',
+                args=[self.employee_pending.pk]
+            )
+        )
+
+        self.assertEqual(list_response.status_code, 302)
+        self.assertEqual(detail_response.status_code, 302)
+
+    def test_non_admin_roles_cannot_route(self):
+
+        route_url = reverse(
+            'admin_route_ticket',
+            args=[self.employee_pending.pk]
+        )
+
+        for user in (
+            self.employee,
+            self.customer,
+            self.support
+        ):
+            with self.subTest(role=user.role):
+
+                self.client.force_login(user)
+
+                self.assertEqual(
+                    self.client.get(
+                        reverse('admin_pending_routing')
+                    ).status_code,
+                    302
+                )
+
+                self.assertEqual(
+                    self.client.get(route_url).status_code,
+                    302
+                )
+
+                self.assertEqual(
+                    self.client.post(
+                        route_url,
+                        {'department': self.facilities.pk}
+                    ).status_code,
+                    302
+                )
+
+        self.employee_pending.refresh_from_db()
+
+        self.assertIsNone(self.employee_pending.department)
+
+    def test_pending_list_contains_only_eligible_tickets(self):
+
+        self.client.force_login(self.admin)
+
+        response = self.client.get(
+            reverse('admin_pending_routing')
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(
+            set(response.context['tickets']),
+            {
+                self.employee_pending,
+                self.customer_pending,
+                self.reopened_pending
+            }
+        )
+
+    def test_admin_can_review_routing_form(self):
+
+        self.client.force_login(self.admin)
+
+        response = self.client.get(
+            reverse(
+                'admin_route_ticket',
+                args=[self.customer_pending.pk]
+            )
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertContains(response, 'Unknown software issue')
+        self.assertContains(response, 'm8_route_customer')
+        self.assertContains(response, 'Custom Portal')
+        self.assertContains(response, 'Assign Department')
+
+        form = response.context['form']
+
+        self.assertIn(
+            self.facilities,
+            form.fields['department'].queryset
+        )
+
+        self.assertIn(
+            self.product_support,
+            form.fields['department'].queryset
+        )
+
+    def test_get_request_does_not_route_ticket(self):
+
+        self.client.force_login(self.admin)
+
+        self.client.get(
+            reverse(
+                'admin_route_ticket',
+                args=[self.employee_pending.pk]
+            )
+        )
+
+        self.employee_pending.refresh_from_db()
+
+        self.assertIsNone(self.employee_pending.department)
+        self.assertEqual(
+            self.employee_pending.status,
+            'submitted'
+        )
+
+    def test_admin_routes_employee_ticket_to_department(self):
+
+        previous_update = timezone.now() - timedelta(days=1)
+
+        Ticket.objects.filter(
+            pk=self.employee_pending.pk
+        ).update(updated_at=previous_update)
+
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse(
+                'admin_route_ticket',
+                args=[self.employee_pending.pk]
+            ),
+            {'department': self.facilities.pk}
+        )
+
+        self.assertRedirects(
+            response,
+            reverse('admin_pending_routing'),
+            fetch_redirect_response=False
+        )
+
+        self.employee_pending.refresh_from_db()
+
+        self.assertEqual(
+            self.employee_pending.department,
+            self.facilities
+        )
+
+        self.assertEqual(
+            self.employee_pending.status,
+            'submitted'
+        )
+
+        self.assertIsNone(
+            self.employee_pending.assigned_to
+        )
+
+        self.assertGreater(
+            self.employee_pending.updated_at,
+            previous_update
+        )
+
+    def test_customer_routing_enters_support_queue(self):
+
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse(
+                'admin_route_ticket',
+                args=[self.customer_pending.pk]
+            ),
+            {'department': self.product_support.pk}
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        self.customer_pending.refresh_from_db()
+
+        self.assertEqual(
+            self.customer_pending.department,
+            self.product_support
+        )
+
+        self.assertEqual(
+            self.customer_pending.status,
+            'submitted'
+        )
+
+        self.client.force_login(self.support)
+
+        queue_response = self.client.get(
+            reverse('support_department_queue')
+        )
+
+        self.assertEqual(queue_response.status_code, 200)
+
+        self.assertIn(
+            self.customer_pending,
+            list(queue_response.context['tickets'])
+        )
+
+    def test_admin_can_route_eligible_reopened_ticket(self):
+
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse(
+                'admin_route_ticket',
+                args=[self.reopened_pending.pk]
+            ),
+            {'department': self.facilities.pk}
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        self.reopened_pending.refresh_from_db()
+
+        self.assertEqual(
+            self.reopened_pending.department,
+            self.facilities
+        )
+
+        self.assertEqual(
+            self.reopened_pending.status,
+            'reopened'
+        )
+
+    def test_missing_department_is_rejected(self):
+
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse(
+                'admin_route_ticket',
+                args=[self.employee_pending.pk]
+            ),
+            {'department': ''}
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertIn(
+            'department',
+            response.context['form'].errors
+        )
+
+        self.employee_pending.refresh_from_db()
+
+        self.assertIsNone(self.employee_pending.department)
+
+    def test_nonexistent_department_is_rejected(self):
+
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse(
+                'admin_route_ticket',
+                args=[self.employee_pending.pk]
+            ),
+            {'department': 999999}
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertIn(
+            'department',
+            response.context['form'].errors
+        )
+
+        self.employee_pending.refresh_from_db()
+
+        self.assertIsNone(self.employee_pending.department)
+
+    def test_forged_ticket_fields_are_ignored(self):
+
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse(
+                'admin_route_ticket',
+                args=[self.employee_pending.pk]
+            ),
+            {
+                'department': self.facilities.pk,
+                'reporter': self.customer.pk,
+                'division': 'customer',
+                'status': 'closed',
+                'assigned_to': self.support.pk,
+                'category': self.customer_other.pk,
+            }
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        self.employee_pending.refresh_from_db()
+
+        self.assertEqual(
+            self.employee_pending.reporter,
+            self.employee
+        )
+
+        self.assertEqual(
+            self.employee_pending.division,
+            'employee'
+        )
+
+        self.assertEqual(
+            self.employee_pending.status,
+            'submitted'
+        )
+
+        self.assertEqual(
+            self.employee_pending.category,
+            self.employee_other
+        )
+
+        self.assertEqual(
+            self.employee_pending.department,
+            self.facilities
+        )
+
+        self.assertIsNone(
+            self.employee_pending.assigned_to
+        )
+
+    def test_ineligible_tickets_cannot_be_routed(self):
+
+        self.client.force_login(self.admin)
+
+        for ticket in (
+            self.already_routed,
+            self.assigned_without_department,
+            self.resolved_pending,
+            self.in_progress_pending
+        ):
+            with self.subTest(ticket=ticket.pk):
+
+                url = reverse(
+                    'admin_route_ticket',
+                    args=[ticket.pk]
+                )
+
+                self.assertEqual(
+                    self.client.get(url).status_code,
+                    404
+                )
+
+                self.assertEqual(
+                    self.client.post(
+                        url,
+                        {'department': self.facilities.pk}
+                    ).status_code,
+                    404
+                )
+
+    def test_ticket_cannot_be_routed_twice(self):
+
+        self.client.force_login(self.admin)
+
+        url = reverse(
+            'admin_route_ticket',
+            args=[self.employee_pending.pk]
+        )
+
+        first_response = self.client.post(
+            url,
+            {'department': self.facilities.pk}
+        )
+
+        second_response = self.client.post(
+            url,
+            {'department': self.product_support.pk}
+        )
+
+        self.assertEqual(first_response.status_code, 302)
+        self.assertEqual(second_response.status_code, 404)
+
+        self.employee_pending.refresh_from_db()
+
+        self.assertEqual(
+            self.employee_pending.department,
+            self.facilities
+        )
