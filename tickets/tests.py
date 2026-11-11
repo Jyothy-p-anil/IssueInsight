@@ -2226,3 +2226,279 @@ class ReporterTicketDetailTests(TestCase):
             'Replies are unavailable'
         )
         self.assertNotContains(response, 'Send Message')
+
+class ReporterTicketListFilterTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+
+        cls.employee = User.objects.create_user(
+            username='module7_filter_employee',
+            password='TestPass123!',
+            role='employee'
+        )
+
+        cls.other_employee = User.objects.create_user(
+            username='module7_filter_other_employee',
+            password='TestPass123!',
+            role='employee'
+        )
+
+        cls.customer = User.objects.create_user(
+            username='module7_filter_customer',
+            password='TestPass123!',
+            role='customer'
+        )
+
+        cls.other_customer = User.objects.create_user(
+            username='module7_filter_other_customer',
+            password='TestPass123!',
+            role='customer'
+        )
+
+        cls.department = Department.objects.create(
+            name='Module7 Filter Support'
+        )
+
+        cls.employee_category = Category.objects.create(
+            name='Module7 Filter Facilities',
+            division='employee',
+            department=cls.department
+        )
+
+        cls.customer_category = Category.objects.create(
+            name='Module7 Filter Software',
+            division='customer',
+            department=cls.department
+        )
+
+        cls.employee_submitted = Ticket.objects.create(
+            reporter=cls.employee,
+            division='employee',
+            title='My submitted AC issue',
+            description='AC needs repair.',
+            category=cls.employee_category,
+            department=cls.department,
+            status='submitted'
+        )
+
+        cls.employee_resolved = Ticket.objects.create(
+            reporter=cls.employee,
+            division='employee',
+            title='My resolved lighting issue',
+            description='Lights have been repaired.',
+            category=cls.employee_category,
+            department=cls.department,
+            status='resolved'
+        )
+
+        cls.customer_submitted = Ticket.objects.create(
+            reporter=cls.customer,
+            division='customer',
+            title='My submitted software issue',
+            description='Software has an error.',
+            category=cls.customer_category,
+            department=cls.department,
+            status='submitted'
+        )
+
+        cls.customer_in_progress = Ticket.objects.create(
+            reporter=cls.customer,
+            division='customer',
+            title='My ongoing software issue',
+            description='Support is investigating.',
+            category=cls.customer_category,
+            department=cls.department,
+            status='in_progress'
+        )
+
+        Ticket.objects.create(
+            reporter=cls.other_employee,
+            division='employee',
+            title='Private employee resolved issue',
+            description='Private workplace complaint.',
+            category=cls.employee_category,
+            department=cls.department,
+            status='resolved'
+        )
+
+        Ticket.objects.create(
+            reporter=cls.other_customer,
+            division='customer',
+            title='Private customer ongoing issue',
+            description='Private software complaint.',
+            category=cls.customer_category,
+            department=cls.department,
+            status='in_progress'
+        )
+
+    def test_employee_filter_returns_only_own_matching_tickets(self):
+
+        self.client.force_login(self.employee)
+
+        response = self.client.get(
+            reverse('employee_my_tickets'),
+            {'status': 'resolved'}
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            list(response.context['tickets']),
+            [self.employee_resolved]
+        )
+        self.assertEqual(
+            response.context['selected_status'],
+            'resolved'
+        )
+        self.assertNotContains(
+            response, 'Private employee resolved issue'
+        )
+
+    def test_customer_filter_returns_only_own_matching_tickets(self):
+
+        self.client.force_login(self.customer)
+
+        response = self.client.get(
+            reverse('customer_my_tickets'),
+            {'status': 'in_progress'}
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            list(response.context['tickets']),
+            [self.customer_in_progress]
+        )
+        self.assertNotContains(
+            response, 'Private customer ongoing issue'
+        )
+
+    def test_unfiltered_lists_show_all_own_tickets(self):
+
+        scenarios = [
+            (
+                self.employee,
+                'employee_my_tickets',
+                {self.employee_submitted, self.employee_resolved}
+            ),
+            (
+                self.customer,
+                'customer_my_tickets',
+                {self.customer_submitted, self.customer_in_progress}
+            ),
+        ]
+
+        for user, url_name, expected in scenarios:
+            with self.subTest(role=user.role):
+
+                self.client.force_login(user)
+
+                response = self.client.get(reverse(url_name))
+
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(
+                    set(response.context['tickets']),
+                    expected
+                )
+
+    def test_invalid_status_filter_defaults_to_all(self):
+
+        for user, url_name in (
+            (self.employee, 'employee_my_tickets'),
+            (self.customer, 'customer_my_tickets'),
+        ):
+            with self.subTest(role=user.role):
+
+                self.client.force_login(user)
+
+                response = self.client.get(
+                    reverse(url_name),
+                    {'status': 'not-a-valid-status'}
+                )
+
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(
+                    response.context['selected_status'],
+                    ''
+                )
+                self.assertEqual(
+                    len(list(response.context['tickets'])),
+                    2
+                )
+
+    def test_empty_filtered_lists_show_correct_message(self):
+
+        for user, url_name in (
+            (self.employee, 'employee_my_tickets'),
+            (self.customer, 'customer_my_tickets'),
+        ):
+            with self.subTest(role=user.role):
+
+                self.client.force_login(user)
+
+                response = self.client.get(
+                    reverse(url_name),
+                    {'status': 'closed'}
+                )
+
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(
+                    list(response.context['tickets']),
+                    []
+                )
+                self.assertContains(
+                    response,
+                    'No complaints found with this status.'
+                )
+
+    def test_empty_unfiltered_lists_show_original_message(self):
+
+        new_employee = User.objects.create_user(
+            username='module7_no_ticket_employee',
+            password='TestPass123!',
+            role='employee'
+        )
+
+        new_customer = User.objects.create_user(
+            username='module7_no_ticket_customer',
+            password='TestPass123!',
+            role='customer'
+        )
+
+        for user, url_name, expected_message in (
+            (
+                new_employee,
+                'employee_my_tickets',
+                'You have not submitted any complaints yet.'
+            ),
+            (
+                new_customer,
+                'customer_my_tickets',
+                'No complaints submitted yet.'
+            ),
+        ):
+            with self.subTest(role=user.role):
+
+                self.client.force_login(user)
+
+                response = self.client.get(reverse(url_name))
+
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(response, expected_message)
+
+    def test_both_pages_display_status_filter_options(self):
+
+        for user, url_name in (
+            (self.employee, 'employee_my_tickets'),
+            (self.customer, 'customer_my_tickets'),
+        ):
+            with self.subTest(role=user.role):
+
+                self.client.force_login(user)
+
+                response = self.client.get(reverse(url_name))
+
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(response, 'name="status"')
+                self.assertContains(response, 'All Statuses')
+                self.assertContains(response, 'value="reopened"')
+                self.assertContains(response, 'table-responsive')

@@ -15,6 +15,47 @@
 </div>
 
 <div class="card shadow-sm">
+    
+<form method="get" class="row g-2 align-items-end mb-3">
+
+    <div class="col-12 col-sm-5 col-md-4">
+        <label for="employee-status-filter" class="form-label">
+            Filter by Status
+        </label>
+
+        <select name="status"
+                id="employee-status-filter"
+                class="form-select">
+
+            <option value="">All Statuses</option>
+
+            {% for value, label in status_choices %}
+                <option value="{{ value }}"
+                    {% if selected_status == value %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+
+        </select>
+    </div>
+
+    <div class="col-12 col-sm-auto">
+        <button type="submit" class="btn btn-primary">
+            Apply Filter
+        </button>
+    </div>
+
+    {% if selected_status %}
+        <div class="col-12 col-sm-auto">
+            <a href="{% url 'employee_my_tickets' %}"
+               class="btn btn-outline-secondary">
+                Show All
+            </a>
+        </div>
+    {% endif %}
+
+</form>
+
     <div class="card-body table-responsive">
 
         <table class="table table-striped align-middle">
@@ -58,7 +99,11 @@
                 {% empty %}
                     <tr>
                         <td colspan="7" class="text-center">
-                            You have not submitted any complaints yet.
+                            {% if selected_status %}
+                                    No complaints found with this status.
+                                {% else %}
+                                    You have not submitted any complaints yet.
+                                {% endif %}
                         </td>
                     </tr>
                 {% endfor %}

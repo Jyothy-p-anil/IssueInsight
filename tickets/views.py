@@ -108,6 +108,7 @@ def submit_employee_complaint(request):
     })
 
 
+
 @role_required('employee')
 def employee_my_tickets(request):
 
@@ -118,9 +119,26 @@ def employee_my_tickets(request):
         'category', 'department'
     ).order_by('-created_at')
 
-    return render(request, 'tickets/employee_my_tickets.html', {
-        'tickets': tickets
-    })
+    selected_status = request.GET.get('status', '')
+
+    valid_statuses = {
+        value for value, label in Ticket.STATUS_CHOICES
+    }
+
+    if selected_status in valid_statuses:
+        tickets = tickets.filter(status=selected_status)
+    else:
+        selected_status = ''
+
+    return render(
+        request,
+        'tickets/employee_my_tickets.html',
+        {
+            'tickets': tickets,
+            'selected_status': selected_status,
+            'status_choices': Ticket.STATUS_CHOICES,
+        }
+    )
 
 #function to submit customer complaint and view tickets
 
@@ -168,11 +186,27 @@ def customer_my_tickets(request):
         'category', 'department', 'product'
     ).order_by('-created_at')
 
+    selected_status = request.GET.get('status', '')
+
+    valid_statuses = {
+        value for value, label in Ticket.STATUS_CHOICES
+    }
+
+    if selected_status in valid_statuses:
+        tickets = tickets.filter(status=selected_status)
+    else:
+        selected_status = ''
+
     return render(
         request,
         'tickets/customer_my_tickets.html',
-        {'tickets': tickets}
+        {
+            'tickets': tickets,
+            'selected_status': selected_status,
+            'status_choices': Ticket.STATUS_CHOICES,
+        }
     )
+
 
 
 # Employee and Customer ticket detail page
