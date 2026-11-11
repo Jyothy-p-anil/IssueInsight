@@ -3,8 +3,9 @@ from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 
-from .models import Department, Category, Ticket, Product
 from .forms import CustomerComplaintForm
+
+from .models import Department, Category, Ticket, Product, TicketMessage
 
 User = get_user_model()
 
@@ -2038,3 +2039,190 @@ class CustomerComplaintSubmissionTests(TestCase):
 
         employee_response = self.client.get(url)
         self.assertEqual(employee_response.status_code, 302)
+
+
+class ReporterTicketDetailTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+
+        cls.employee = User.objects.create_user(
+            username='module7_employee',
+            password='TestPass123!',
+            role='employee'
+        )
+
+        cls.other_employee = User.objects.create_user(
+            username='module7_other_employee',
+            password='TestPass123!',
+            role='employee'
+        )
+
+        cls.customer = User.objects.create_user(
+            username='module7_customer',
+            password='TestPass123!',
+            role='customer'
+        )
+
+        cls.facilities = Department.objects.create(
+            name='Module7 Facilities'
+        )
+
+        cls.product_support = Department.objects.create(
+            name='Module7 Product Support'
+        )
+
+        cls.facilities_category = Category.objects.create(
+            name='Module7 Facilities Issues',
+            division='employee',
+            department=cls.facilities
+        )
+
+        cls.software_category = Category.objects.create(
+            name='Module7 Software Errors',
+            division='customer',
+            department=cls.product_support
+        )
+
+        cls.product = Product.objects.create(
+            name='Module7 PayrollPro'
+        )
+
+        cls.support = User.objects.create_user(
+            username='module7_support',
+            password='TestPass123!',
+            role='support',
+            department=cls.product_support
+        )
+
+        cls.employee_ticket = Ticket.objects.create(
+            reporter=cls.employee,
+            division='employee',
+            title='Office AC not working',
+            description='The office AC is not cooling.',
+            floor='Floor 2',
+            category=cls.facilities_category,
+            department=cls.facilities,
+            status='submitted'
+        )
+
+        cls.customer_ticket = Ticket.objects.create(
+            reporter=cls.customer,
+            division='customer',
+            title='Payroll software error',
+            description='The software displays an error.',
+            product=cls.product,
+            category=cls.software_category,
+            department=cls.product_support,
+            assigned_to=cls.support,
+            status='in_progress'
+        )
+
+    def test_employee_detail_displays_workplace_information(self):
+
+        self.client.force_login(self.employee)
+
+        response = self.client.get(
+            reverse('ticket_detail', args=[self.employee_ticket.pk])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Office AC not working')
+        self.assertContains(response, 'Floor 2')
+        self.assertContains(response, 'Module7 Facilities Issues')
+        self.assertContains(response, 'Module7 Facilities')
+        self.assertContains(response, 'Submitted On')
+        self.assertContains(response, 'The office AC is not cooling.')
+
+    def test_customer_detail_displays_product_and_assignment(self):
+
+        self.client.force_login(self.customer)
+
+        response = self.client.get(
+            reverse('ticket_detail', args=[self.customer_ticket.pk])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Module7 PayrollPro')
+        self.assertContains(response, 'Module7 Product Support')
+        self.assertContains(response, 'module7_support')
+        self.assertContains(response, 'In Progress')
+        self.assertContains(response, 'Send Message')
+
+    def test_unlisted_customer_product_is_displayed(self):
+
+        ticket = Ticket.objects.create(
+            reporter=self.customer,
+            division='customer',
+            title='Custom portal problem',
+            description='The portal is unavailable.',
+            other_product_name='Custom Client Portal',
+            category=self.software_category,
+            department=self.product_support
+        )
+
+        self.client.force_login(self.customer)
+
+        response = self.client.get(
+            reverse('ticket_detail', args=[ticket.pk])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Custom Client Portal')
+
+    def test_reporter_sees_public_messages_not_internal_notes(self):
+
+        TicketMessage.objects.create(
+            ticket=self.customer_ticket,
+            author=self.support,
+            body='Public support update',
+            is_internal=False
+        )
+
+        TicketMessage.objects.create(
+            ticket=self.customer_ticket,
+            author=self.support,
+            body='Private internal investigation',
+            is_internal=True
+        )
+
+        self.client.force_login(self.customer)
+
+        response = self.client.get(
+            reverse('ticket_detail', args=[self.customer_ticket.pk])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Public support update')
+        self.assertNotContains(
+            response,
+            'Private internal investigation'
+        )
+
+    def test_other_employee_cannot_open_private_ticket(self):
+
+        self.client.force_login(self.other_employee)
+
+        response = self.client.get(
+            reverse('ticket_detail', args=[self.employee_ticket.pk])
+        )
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_closed_ticket_does_not_show_reply_form(self):
+
+        self.customer_ticket.status = 'closed'
+        self.customer_ticket.save(update_fields=['status'])
+
+        self.client.force_login(self.customer)
+
+        response = self.client.get(
+            reverse('ticket_detail', args=[self.customer_ticket.pk])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            'Replies are unavailable'
+        )
+        self.assertNotContains(response, 'Send Message')
