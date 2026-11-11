@@ -1,0 +1,75 @@
+
+
+
+<form method="get" class="row g-2 align-items-end mb-3">
+
+    <div class="col-12 col-md-4">
+        <label for="ticket-search" class="form-label">
+            Search Complaints
+        </label>
+        <input type="search"
+               id="ticket-search"
+               name="q"
+               value="{{ search_query }}"
+               class="form-control"
+               placeholder="Title or ticket #">
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-2">
+        <label for="date-from" class="form-label">
+            From Date
+        </label>
+        <input type="date"
+               id="date-from"
+               name="date_from"
+               value="{{ date_from }}"
+               class="form-control">
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-2">
+        <label for="date-to" class="form-label">
+            To Date
+        </label>
+        <input type="date"
+               id="date-to"
+               name="date_to"
+               value="{{ date_to }}"
+               class="form-control">
+    </div>
+
+    <div class="col-12 col-md-3">
+        <label for="ticket-status" class="form-label">
+            Status
+        </label>
+
+        <select name="status"
+                id="ticket-status"
+                class="form-select">
+
+            <option value="">All Statuses</option>
+
+            {% for value, label in status_choices %}
+                <option value="{{ value }}"
+                    {% if selected_status == value %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="col-12 col-md-auto">
+        <button type="submit" class="btn btn-primary">
+            Apply Filter
+        </button>
+    </div>
+
+    {% if filters_applied %}
+        <div class="col-12 col-md-auto">
+            <a href="{% url reset_url %}"
+               class="btn btn-outline-secondary">
+                Show All
+            </a>
+        </div>
+    {% endif %}
+
+</form>

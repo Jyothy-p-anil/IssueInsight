@@ -2,6 +2,9 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from accounts.decorators import role_required
 
+from django.utils import timezone
+from datetime import date
+from django.db.models import Q
 
 
 from django.contrib import messages
@@ -106,7 +109,88 @@ def submit_employee_complaint(request):
     return render(request, 'tickets/employee_complaint_form.html', {
         'form': form
     })
+# Step 65: Shared search and filters for reporter ticket lists
 
+def apply_reporter_ticket_filters(request, tickets):
+
+    search_query = request.GET.get('q', '').strip()
+    selected_status = request.GET.get('status', '')
+
+    valid_statuses = {
+        value for value, label in Ticket.STATUS_CHOICES
+    }
+
+    if selected_status not in valid_statuses:
+        selected_status = ''
+
+    def valid_date(value):
+        try:
+            parsed = date.fromisoformat(value)
+            if parsed.isoformat() == value:
+                return parsed
+        except (TypeError, ValueError):
+            pass
+        return None
+
+    from_date = valid_date(request.GET.get('date_from', ''))
+    to_date = valid_date(request.GET.get('date_to', ''))
+
+    if search_query:
+        candidate = (
+            search_query[1:]
+            if search_query.startswith('#')
+            else search_query
+        )
+
+        if (
+            candidate.isascii()
+            and candidate.isdigit()
+            and len(candidate) <= 18
+        ):
+            tickets = tickets.filter(
+                Q(title__icontains=search_query)
+                | Q(pk=int(candidate))
+            )
+        else:
+            tickets = tickets.filter(
+                title__icontains=search_query
+            )
+
+    if selected_status:
+        tickets = tickets.filter(status=selected_status)
+
+    if from_date:
+        tickets = tickets.filter(
+            created_at__date__gte=from_date
+        )
+
+    if to_date:
+        tickets = tickets.filter(
+            created_at__date__lte=to_date
+        )
+
+    date_from_value = (
+        from_date.isoformat() if from_date else ''
+    )
+    date_to_value = (
+        to_date.isoformat() if to_date else ''
+    )
+
+    filters = {
+        'search_query': search_query,
+        'selected_status': selected_status,
+        'status_choices': Ticket.STATUS_CHOICES,
+        'date_from': date_from_value,
+        'date_to': date_to_value,
+        'filters_applied': bool(
+            search_query
+            or selected_status
+            or from_date
+            or to_date
+        ),
+    }
+
+    return tickets, filters
 
 
 @role_required('employee')
@@ -119,26 +203,20 @@ def employee_my_tickets(request):
         'category', 'department'
     ).order_by('-created_at')
 
-    selected_status = request.GET.get('status', '')
-
-    valid_statuses = {
-        value for value, label in Ticket.STATUS_CHOICES
-    }
-
-    if selected_status in valid_statuses:
-        tickets = tickets.filter(status=selected_status)
-    else:
-        selected_status = ''
+    tickets, filters = apply_reporter_ticket_filters(
+        request, tickets
+    )
 
     return render(
         request,
         'tickets/employee_my_tickets.html',
         {
             'tickets': tickets,
-            'selected_status': selected_status,
-            'status_choices': Ticket.STATUS_CHOICES,
+            'reset_url': 'employee_my_tickets',
+            **filters,
         }
     )
+
 
 #function to submit customer complaint and view tickets
 
@@ -176,6 +254,7 @@ def submit_customer_complaint(request):
     )
 
 
+
 @role_required('customer')
 def customer_my_tickets(request):
 
@@ -186,26 +265,20 @@ def customer_my_tickets(request):
         'category', 'department', 'product'
     ).order_by('-created_at')
 
-    selected_status = request.GET.get('status', '')
-
-    valid_statuses = {
-        value for value, label in Ticket.STATUS_CHOICES
-    }
-
-    if selected_status in valid_statuses:
-        tickets = tickets.filter(status=selected_status)
-    else:
-        selected_status = ''
+    tickets, filters = apply_reporter_ticket_filters(
+        request, tickets
+    )
 
     return render(
         request,
         'tickets/customer_my_tickets.html',
         {
             'tickets': tickets,
-            'selected_status': selected_status,
-            'status_choices': Ticket.STATUS_CHOICES,
+            'reset_url': 'customer_my_tickets',
+            **filters,
         }
     )
+
 
 
 
@@ -389,7 +462,8 @@ def claim_support_ticket(request, ticket_id):
         status__in=['submitted', 'reopened']
     ).update(
         assigned_to=request.user,
-        status='in_progress'
+        status='in_progress',
+        updated_at=timezone.now()
     )
 
     if updated:
@@ -447,6 +521,10 @@ def add_reporter_message(request, ticket_id):
         message.is_internal = False
         message.save()
 
+        Ticket.objects.filter(pk=ticket.pk).update(
+            updated_at=message.created_at
+        )
+
         messages.success(request, 'Message sent successfully.')
 
     else:
@@ -487,6 +565,10 @@ def add_support_message(request, ticket_id):
             message.ticket = ticket
             message.author = request.user
             message.save()
+            if not message.is_internal:
+                Ticket.objects.filter(pk=ticket.pk).update(
+                    updated_at=message.created_at
+                )
 
             # Record only the first PUBLIC Support Staff reply.
             if not message.is_internal:
@@ -557,7 +639,8 @@ def admin_route_ticket(request, ticket_id):
                 assigned_to__isnull=True,
                 status__in=['submitted', 'reopened']
             ).update(
-                department_id=department.pk
+                department_id=department.pk,
+                updated_at=timezone.now()
             )
 
             if updated:

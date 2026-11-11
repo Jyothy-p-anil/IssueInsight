@@ -12,6 +12,11 @@ User = get_user_model()
 
 from .services.category_suggestions import get_suggestion_candidates
 
+
+
+from datetime import datetime, timedelta, timezone as dt_timezone
+from django.utils import timezone
+
 class DepartmentManagementTests(TestCase):
 
     @classmethod
@@ -2502,3 +2507,416 @@ class ReporterTicketListFilterTests(TestCase):
                 self.assertContains(response, 'All Statuses')
                 self.assertContains(response, 'value="reopened"')
                 self.assertContains(response, 'table-responsive')
+
+class ReporterTicketSearchDateUpdateTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+
+        cls.employee = User.objects.create_user(
+            username='module7_search_employee',
+            password='TestPass123!',
+            role='employee'
+        )
+
+        cls.other_employee = User.objects.create_user(
+            username='module7_search_other_employee',
+            password='TestPass123!',
+            role='employee'
+        )
+
+        cls.customer = User.objects.create_user(
+            username='module7_search_customer',
+            password='TestPass123!',
+            role='customer'
+        )
+
+        cls.support = User.objects.create_user(
+            username='module7_search_support',
+            password='TestPass123!',
+            role='support'
+        )
+
+        cls.department = Department.objects.create(
+            name='Module7 Search Support'
+        )
+
+        cls.support.department = cls.department
+        cls.support.save(update_fields=['department'])
+
+        cls.employee_category = Category.objects.create(
+            name='Module7 Printer Issues',
+            division='employee',
+            department=cls.department
+        )
+
+        cls.customer_category = Category.objects.create(
+            name='Module7 Report Issues',
+            division='customer',
+            department=cls.department
+        )
+
+        cls.employee_old = Ticket.objects.create(
+            reporter=cls.employee,
+            division='employee',
+            title='Printer unavailable',
+            description='The office printer is unavailable.',
+            category=cls.employee_category,
+            department=cls.department,
+            status='submitted'
+        )
+
+        cls.employee_recent = Ticket.objects.create(
+            reporter=cls.employee,
+            division='employee',
+            title='Laptop freezing',
+            description='The assigned laptop freezes.',
+            category=cls.employee_category,
+            department=cls.department,
+            status='in_progress'
+        )
+
+        cls.customer_old = Ticket.objects.create(
+            reporter=cls.customer,
+            division='customer',
+            title='Invoice download fails',
+            description='Invoices cannot be downloaded.',
+            category=cls.customer_category,
+            department=cls.department,
+            status='submitted'
+        )
+
+        cls.customer_recent = Ticket.objects.create(
+            reporter=cls.customer,
+            division='customer',
+            title='Report export error',
+            description='Exporting a report fails.',
+            category=cls.customer_category,
+            department=cls.department,
+            status='in_progress'
+        )
+
+        cls.private_ticket = Ticket.objects.create(
+            reporter=cls.other_employee,
+            division='employee',
+            title='Private Printer issue',
+            description='This is not the first employee complaint.',
+            category=cls.employee_category,
+            department=cls.department,
+            status='submitted'
+        )
+
+        for ticket, day in (
+            (cls.employee_old, 1),
+            (cls.employee_recent, 3),
+            (cls.customer_old, 2),
+            (cls.customer_recent, 4),
+            (cls.private_ticket, 1),
+        ):
+            Ticket.objects.filter(pk=ticket.pk).update(
+                created_at=datetime(
+                    2025, 6, day, 12, 0,
+                    tzinfo=dt_timezone.utc
+                )
+            )
+
+    def test_employee_title_search_preserves_privacy(self):
+
+        self.client.force_login(self.employee)
+
+        response = self.client.get(
+            reverse('employee_my_tickets'),
+            {'q': 'Printer'}
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(
+            list(response.context['tickets']),
+            [self.employee_old]
+        )
+
+        self.assertNotContains(
+            response,
+            'Private Printer issue'
+        )
+
+    def test_customer_can_search_by_ticket_reference(self):
+
+        self.client.force_login(self.customer)
+
+        response = self.client.get(
+            reverse('customer_my_tickets'),
+            {'q': f'#{self.customer_recent.pk}'}
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(
+            list(response.context['tickets']),
+            [self.customer_recent]
+        )
+
+    def test_date_filter_is_inclusive(self):
+
+        self.client.force_login(self.customer)
+
+        response = self.client.get(
+            reverse('customer_my_tickets'),
+            {
+                'date_from': '2025-06-02',
+                'date_to': '2025-06-02'
+            }
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(
+            list(response.context['tickets']),
+            [self.customer_old]
+        )
+
+    def test_search_status_and_date_work_together(self):
+
+        self.client.force_login(self.employee)
+
+        response = self.client.get(
+            reverse('employee_my_tickets'),
+            {
+                'q': 'Printer',
+                'status': 'submitted',
+                'date_from': '2025-06-01',
+                'date_to': '2025-06-01',
+            }
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(
+            list(response.context['tickets']),
+            [self.employee_old]
+        )
+
+    def test_invalid_dates_do_not_crash_or_filter(self):
+
+        self.client.force_login(self.employee)
+
+        response = self.client.get(
+            reverse('employee_my_tickets'),
+            {
+                'date_from': '2025-99-99',
+                'date_to': 'invalid'
+            }
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(
+            len(list(response.context['tickets'])),
+            2
+        )
+
+        self.assertEqual(
+            response.context['date_from'],
+            ''
+        )
+
+        self.assertEqual(
+            response.context['date_to'],
+            ''
+        )
+
+    def test_search_no_results_has_helpful_message(self):
+
+        self.client.force_login(self.customer)
+
+        response = self.client.get(
+            reverse('customer_my_tickets'),
+            {'q': 'NonexistentComplaintXYZ'}
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(
+            list(response.context['tickets']),
+            []
+        )
+
+        self.assertContains(
+            response,
+            'No complaints match your search or filters.'
+        )
+
+    def test_claiming_ticket_updates_latest_timestamp(self):
+
+        previous_update = timezone.now() - timedelta(days=1)
+
+        Ticket.objects.filter(
+            pk=self.employee_old.pk
+        ).update(updated_at=previous_update)
+
+        self.client.force_login(self.support)
+
+        response = self.client.post(
+            reverse(
+                'claim_support_ticket',
+                args=[self.employee_old.pk]
+            )
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        ticket = Ticket.objects.get(pk=self.employee_old.pk)
+
+        self.assertEqual(ticket.status, 'in_progress')
+        self.assertEqual(ticket.assigned_to, self.support)
+        self.assertGreater(ticket.updated_at, previous_update)
+
+    def test_public_message_updates_timestamp_and_history(self):
+
+        previous_update = timezone.now() - timedelta(days=1)
+
+        Ticket.objects.filter(
+            pk=self.customer_old.pk
+        ).update(updated_at=previous_update)
+
+        self.client.force_login(self.customer)
+
+        response = self.client.post(
+            reverse(
+                'add_reporter_message',
+                args=[self.customer_old.pk]
+            ),
+            {'body': 'Public message for timeline'}
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        ticket = Ticket.objects.get(pk=self.customer_old.pk)
+
+        message = TicketMessage.objects.get(
+            ticket=ticket,
+            body='Public message for timeline'
+        )
+
+        self.assertEqual(
+            ticket.updated_at,
+            message.created_at
+        )
+
+        detail_response = self.client.get(
+            reverse('ticket_detail', args=[ticket.pk])
+        )
+
+        self.assertContains(detail_response, 'Latest Update')
+        self.assertContains(detail_response, 'Complaint Submitted')
+        self.assertContains(
+            detail_response,
+            'Public message for timeline'
+        )
+
+    def test_manual_routing_updates_latest_timestamp(self):
+
+        other_category = Category.objects.create(
+            name='Other',
+            division='customer',
+            department=None
+        )
+
+        pending_ticket = Ticket.objects.create(
+            reporter=self.customer,
+            division='customer',
+            title='Unmapped customer complaint',
+            description='Admin routing is required.',
+            category=other_category,
+            status='submitted'
+        )
+
+        previous_update = timezone.now() - timedelta(days=1)
+
+        Ticket.objects.filter(
+            pk=pending_ticket.pk
+        ).update(updated_at=previous_update)
+
+        admin = User.objects.create_user(
+            username='module7_search_admin',
+            password='TestPass123!',
+            role='admin'
+        )
+
+        self.client.force_login(admin)
+
+        response = self.client.post(
+            reverse(
+                'admin_route_ticket',
+                args=[pending_ticket.pk]
+            ),
+            {'department': self.department.pk}
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        pending_ticket.refresh_from_db()
+
+        self.assertEqual(
+            pending_ticket.department,
+            self.department
+        )
+
+        self.assertGreater(
+            pending_ticket.updated_at,
+            previous_update
+        )
+
+    def test_long_text_uses_responsive_layout(self):
+
+        long_title = 'LaptopIssue' * 15
+        long_description = 'DetailedProblem' * 40
+
+        Ticket.objects.filter(
+            pk=self.employee_old.pk
+        ).update(
+            title=long_title,
+            description=long_description
+        )
+
+        self.client.force_login(self.employee)
+
+        list_response = self.client.get(
+            reverse('employee_my_tickets')
+        )
+
+        self.assertEqual(list_response.status_code, 200)
+        self.assertContains(list_response, long_title)
+        self.assertContains(list_response, 'table-responsive')
+        self.assertContains(list_response, 'text-break')
+
+        detail_response = self.client.get(
+            reverse(
+                'ticket_detail',
+                args=[self.employee_old.pk]
+            )
+        )
+
+        self.assertEqual(detail_response.status_code, 200)
+        self.assertContains(detail_response, long_description)
+        self.assertContains(detail_response, 'text-break')
+
+    def test_both_roles_have_search_and_date_controls(self):
+
+        for user, url_name in (
+            (self.employee, 'employee_my_tickets'),
+            (self.customer, 'customer_my_tickets'),
+        ):
+            with self.subTest(role=user.role):
+
+                self.client.force_login(user)
+
+                response = self.client.get(reverse(url_name))
+
+                self.assertEqual(response.status_code, 200)
+
+                self.assertContains(response, 'name="q"')
+                self.assertContains(response, 'name="date_from"')
+                self.assertContains(response, 'name="date_to"')
+                self.assertContains(response, 'name="status"')
