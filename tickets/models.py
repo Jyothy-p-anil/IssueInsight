@@ -249,3 +249,45 @@ class TicketActivity(models.Model):
 
     def __str__(self):
         return f'{self.action} - Ticket #{self.ticket_id}'
+
+
+class Notification(models.Model):
+
+    recipient = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='notifications'
+    )
+
+    ticket = models.ForeignKey(
+        Ticket,
+        on_delete=models.CASCADE,
+        related_name='notifications'
+    )
+
+    message = models.CharField(max_length=255)
+
+    event_key = models.CharField(
+    max_length=150,
+    null=True,
+    blank=True
+)
+
+    is_read = models.BooleanField(default=False)
+
+    created_at = models.DateTimeField(
+        default=timezone.now,
+        editable=False
+    )
+
+    class Meta:
+        ordering = ['-created_at', '-id']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['recipient', 'event_key'],
+                name='unique_notification_per_event'
+            )
+        ]
+
+    def __str__(self):
+        return f'Notification for {self.recipient.username}'

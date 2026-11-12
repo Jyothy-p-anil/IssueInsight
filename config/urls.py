@@ -296,5 +296,25 @@ path(
 ),
 
 
+path(
+    'notifications/',
+    views.notification_list,
+    name='notification_list'
+),
+
+
+path(
+    'notifications/<int:notification_id>/read/',
+    views.mark_notification_read,
+    name='mark_notification_read'
+),
+
+path(
+    'support/tickets/<int:ticket_id>/escalate/',
+    views.escalate_support_ticket,
+    name='escalate_support_ticket'
+),
+
+
 
 ]

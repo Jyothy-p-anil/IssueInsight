@@ -5810,3 +5810,54 @@ class TicketDurationTests(TestCase):
             ticket.resolution_duration,
             original_resolution
         )
+
+from django.test import TestCase
+from django.urls import reverse
+from django.contrib.auth import get_user_model
+from tickets.models import Ticket, Notification
+
+
+class NotificationSecurityTests(TestCase):
+
+    def test_user_cannot_mark_another_users_notification_read(self):
+        User = get_user_model()
+
+        owner = User.objects.create_user(
+            username='notification_owner',
+            password='TestPass123!',
+            role='employee'
+        )
+
+        other_user = User.objects.create_user(
+            username='notification_other',
+            password='TestPass123!',
+            role='customer'
+        )
+
+        ticket = Ticket.objects.create(
+            reporter=owner,
+            division='employee',
+            status='submitted',
+            title='Notification security test',
+        )
+
+        notification = Notification.objects.create(
+            recipient=owner,
+            ticket=ticket,
+            message='Private notification',
+            event_key='security_test_1'
+        )
+
+        self.client.force_login(other_user)
+
+        response = self.client.post(
+            reverse(
+                'mark_notification_read',
+                args=[notification.pk]
+            )
+        )
+
+        self.assertEqual(response.status_code, 404)
+
+        notification.refresh_from_db()
+        self.assertFalse(notification.is_read)

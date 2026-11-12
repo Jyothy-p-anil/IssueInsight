@@ -74,9 +74,17 @@
                     </div>
                 {% endif %}
 
-                {% if activity.description %}
+                
+                {% if activity.action == 'escalated' %}
+                    <div class="alert alert-warning py-2 mt-2 mb-2">
+                        <strong>Ticket Escalation Update:</strong>
+                        Your complaint has been forwarded to the
+                        appropriate technical team for further review.
+                    </div>
+                {% elif activity.description %}
                     <div>{{ activity.description }}</div>
                 {% endif %}
+
 
                 <div class="text-muted small">
                     {% if activity.actor %}
@@ -184,12 +192,20 @@
             </div>
         {% for item in conversation %}
             <div class="border rounded p-3 mb-3">
-                <div class="d-flex justify-content-between flex-wrap gap-2 mb-2">
-                    <strong>{{ item.author.username }}</strong>
-                    <small class="text-muted">
-                        {{ item.created_at|date:"d M Y, h:i A" }}
-                    </small>
-                </div>
+
+        <div class="d-flex justify-content-between flex-wrap gap-2 mb-2">
+            <div>
+                <strong>{{ item.author.username }}</strong>
+                <span class="text-muted small ms-2">
+                    ({{ item.author.get_role_display }})
+                </span>
+            </div>
+
+            <small class="text-muted">
+                {{ item.created_at|date:"d M Y, h:i A" }}
+            </small>
+        </div>
+
 
                 <div>{{ item.body|linebreaksbr }}</div>
             </div>

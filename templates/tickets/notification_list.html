@@ -1,0 +1,66 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Notifications | IssueInsight{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">Notifications</h2>
+
+{% if unread_count %}
+    <p class="text-primary">
+        {{ unread_count }} unread notification(s)
+    </p>
+{% endif %}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+
+        {% for notification in notifications %}
+
+            <div class="border-bottom py-3">
+                <p class="mb-1">
+                    {% if not notification.is_read %}
+                        <strong>New:</strong>
+                    {% endif %}
+
+                    {{ notification.message }}
+                </p>
+                
+                    {% if not notification.is_read %}
+                        <form method="post"
+                            action="{% url 'mark_notification_read' notification.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-primary">
+                                Mark as Read
+                            </button>
+                        </form>
+                    {% endif %}
+
+                <small class="text-muted">
+                    {{ notification.created_at|date:"d M Y, h:i A" }}
+                </small>
+            </div>
+
+
+        {% empty %}
+
+        {% if not notification.is_read %}
+            <form method="post"
+                action="{% url 'mark_notification_read' notification.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-outline-primary">
+                    Mark as Read
+                </button>
+            </form>
+        {% endif %}
+
+            <p class="text-muted mb-0">
+                No notifications yet.
+            </p>
+        {% endfor %}
+
+    </div>
+</div>
+
+{% endblock %}

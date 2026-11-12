@@ -14,6 +14,11 @@ from .models import Ticket, Department, Category, Product, TicketActivity, Ticke
 
 from django.db import transaction
 
+from .models import Notification
+
+from .services.notifications import create_notification
+
+
 
 
 
@@ -516,7 +521,7 @@ def resolve_support_ticket(request, ticket_id):
         )
 
         if updated:
-            TicketActivity.objects.create(
+            activity = TicketActivity.objects.create(
                 ticket=ticket,
                 actor=request.user,
                 action='resolved',
@@ -524,6 +529,17 @@ def resolve_support_ticket(request, ticket_id):
                 new_status='resolved',
                 description='Support Staff resolved the ticket.'
             )
+
+            create_notification(
+                recipient=ticket.reporter,
+                ticket=ticket,
+                message=(
+                    f'Ticket #{ticket.pk} has been resolved. '
+                    'Please review and confirm the resolution.'
+                ),
+                event_key=f'ticket_activity_{activity.pk}_resolved'
+            )
+
 
 
     if updated:
@@ -569,6 +585,7 @@ def reopen_ticket(request, ticket_id):
 
     with transaction.atomic():
 
+        previous_assignee = ticket.assigned_to
         updated = Ticket.objects.filter(
             pk=ticket.pk,
             reporter=request.user,
@@ -582,7 +599,7 @@ def reopen_ticket(request, ticket_id):
         if updated:
 
 
-            TicketActivity.objects.create(
+            activity = TicketActivity.objects.create(
                 ticket=ticket,
                 actor=request.user,
                 action='reopened',
@@ -603,6 +620,16 @@ def reopen_ticket(request, ticket_id):
                 ),
                 is_internal=False
             )
+            if previous_assignee:
+                create_notification(
+                    recipient=previous_assignee,
+                    ticket=ticket,
+                    message=(
+                        f'Ticket #{ticket.pk} has been reopened '
+                        'and returned to the department queue.'
+                    ),
+                    event_key=f'ticket_activity_{activity.pk}_reopened'
+                )
 
     if updated:
         messages.success(
@@ -646,7 +673,7 @@ def confirm_ticket_resolution(request, ticket_id):
         )
 
     if updated:
-        TicketActivity.objects.create(
+        activity = TicketActivity.objects.create(
                 ticket=ticket,
                 actor=request.user,
                 action='closed',
@@ -654,6 +681,19 @@ def confirm_ticket_resolution(request, ticket_id):
                 new_status='closed',
                 description='Reporter confirmed the resolution.'
         )
+
+
+        if ticket.assigned_to_id:
+            create_notification(
+                recipient=ticket.assigned_to,
+                ticket=ticket,
+                message=(
+                    f'Ticket #{ticket.pk} has been closed. '
+                    'The reporter confirmed the resolution.'
+                ),
+                event_key=f'ticket_activity_{activity.pk}_closed'
+            )
+
 
 
         messages.success(
@@ -734,6 +774,12 @@ def claim_support_ticket(request, ticket_id):
                 new_status='in_progress',
                 description='Ticket claimed by Support Staff.'
             )
+        create_notification(
+            recipient=request.user,
+            ticket=Ticket.objects.get(pk=ticket_id),
+            message=f'Ticket #{ticket_id} has been assigned to you.',
+            event_key=f'ticket_{ticket_id}_claimed'
+        )
 
 
         messages.success(
@@ -789,6 +835,13 @@ def add_reporter_message(request, ticket_id):
         message.author = request.user
         message.is_internal = False
         message.save()
+        if ticket.assigned_to_id:
+            create_notification(
+                recipient=ticket.assigned_to,
+                ticket=ticket,
+                message=f'New public reply on Ticket #{ticket.pk}.',
+                event_key=f'ticket_message_{message.pk}'
+    )
 
         Ticket.objects.filter(pk=ticket.pk).update(
             updated_at=message.created_at
@@ -834,6 +887,13 @@ def add_support_message(request, ticket_id):
             message.ticket = ticket
             message.author = request.user
             message.save()
+            if not message.is_internal:
+                create_notification(
+                    recipient=ticket.reporter,
+                    ticket=ticket,
+                    message=f'New Support Staff reply on Ticket #{ticket.pk}.',
+                    event_key=f'ticket_message_{message.pk}'
+    )
             if not message.is_internal:
                 Ticket.objects.filter(pk=ticket.pk).update(
                     updated_at=message.created_at
@@ -1400,3 +1460,99 @@ def toggle_product_status(request, product_id):
     )
 
     return redirect('manage_products')
+
+
+@login_required
+def notification_list(request):
+
+    notifications = Notification.objects.filter(
+        recipient=request.user
+    )
+
+    unread_count = notifications.filter(
+        is_read=False
+    ).count()
+
+    return render(
+        request,
+        'tickets/notification_list.html',
+        {
+            'notifications': notifications,
+            'unread_count': unread_count,
+        }
+    )
+
+
+
+@login_required
+@require_POST
+def mark_notification_read(request, notification_id):
+
+    notification = get_object_or_404(
+        Notification,
+        pk=notification_id,
+        recipient=request.user
+    )
+
+    if not notification.is_read:
+        notification.is_read = True
+        notification.save(update_fields=['is_read'])
+
+    return redirect('notification_list')
+
+
+@role_required('support')
+@require_POST
+def escalate_support_ticket(request, ticket_id):
+
+    ticket = get_object_or_404(
+        Ticket,
+        pk=ticket_id,
+        assigned_to=request.user,
+        department_id=request.user.department_id,
+        status='in_progress'
+    )
+
+    with transaction.atomic():
+        updated = Ticket.objects.filter(
+            pk=ticket.pk,
+            assigned_to=request.user,
+            status='in_progress'
+        ).update(
+            updated_at=timezone.now()
+        )
+
+        
+        if updated:
+            activity, created = TicketActivity.objects.get_or_create(
+                ticket=ticket,
+                action='escalated',
+                defaults={
+                    'actor': request.user,
+                    'description': (
+                        'Ticket escalated for further technical review.'
+                    )
+                }
+            )
+
+            if created:
+                create_notification(
+                    recipient=ticket.reporter,
+                    ticket=ticket,
+                    message=(
+                        f'Ticket #{ticket.pk} has been escalated '
+                        'for further technical review.'
+                    ),
+                    event_key=f'ticket_activity_{activity.pk}_escalated'
+                )
+       
+
+    messages.success(
+        request,
+        'Ticket escalation recorded successfully.'
+    )
+
+    return redirect(
+        'support_ticket_detail',
+        ticket_id=ticket_id
+    )
