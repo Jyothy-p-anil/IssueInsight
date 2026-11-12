@@ -12,6 +12,7 @@ from django.contrib import messages
 
 from .models import Ticket, Department, Category, Product
 
+from django.db import transaction
 
 
 
@@ -26,6 +27,9 @@ from .forms import (
     CategoryForm,
     ProductForm,
     TicketResolutionForm,
+    TicketReopeningForm,
+    TicketMessage,
+
 )
 
 from django.db import transaction
@@ -497,6 +501,69 @@ def resolve_support_ticket(request, ticket_id):
 
     return redirect(
         'support_ticket_detail',
+        ticket_id=ticket_id
+    )
+
+# Step 77: Reporter reopens an unresolved complaint
+
+@role_required('employee', 'customer')
+@require_POST
+def reopen_ticket(request, ticket_id):
+
+    ticket = get_object_or_404(
+        Ticket,
+        pk=ticket_id,
+        reporter=request.user
+    )
+
+    form = TicketReopeningForm(request.POST)
+
+    if not form.is_valid():
+        messages.error(
+            request,
+            'A valid reopening reason is required.'
+        )
+        return redirect(
+            'ticket_detail',
+            ticket_id=ticket_id
+        )
+
+    with transaction.atomic():
+
+        updated = Ticket.objects.filter(
+            pk=ticket.pk,
+            reporter=request.user,
+            status='resolved'
+        ).update(
+            status='reopened',
+            assigned_to=None,
+            updated_at=timezone.now()
+        )
+
+        if updated:
+            TicketMessage.objects.create(
+                ticket=ticket,
+                author=request.user,
+                body=(
+                    'Reopening reason: '
+                    + form.cleaned_data['reopening_reason']
+                ),
+                is_internal=False
+            )
+
+    if updated:
+        messages.success(
+            request,
+            'Ticket reopened successfully.'
+        )
+    else:
+        messages.warning(
+            request,
+            'Only resolved tickets can be reopened.'
+        )
+
+    return redirect(
+        'ticket_detail',
         ticket_id=ticket_id
     )
 

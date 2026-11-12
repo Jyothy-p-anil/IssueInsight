@@ -158,6 +158,7 @@ class SupportMessageForm(TicketMessageForm):
             'is_internal': 'Internal note (hidden from reporter)'
         }
 
+
 # Step 75: Mandatory Support Staff resolution summary
 
 class TicketResolutionForm(forms.Form):
@@ -184,6 +185,34 @@ class TicketResolutionForm(forms.Form):
             )
 
         return summary
+
+
+# Step 77: Reporter reopening reason
+
+class TicketReopeningForm(forms.Form):
+
+    reopening_reason = forms.CharField(
+        required=True,
+        strip=True,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 4,
+            'placeholder': 'Explain why the issue is not resolved.'
+        }),
+        label='Reason for Reopening'
+    )
+
+    def clean_reopening_reason(self):
+        reason = self.cleaned_data[
+            'reopening_reason'
+        ].strip()
+
+        if not reason:
+            raise forms.ValidationError(
+                'A reopening reason is required.'
+            )
+
+        return reason
 
 
 # Form for creating and editing support departments

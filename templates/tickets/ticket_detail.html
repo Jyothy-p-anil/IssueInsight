@@ -223,6 +223,50 @@
 
 {% endif %}
 
+<!-- Step 77: Reporter ticket reopening -->
+
+{% if ticket.status == 'resolved' %}
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+
+        <h5>Reopen Ticket</h5>
+
+        <p>
+            If the issue has not been resolved,
+            explain why you want to reopen it.
+        </p>
+
+        <form method="post"
+              action="{% url 'reopen_ticket' ticket.id %}">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="reopening_reason"
+                       class="form-label">
+                    Reason for Reopening
+                </label>
+
+                <textarea
+                    name="reopening_reason"
+                    id="reopening_reason"
+                    class="form-control"
+                    rows="4"
+                    required
+                    placeholder="Explain why the issue is not resolved."></textarea>
+            </div>
+
+            <button type="submit"
+                    class="btn btn-warning">
+                Reopen Ticket
+            </button>
+
+        </form>
+    </div>
+</div>
+
+{% endif %}
+
 
 {% if ticket.division == 'employee' %}
     <a href="{% url 'employee_my_tickets' %}"

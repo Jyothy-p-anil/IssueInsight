@@ -178,6 +178,15 @@ path(
     name='confirm_ticket_resolution'
 ),
 
+
+# Step 77: Reporter ticket reopening
+path(
+    'tickets/<int:ticket_id>/reopen/',
+    views.reopen_ticket,
+    name='reopen_ticket'
+),
+
+
 # Module 8: Admin All Complaints
 
 path(

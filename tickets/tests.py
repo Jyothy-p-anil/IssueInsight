@@ -4746,3 +4746,184 @@ class ReporterResolutionConfirmationTests(TestCase):
         ticket.refresh_from_db()
         self.assertEqual(ticket.status, 'closed')
         self.assertEqual(ticket.updated_at, first_updated_at)
+
+
+# Step 77E: Reporter ticket reopening tests
+
+class ReporterTicketReopeningTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.department = Department.objects.create(
+            name='Reopening Test Facilities'
+        )
+
+        cls.employee = User.objects.create_user(
+            username='reopening_employee',
+            password='TestPass123!',
+            role='employee'
+        )
+
+        cls.other_employee = User.objects.create_user(
+            username='reopening_other_employee',
+            password='TestPass123!',
+            role='employee'
+        )
+
+        cls.customer = User.objects.create_user(
+            username='reopening_customer',
+            password='TestPass123!',
+            role='customer'
+        )
+
+        cls.support = User.objects.create_user(
+            username='reopening_support',
+            password='TestPass123!',
+            role='support',
+            department=cls.department
+        )
+
+    def make_ticket(self, reporter=None, status='resolved'):
+        reporter = reporter or self.employee
+
+        return Ticket.objects.create(
+            reporter=reporter,
+            division=reporter.role,
+            title='Reopening test complaint',
+            description='Issue still exists.',
+            department=self.department,
+            assigned_to=self.support,
+            status=status,
+            resolution_summary='Issue was marked as fixed.',
+            resolved_at=timezone.now()
+        )
+
+    def reopen(self, ticket, reason='Issue still exists.'):
+        return self.client.post(
+            reverse('reopen_ticket', args=[ticket.pk]),
+            {'reopening_reason': reason}
+        )
+
+    def test_employee_can_reopen(self):
+        ticket = self.make_ticket()
+        self.client.force_login(self.employee)
+
+        response = self.reopen(ticket)
+
+        ticket.refresh_from_db()
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(ticket.status, 'reopened')
+        self.assertIsNone(ticket.assigned_to)
+
+    def test_customer_can_reopen(self):
+        ticket = self.make_ticket(reporter=self.customer)
+        self.client.force_login(self.customer)
+
+        self.reopen(ticket)
+
+        ticket.refresh_from_db()
+        self.assertEqual(ticket.status, 'reopened')
+
+    def test_other_reporter_cannot_reopen(self):
+        ticket = self.make_ticket()
+        self.client.force_login(self.other_employee)
+
+        response = self.reopen(ticket)
+
+        ticket.refresh_from_db()
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(ticket.status, 'resolved')
+
+    def test_support_staff_cannot_reopen(self):
+        ticket = self.make_ticket()
+        self.client.force_login(self.support)
+
+        self.reopen(ticket)
+
+        ticket.refresh_from_db()
+        self.assertEqual(ticket.status, 'resolved')
+
+    def test_get_request_is_rejected(self):
+        ticket = self.make_ticket()
+        self.client.force_login(self.employee)
+
+        response = self.client.get(
+            reverse('reopen_ticket', args=[ticket.pk])
+        )
+
+        self.assertEqual(response.status_code, 405)
+
+        ticket.refresh_from_db()
+        self.assertEqual(ticket.status, 'resolved')
+
+    def test_blank_reason_is_rejected(self):
+        ticket = self.make_ticket()
+        self.client.force_login(self.employee)
+
+        for reason in ('', '   '):
+            with self.subTest(reason=repr(reason)):
+                self.reopen(ticket, reason)
+
+                ticket.refresh_from_db()
+                self.assertEqual(ticket.status, 'resolved')
+
+        self.assertFalse(
+            TicketMessage.objects.filter(ticket=ticket).exists()
+        )
+
+    def test_only_resolved_ticket_can_reopen(self):
+        self.client.force_login(self.employee)
+
+        for status in ('submitted', 'in_progress', 'closed', 'reopened'):
+            with self.subTest(status=status):
+                ticket = self.make_ticket(status=status)
+
+                self.reopen(ticket)
+
+                ticket.refresh_from_db()
+                self.assertEqual(ticket.status, status)
+
+    def test_reopening_reason_is_public(self):
+        ticket = self.make_ticket()
+        self.client.force_login(self.employee)
+
+        self.reopen(ticket, 'The Wi-Fi still disconnects.')
+
+        message = TicketMessage.objects.get(ticket=ticket)
+
+        self.assertEqual(message.author, self.employee)
+        self.assertFalse(message.is_internal)
+        self.assertIn('The Wi-Fi still disconnects.', message.body)
+
+    def test_resolution_history_is_preserved(self):
+        ticket = self.make_ticket()
+        original_resolved_at = ticket.resolved_at
+        original_summary = ticket.resolution_summary
+
+        self.client.force_login(self.employee)
+        self.reopen(ticket)
+
+        ticket.refresh_from_db()
+
+        self.assertEqual(
+            ticket.resolution_summary,
+            original_summary
+        )
+        self.assertEqual(ticket.resolved_at, original_resolved_at)
+
+    def test_duplicate_reopening_is_rejected(self):
+        ticket = self.make_ticket()
+        self.client.force_login(self.employee)
+
+        self.reopen(ticket)
+        self.reopen(ticket)
+
+        ticket.refresh_from_db()
+
+        self.assertEqual(ticket.status, 'reopened')
+        self.assertEqual(
+            TicketMessage.objects.filter(ticket=ticket).count(),
+            1
+        )
