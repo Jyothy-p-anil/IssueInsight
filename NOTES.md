@@ -646,3 +646,50 @@ Rules:
   Reporter confirmation, reopening and the precise
   72-hour unconfirmed-resolution rule remain pending.
   Module 8 remains in progress.
+
+
+  - Step 76A (Module 8): Added the reporter resolution
+  confirmation view. The original Employee or Customer
+  reporter can confirm a Resolved complaint, changing
+  its status to Closed. The view uses POST-only access,
+  ownership checks and conditional database updates.
+  URL integration, interface and automated tests
+  remain pending.
+
+
+  - Step 76B (Module 8): Registered the reporter
+  resolution confirmation URL. The endpoint connects
+  to confirm_ticket_resolution and accepts POST
+  requests through its view-level protection.
+  Reporter interface and functional tests remain pending.
+
+
+  - Step 76C (Module 8): Added a reporter-facing
+  resolution confirmation form to the ticket detail
+  page. The form appears for Resolved tickets and
+  submits a CSRF-protected POST request to the
+  confirmation endpoint. Verified that confirming
+  resolution closes the ticket and removes the
+  confirmation button. Resolution history visibility
+  requires follow-up verification.
+
+
+  - Step 76D (Module 8): Added seven automated tests
+  for reporter resolution confirmation. Verified
+  Employee and Customer confirmation, ticket ownership,
+  Support Staff restrictions, POST-only access,
+  prevention of unresolved-ticket confirmation and
+  repeated confirmation protection.
+  Full regression testing remains pending.
+
+
+
+  - Step 76E (Module 8): Completed reporter resolution
+  confirmation. Verified that Employee and Customer
+  reporters can close their own Resolved tickets.
+  Preserved the resolution summary after closure.
+  Verified ownership protection, POST-only access,
+  valid status transitions and duplicate confirmation
+  prevention. Step 76 completed.
+  Reporter reopening and unconfirmed-resolution
+  handling remain pending.

@@ -170,6 +170,14 @@ path(
     name='resolve_support_ticket'
 ),
 
+# Step 76: Reporter resolution confirmation
+
+path(
+    'tickets/<int:ticket_id>/confirm-resolution/',
+    views.confirm_ticket_resolution,
+    name='confirm_ticket_resolution'
+),
+
 # Module 8: Admin All Complaints
 
 path(

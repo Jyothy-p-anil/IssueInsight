@@ -17,6 +17,12 @@ from .services.category_suggestions import get_suggestion_candidates
 from datetime import datetime, timedelta, timezone as dt_timezone
 from django.utils import timezone
 
+from django.test import TestCase
+from django.urls import reverse
+from django.utils import timezone
+
+
+
 class DepartmentManagementTests(TestCase):
 
     @classmethod
@@ -4606,3 +4612,137 @@ class SupportTicketResolutionTests(TestCase):
             response,
             'AC repaired and tested.'
         )
+
+
+# Step 76D: Reporter resolution confirmation tests
+
+class ReporterResolutionConfirmationTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.department = Department.objects.create(
+            name='Resolution Confirmation Department'
+        )
+
+        cls.reporter = User.objects.create_user(
+            username='confirmation_employee',
+            password='TestPass123!',
+            role='employee'
+        )
+
+        cls.other_reporter = User.objects.create_user(
+            username='confirmation_other',
+            password='TestPass123!',
+            role='employee'
+        )
+
+        cls.customer = User.objects.create_user(
+            username='confirmation_customer',
+            password='TestPass123!',
+            role='customer'
+        )
+
+        cls.support = User.objects.create_user(
+            username='confirmation_support',
+            password='TestPass123!',
+            role='support',
+            department=cls.department
+        )
+
+    def make_ticket(self, reporter=None, status='resolved'):
+        reporter = reporter or self.reporter
+
+        return Ticket.objects.create(
+            reporter=reporter,
+            division=reporter.role,
+            title='Confirmation test complaint',
+            description='Testing resolution confirmation.',
+            department=self.department,
+            assigned_to=self.support,
+            status=status,
+            resolution_summary='Issue repaired and verified.',
+            resolved_at=timezone.now()
+        )
+
+    def test_employee_can_confirm_resolution(self):
+        ticket = self.make_ticket()
+        self.client.force_login(self.reporter)
+
+        response = self.client.post(
+            reverse('confirm_ticket_resolution', args=[ticket.pk])
+        )
+
+        ticket.refresh_from_db()
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(ticket.status, 'closed')
+
+    def test_customer_can_confirm_resolution(self):
+        ticket = self.make_ticket(reporter=self.customer)
+        self.client.force_login(self.customer)
+
+        self.client.post(
+            reverse('confirm_ticket_resolution', args=[ticket.pk])
+        )
+
+        ticket.refresh_from_db()
+        self.assertEqual(ticket.status, 'closed')
+
+    def test_other_reporter_cannot_confirm(self):
+        ticket = self.make_ticket()
+        self.client.force_login(self.other_reporter)
+
+        response = self.client.post(
+            reverse('confirm_ticket_resolution', args=[ticket.pk])
+        )
+
+        ticket.refresh_from_db()
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(ticket.status, 'resolved')
+
+    def test_support_staff_cannot_confirm(self):
+        ticket = self.make_ticket()
+        self.client.force_login(self.support)
+
+        self.client.post(
+            reverse('confirm_ticket_resolution', args=[ticket.pk])
+        )
+
+        ticket.refresh_from_db()
+        self.assertEqual(ticket.status, 'resolved')
+
+    def test_get_request_cannot_confirm(self):
+        ticket = self.make_ticket()
+        self.client.force_login(self.reporter)
+
+        response = self.client.get(
+            reverse('confirm_ticket_resolution', args=[ticket.pk])
+        )
+
+        ticket.refresh_from_db()
+        self.assertEqual(response.status_code, 405)
+        self.assertEqual(ticket.status, 'resolved')
+
+    def test_unresolved_ticket_cannot_be_confirmed(self):
+        ticket = self.make_ticket(status='in_progress')
+        self.client.force_login(self.reporter)
+
+        self.client.post(
+            reverse('confirm_ticket_resolution', args=[ticket.pk])
+        )
+
+        ticket.refresh_from_db()
+        self.assertEqual(ticket.status, 'in_progress')
+
+    def test_confirmation_cannot_be_repeated(self):
+        ticket = self.make_ticket()
+        self.client.force_login(self.reporter)
+
+        url = reverse('confirm_ticket_resolution', args=[ticket.pk])
+        self.client.post(url)
+        first_updated_at = Ticket.objects.get(pk=ticket.pk).updated_at
+
+        self.client.post(url)
+
+        ticket.refresh_from_db()
+        self.assertEqual(ticket.status, 'closed')
+        self.assertEqual(ticket.updated_at, first_updated_at)

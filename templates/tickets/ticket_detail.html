@@ -179,7 +179,7 @@
 
 <!-- Step 75: Display resolution details to reporter -->
 
-{% if ticket.status == 'resolved' and ticket.resolution_summary %}
+{% if ticket.resolution_summary and ticket.status == 'resolved' or ticket.resolution_summary and ticket.status == 'closed' %}   
 
 <div class="card shadow-sm mb-4">
     <div class="card-header">
@@ -193,6 +193,31 @@
             Resolved:
             {{ ticket.resolved_at|date:"d M Y, h:i A" }}
         </p>
+    </div>
+</div>
+
+{% endif %}
+
+<!-- Step 76: Reporter resolution confirmation -->
+
+{% if ticket.status == 'resolved' %}
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h5>Confirm Resolution</h5>
+
+        <p>
+            Has your complaint been resolved satisfactorily?
+        </p>
+
+        <form method="post"
+              action="{% url 'confirm_ticket_resolution' ticket.id %}">
+            {% csrf_token %}
+
+            <button type="submit" class="btn btn-success">
+                Confirm Resolution &amp; Close Ticket
+            </button>
+        </form>
     </div>
 </div>
 

@@ -501,6 +501,43 @@ def resolve_support_ticket(request, ticket_id):
     )
 
 
+# Step 76: Reporter confirms ticket resolution
+
+@role_required('employee', 'customer')
+@require_POST
+def confirm_ticket_resolution(request, ticket_id):
+
+    ticket = get_object_or_404(
+        Ticket,
+        pk=ticket_id,
+        reporter=request.user
+    )
+
+    updated = Ticket.objects.filter(
+        pk=ticket.pk,
+        reporter=request.user,
+        status='resolved'
+    ).update(
+        status='closed',
+        updated_at=timezone.now()
+    )
+
+    if updated:
+        messages.success(
+            request,
+            'Resolution confirmed. Ticket closed.'
+        )
+    else:
+        messages.warning(
+            request,
+            'This ticket is not awaiting resolution confirmation.'
+        )
+
+    return redirect(
+        'ticket_detail',
+        ticket_id=ticket_id
+    )
+
 # Support Staff: claim an available ticket
 
 @role_required('support')
