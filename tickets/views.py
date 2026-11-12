@@ -778,6 +778,7 @@ def admin_all_complaints(request):
         'tickets/admin_all_complaints.html',
         {
             'tickets': tickets,
+            'departments': Department.objects.order_by('name'),
         }
     )
 
@@ -799,6 +800,43 @@ def admin_pending_routing(request):
         'tickets/admin_pending_routing.html',
         {'tickets': tickets}
     )
+
+
+# Step 80: Admin department correction
+
+@role_required('admin')
+@require_POST
+def correct_ticket_department(request, ticket_id):
+
+    department = get_object_or_404(
+        Department,
+        pk=request.POST.get('department')
+    )
+
+    updated = Ticket.objects.filter(
+        pk=ticket_id,
+        assigned_to__isnull=True,
+        status__in=['submitted', 'reopened'],
+        department__isnull=False
+    ).exclude(
+        department=department
+    ).update(
+        department=department,
+        updated_at=timezone.now()
+    )
+
+    if updated:
+        messages.success(
+            request,
+            'Ticket department corrected successfully.'
+        )
+    else:
+        messages.error(
+            request,
+            'Department correction is not allowed for this ticket.'
+        )
+
+    return redirect('admin_all_complaints')
 
 
 @role_required('admin')

@@ -5036,3 +5036,154 @@ class ResolutionConfirmationReminderTests(TestCase):
 
         ticket.refresh_from_db()
         self.assertEqual(ticket.status, 'resolved')
+
+
+
+# Step 80: Admin department correction tests
+
+class AdminDepartmentCorrectionTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.old_department = Department.objects.create(
+            name='Correction IT'
+        )
+        cls.new_department = Department.objects.create(
+            name='Correction Facilities'
+        )
+
+        cls.admin = User.objects.create_user(
+            username='correction_admin',
+            password='TestPass123!',
+            role='admin'
+        )
+        cls.employee = User.objects.create_user(
+            username='correction_employee',
+            password='TestPass123!',
+            role='employee'
+        )
+        cls.support = User.objects.create_user(
+            username='correction_support',
+            password='TestPass123!',
+            role='support',
+            department=cls.old_department
+        )
+
+    def make_ticket(self, status='submitted', assigned=False):
+        return Ticket.objects.create(
+            reporter=self.employee,
+            division='employee',
+            title='Department correction test',
+            description='Incorrect department.',
+            department=self.old_department,
+            status=status,
+            assigned_to=self.support if assigned else None
+        )
+
+    def correct(self, ticket, department=None):
+        return self.client.post(
+            reverse('correct_ticket_department', args=[ticket.pk]),
+            {'department': department or self.new_department.pk}
+        )
+
+    def test_admin_can_correct_submitted_ticket(self):
+        ticket = self.make_ticket()
+        self.client.force_login(self.admin)
+
+        self.correct(ticket)
+        ticket.refresh_from_db()
+
+        self.assertEqual(ticket.department, self.new_department)
+        self.assertEqual(ticket.status, 'submitted')
+
+    def test_admin_can_correct_reopened_ticket(self):
+        ticket = self.make_ticket(status='reopened')
+        self.client.force_login(self.admin)
+
+        self.correct(ticket)
+        ticket.refresh_from_db()
+
+        self.assertEqual(ticket.department, self.new_department)
+        self.assertEqual(ticket.status, 'reopened')
+
+    def test_assigned_ticket_cannot_be_corrected(self):
+        ticket = self.make_ticket(
+            status='in_progress',
+            assigned=True
+        )
+        self.client.force_login(self.admin)
+
+        self.correct(ticket)
+        ticket.refresh_from_db()
+
+        self.assertEqual(ticket.department, self.old_department)
+        self.assertEqual(ticket.assigned_to, self.support)
+
+    def test_resolved_ticket_cannot_be_corrected(self):
+        ticket = self.make_ticket(status='resolved')
+        self.client.force_login(self.admin)
+
+        self.correct(ticket)
+        ticket.refresh_from_db()
+
+        self.assertEqual(ticket.department, self.old_department)
+
+    def test_employee_cannot_correct_department(self):
+        ticket = self.make_ticket()
+        self.client.force_login(self.employee)
+
+        self.correct(ticket)
+        ticket.refresh_from_db()
+
+        self.assertEqual(ticket.department, self.old_department)
+
+    def test_guest_cannot_correct_department(self):
+        ticket = self.make_ticket()
+
+        self.correct(ticket)
+        ticket.refresh_from_db()
+
+        self.assertEqual(ticket.department, self.old_department)
+
+    def test_get_request_cannot_correct_department(self):
+        ticket = self.make_ticket()
+        self.client.force_login(self.admin)
+
+        response = self.client.get(
+            reverse('correct_ticket_department', args=[ticket.pk])
+        )
+
+        self.assertEqual(response.status_code, 405)
+
+    def test_invalid_department_is_rejected(self):
+        ticket = self.make_ticket()
+        self.client.force_login(self.admin)
+
+        response = self.correct(ticket, department=999999)
+        self.assertEqual(response.status_code, 404)
+
+        ticket.refresh_from_db()
+        self.assertEqual(ticket.department, self.old_department)
+
+    def test_same_department_is_not_changed(self):
+        ticket = self.make_ticket()
+        self.client.force_login(self.admin)
+
+        self.correct(ticket, department=self.old_department.pk)
+        ticket.refresh_from_db()
+
+        self.assertEqual(ticket.department, self.old_department)
+
+    def test_correction_updates_timestamp(self):
+        ticket = self.make_ticket()
+        old_time = timezone.now() - timedelta(days=1)
+
+        Ticket.objects.filter(pk=ticket.pk).update(
+            updated_at=old_time
+        )
+
+        self.client.force_login(self.admin)
+        self.correct(ticket)
+        ticket.refresh_from_db()
+
+        self.assertGreater(ticket.updated_at, old_time)

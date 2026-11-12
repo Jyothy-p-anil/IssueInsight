@@ -195,6 +195,12 @@ path(
     name='admin_all_complaints'
 ),
 
+# Step 80: Admin department correction
+path(
+    'management/complaints/<int:ticket_id>/correct-department/',
+    views.correct_ticket_department,
+    name='correct_ticket_department'
+),
 
 # Admin: manual complaint routing
 

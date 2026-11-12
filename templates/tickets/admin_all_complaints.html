@@ -37,6 +37,7 @@
                         <th>Source</th>
                         <th>Category</th>
                         <th>Department</th>
+                        <th>Correct Department</th>
                         <th>Assigned To</th>
                         <th>Status</th>
                         <th>Submitted</th>
@@ -65,6 +66,36 @@
                             </td>
 
                             <td>
+                                {% if ticket.department and not ticket.assigned_to and ticket.status == 'submitted' or ticket.department and not ticket.assigned_to and ticket.status == 'reopened' %}
+                                    <form method="post"
+                                        action="{% url 'correct_ticket_department' ticket.pk %}">
+                                        {% csrf_token %}
+
+                                        <select name="department"
+                                                class="form-select form-select-sm mb-1"
+                                                required>
+                                            <option value="">Select department</option>
+                                            {% for department in departments %}
+                                                {% if department.pk != ticket.department_id %}
+                                                    <option value="{{ department.pk }}">
+                                                        {{ department.name }}
+                                                    </option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+
+                                        <button type="submit"
+                                                class="btn btn-sm btn-outline-primary">
+                                            Correct
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+
+
+                            <td>
                                 {% if ticket.assigned_to %}
                                     {{ ticket.assigned_to.username }}
                                 {% else %}
@@ -81,7 +112,7 @@
 
                     {% empty %}
                         <tr>
-                            <td colspan="9"
+                            <td colspan="10"
                                 class="text-center text-muted py-4">
                                 No complaints have been submitted yet.
                             </td>

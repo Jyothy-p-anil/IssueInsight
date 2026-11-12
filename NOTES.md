@@ -771,3 +771,13 @@ Rules:
   status changes occur. Reminder calculations,
   visibility and regression tests passed.
   Step 78 completed.
+
+
+  - Step 80 (Module 8): Implemented Admin department
+  correction for unassigned Submitted and Reopened
+  tickets. Admin can change an incorrectly routed
+  department without changing ticket status.
+  Assigned tickets and invalid transitions are protected.
+  Added ten automated tests covering permissions,
+  valid corrections, invalid departments, HTTP methods
+  and timestamp updates. Full regression tests passed.
