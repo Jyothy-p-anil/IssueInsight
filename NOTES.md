@@ -460,6 +460,7 @@ Rules:
   Admin complaint visibility remains planned
   for Module 8, with search and filtering
   coordinated with Module 13.
+  -----------------------------------
 
 
     - Step 57 (Module 5): Completed Employee Complaint
@@ -502,6 +503,7 @@ Rules:
   Shared issue verification remains in Module 10,
   and AI classification remains in Module 11.
 
+--------------------------------------------------------
     - Step 60 (Module 6): Reviewed Customer complaint
   form, product selection, category restrictions and
   required-field validation. Reused the category
@@ -531,6 +533,7 @@ Rules:
   Later ticket lifecycle functionality remains
   in its designated modules.
 
+----------------------------------------------------------
     - Step 63 (Module 7): Reviewed reporter complaint
   detail pages and corrected HTML nesting.
   Verified Employee workplace information,
@@ -572,6 +575,7 @@ Rules:
   closing, reopening and escalation remain in their
   designated later modules.
 
+-----------------------------------------------------
 
     - Step 71 (Module 8): Added the Admin All Complaints
   overview for Employee and Customer complaints.
@@ -732,3 +736,38 @@ Rules:
   duplicate prevention and regression tests.
   Step 77 completed.
   Unconfirmed-resolution handling remains pending.
+
+
+  - Step 78A (Module 8): Added the calculated
+  confirmation_reminder_due property to Ticket.
+  It identifies tickets that remain Resolved
+  at least 72 hours after resolved_at.
+  No automatic status changes, new statuses,
+  database fields or background jobs were added.
+  Reminder interface and tests remain pending.
+
+
+  - Step 78B (Module 8): Added the 72-hour resolution
+  confirmation reminder to the reporter ticket detail
+  page. The reminder appears only when a ticket remains
+  Resolved for at least 72 hours. It directs the reporter
+  to confirm or reopen the ticket without changing its
+  status. Boundary and rendering tests remain pending.
+
+
+  - Step 78C (Module 8): Added nine automated tests
+  for the 72-hour resolution confirmation reminder.
+  Verified timing conditions, eligible ticket status,
+  missing resolution timestamps, reporter visibility,
+  reminder suppression and preservation of ticket
+  status. Full regression testing remains pending.
+
+
+  - Step 78D (Module 8): Completed the 72-hour
+  resolution confirmation reminder. Verified that
+  tickets remaining Resolved for at least 72 hours
+  display a reminder to the reporter. Confirming or
+  reopening remains available, and no automatic
+  status changes occur. Reminder calculations,
+  visibility and regression tests passed.
+  Step 78 completed.

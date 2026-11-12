@@ -22,6 +22,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 
+from datetime import timedelta
 
 class DepartmentManagementTests(TestCase):
 
@@ -4927,3 +4928,111 @@ class ReporterTicketReopeningTests(TestCase):
             TicketMessage.objects.filter(ticket=ticket).count(),
             1
         )
+
+
+# Step 78C: Resolution confirmation reminder tests
+
+class ResolutionConfirmationReminderTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.reporter = User.objects.create_user(
+            username='reminder_employee',
+            password='TestPass123!',
+            role='employee'
+        )
+
+    def make_ticket(self, status='resolved', hours_ago=73):
+        return Ticket.objects.create(
+            reporter=self.reporter,
+            division='employee',
+            title='Reminder test complaint',
+            description='Testing the 72-hour reminder.',
+            status=status,
+            resolution_summary='Issue was resolved.',
+            resolved_at=(
+                timezone.now() - timedelta(hours=hours_ago)
+            )
+        )
+
+    def test_reminder_before_72_hours(self):
+        ticket = self.make_ticket(hours_ago=71)
+
+        self.assertFalse(
+            ticket.confirmation_reminder_due
+        )
+
+    def test_reminder_after_72_hours(self):
+        ticket = self.make_ticket(hours_ago=73)
+
+        self.assertTrue(
+            ticket.confirmation_reminder_due
+        )
+
+    def test_reminder_at_exact_boundary(self):
+        ticket = self.make_ticket(hours_ago=72)
+
+        self.assertTrue(
+            ticket.confirmation_reminder_due
+        )
+
+    def test_closed_ticket_has_no_reminder(self):
+        ticket = self.make_ticket(status='closed')
+
+        self.assertFalse(
+            ticket.confirmation_reminder_due
+        )
+
+    def test_reopened_ticket_has_no_reminder(self):
+        ticket = self.make_ticket(status='reopened')
+
+        self.assertFalse(
+            ticket.confirmation_reminder_due
+        )
+
+    def test_ticket_without_resolution_time(self):
+        ticket = self.make_ticket()
+        ticket.resolved_at = None
+
+        self.assertFalse(
+            ticket.confirmation_reminder_due
+        )
+
+    def test_reminder_visible_to_reporter(self):
+        ticket = self.make_ticket(hours_ago=73)
+        self.client.force_login(self.reporter)
+
+        response = self.client.get(
+            reverse('ticket_detail', args=[ticket.pk])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            'Resolution Confirmation Pending'
+        )
+
+    def test_reminder_hidden_before_deadline(self):
+        ticket = self.make_ticket(hours_ago=24)
+        self.client.force_login(self.reporter)
+
+        response = self.client.get(
+            reverse('ticket_detail', args=[ticket.pk])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(
+            response,
+            'Resolution Confirmation Pending'
+        )
+
+    def test_reminder_does_not_change_status(self):
+        ticket = self.make_ticket(hours_ago=73)
+        self.client.force_login(self.reporter)
+
+        self.client.get(
+            reverse('ticket_detail', args=[ticket.pk])
+        )
+
+        ticket.refresh_from_db()
+        self.assertEqual(ticket.status, 'resolved')

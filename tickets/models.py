@@ -3,6 +3,9 @@ from django.db import models
 from django.conf import settings
 
 
+from datetime import timedelta
+from django.utils import timezone
+
 
 class Department(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -144,6 +147,21 @@ class Ticket(models.Model):
         null=True,
         blank=True
     )
+
+    # Step 78: Pending resolution confirmation reminder
+
+    @property
+    def confirmation_reminder_due(self):
+        if (
+            self.status != 'resolved'
+            or self.resolved_at is None
+        ):
+            return False
+
+        return timezone.now() >= (
+            self.resolved_at + timedelta(hours=72)
+        )
+
     def __str__(self):
         return self.title
 
