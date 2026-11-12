@@ -10,7 +10,7 @@ from django.db.models import Q
 from django.contrib import messages
 
 
-from .models import Ticket, Department, Category, Product
+from .models import Ticket, Department, Category, Product, TicketActivity, TicketActivity
 
 from django.db import transaction
 
@@ -102,7 +102,18 @@ def submit_employee_complaint(request):
 
             ticket.department = ticket.category.department
 
-            ticket.save()
+            
+            with transaction.atomic():
+                ticket.save()
+
+                TicketActivity.objects.create(
+                    ticket=ticket,
+                    actor=request.user,
+                    action='created',
+                    new_status='submitted',
+                    description='Employee complaint submitted.'
+                )
+
 
             messages.success(
                 request,
@@ -243,7 +254,18 @@ def submit_customer_complaint(request):
 
             ticket.department = ticket.category.department
 
-            ticket.save()
+            
+            with transaction.atomic():
+                ticket.save()
+
+                TicketActivity.objects.create(
+                    ticket=ticket,
+                    actor=request.user,
+                    action='created',
+                    new_status='submitted',
+                    description='Customer complaint submitted.'
+                )
+
 
             messages.success(
                 request,
@@ -322,6 +344,7 @@ def ticket_detail(request, ticket_id):
         {
             'ticket': ticket,
             'conversation': conversation,
+            'activities': ticket.activities.select_related('actor').all(),
             'reply_form': TicketMessageForm(),
             'can_reply': can_reply,
         }
@@ -442,6 +465,7 @@ def support_ticket_detail(request, ticket_id):
             'conversation': conversation,
             'reply_form': SupportMessageForm(),
             'can_reply': can_reply,
+            'activities': ticket.activities.select_related('actor').all(),
         }
     )
 
@@ -474,19 +498,33 @@ def resolve_support_ticket(request, ticket_id):
 
     resolved_time = timezone.now()
 
-    updated = Ticket.objects.filter(
-        pk=ticket.pk,
-        department_id=request.user.department_id,
-        assigned_to=request.user,
-        status='in_progress'
-    ).update(
-        status='resolved',
-        resolution_summary=form.cleaned_data[
-            'resolution_summary'
-        ],
-        resolved_at=resolved_time,
-        updated_at=resolved_time
-    )
+
+    with transaction.atomic():
+
+        updated = Ticket.objects.filter(
+            pk=ticket.pk,
+            department_id=request.user.department_id,
+            assigned_to=request.user,
+            status='in_progress'
+        ).update(
+            status='resolved',
+            resolution_summary=form.cleaned_data[
+                'resolution_summary'
+            ],
+            resolved_at=resolved_time,
+            updated_at=resolved_time
+        )
+
+        if updated:
+            TicketActivity.objects.create(
+                ticket=ticket,
+                actor=request.user,
+                action='resolved',
+                old_status='in_progress',
+                new_status='resolved',
+                description='Support Staff resolved the ticket.'
+            )
+
 
     if updated:
         messages.success(
@@ -498,6 +536,7 @@ def resolve_support_ticket(request, ticket_id):
             request,
             'This ticket can no longer be resolved.'
         )
+
 
     return redirect(
         'support_ticket_detail',
@@ -541,6 +580,20 @@ def reopen_ticket(request, ticket_id):
         )
 
         if updated:
+
+
+            TicketActivity.objects.create(
+                ticket=ticket,
+                actor=request.user,
+                action='reopened',
+                old_status='resolved',
+                new_status='reopened',
+                description=(
+                    'Reporter reopened the ticket. Reason: '
+                    + form.cleaned_data['reopening_reason']
+                )
+            )
+
             TicketMessage.objects.create(
                 ticket=ticket,
                 author=request.user,
@@ -580,16 +633,29 @@ def confirm_ticket_resolution(request, ticket_id):
         reporter=request.user
     )
 
-    updated = Ticket.objects.filter(
-        pk=ticket.pk,
-        reporter=request.user,
-        status='resolved'
-    ).update(
-        status='closed',
-        updated_at=timezone.now()
-    )
+
+    with transaction.atomic():
+
+        updated = Ticket.objects.filter(
+            pk=ticket.pk,
+            reporter=request.user,
+            status='resolved'
+        ).update(
+            status='closed',
+            updated_at=timezone.now()
+        )
 
     if updated:
+        TicketActivity.objects.create(
+                ticket=ticket,
+                actor=request.user,
+                action='closed',
+                old_status='resolved',
+                new_status='closed',
+                description='Reporter confirmed the resolution.'
+        )
+
+
         messages.success(
             request,
             'Resolution confirmed. Ticket closed.'
@@ -617,22 +683,59 @@ def claim_support_ticket(request, ticket_id):
             'Your account has no support department assigned.'
         )
         return redirect('support_dashboard')
+    
+    # Prevent access to tickets outside the staff member's department.
+    get_object_or_404(
+        Ticket,
+        pk=ticket_id,
+        department_id=request.user.department_id
+    )
 
-    # Conditional update prevents two staff members
-    # from successfully claiming the same ticket.
 
-    updated = Ticket.objects.filter(
+    
+    previous_status = Ticket.objects.filter(
         pk=ticket_id,
         department_id=request.user.department_id,
         assigned_to__isnull=True,
         status__in=['submitted', 'reopened']
-    ).update(
-        assigned_to=request.user,
-        status='in_progress',
-        updated_at=timezone.now()
-    )
+    ).values_list('status', flat=True).first()
 
-    if updated:
+
+    # Conditional update prevents two staff members
+    # from successfully claiming the same ticket.
+
+    
+    with transaction.atomic():
+
+        previous_status = Ticket.objects.filter(
+            pk=ticket_id,
+            department_id=request.user.department_id,
+            assigned_to__isnull=True,
+            status__in=['submitted', 'reopened']
+        ).values_list('status', flat=True).first()
+
+        updated = Ticket.objects.filter(
+            pk=ticket_id,
+            department_id=request.user.department_id,
+            assigned_to__isnull=True,
+            status__in=['submitted', 'reopened']
+        ).update(
+            assigned_to=request.user,
+            status='in_progress',
+            updated_at=timezone.now()
+        )
+
+        if updated:
+            TicketActivity.objects.create(
+                ticket_id=ticket_id,
+                actor=request.user,
+                action='claimed',
+                old_status=previous_status or '',
+                new_status='in_progress',
+                description='Ticket claimed by Support Staff.'
+            )
+
+
         messages.success(
             request,
             f'Ticket #{ticket_id} assigned to you.'
@@ -813,17 +916,37 @@ def correct_ticket_department(request, ticket_id):
         pk=request.POST.get('department')
     )
 
-    updated = Ticket.objects.filter(
-        pk=ticket_id,
-        assigned_to__isnull=True,
-        status__in=['submitted', 'reopened'],
-        department__isnull=False
-    ).exclude(
-        department=department
-    ).update(
-        department=department,
-        updated_at=timezone.now()
-    )
+    with transaction.atomic():
+
+        ticket = get_object_or_404(
+            Ticket.objects.select_for_update(),
+            pk=ticket_id
+        )
+
+        previous_department = ticket.department_id
+
+        updated = Ticket.objects.filter(
+            pk=ticket_id,
+            assigned_to__isnull=True,
+            status__in=['submitted', 'reopened'],
+            department__isnull=False
+        ).exclude(
+            department=department
+        ).update(
+            department=department,
+            updated_at=timezone.now()
+        )
+
+        if updated:
+            TicketActivity.objects.create(
+                ticket=ticket,
+                actor=request.user,
+                action='department_corrected',
+                description=(
+                    f'Department changed from ID '
+                    f'{previous_department} to {department.name}.'
+                )
+            )
 
     if updated:
         messages.success(
@@ -858,15 +981,29 @@ def admin_route_ticket(request, ticket_id):
         if form.is_valid():
             department = form.cleaned_data['department']
 
-            updated = Ticket.objects.filter(
-                pk=ticket.pk,
-                department__isnull=True,
-                assigned_to__isnull=True,
-                status__in=['submitted', 'reopened']
-            ).update(
-                department_id=department.pk,
-                updated_at=timezone.now()
-            )
+            
+            with transaction.atomic():
+
+                updated = Ticket.objects.filter(
+                    pk=ticket.pk,
+                    department__isnull=True,
+                    assigned_to__isnull=True,
+                    status__in=['submitted', 'reopened']
+                ).update(
+                    department_id=department.pk,
+                    updated_at=timezone.now()
+                )
+
+
+                if updated:
+                    TicketActivity.objects.create(
+                        ticket=ticket,
+                        actor=request.user,
+                        action='department_routed',
+                        description=(
+                            f'Ticket routed to {department.name}.'
+                        )
+                    )
 
             if updated:
                 messages.success(
@@ -882,6 +1019,7 @@ def admin_route_ticket(request, ticket_id):
                 )
 
             return redirect('admin_pending_routing')
+
 
     else:
         form = ManualRoutingForm()

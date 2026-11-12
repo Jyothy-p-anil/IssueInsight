@@ -5,8 +5,7 @@ from django.contrib.auth import get_user_model
 
 from .forms import CustomerComplaintForm
 
-from .models import Department, Category, Ticket, Product, TicketMessage
-
+from .models import Department, Category, Ticket, Product, TicketMessage, TicketActivity
 User = get_user_model()
 
 
@@ -14,15 +13,16 @@ from .services.category_suggestions import get_suggestion_candidates
 
 
 
+
 from datetime import datetime, timedelta, timezone as dt_timezone
-from django.utils import timezone
 
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-
 from datetime import timedelta
+
+
 
 class DepartmentManagementTests(TestCase):
 
@@ -5187,3 +5187,626 @@ class AdminDepartmentCorrectionTests(TestCase):
         ticket.refresh_from_db()
 
         self.assertGreater(ticket.updated_at, old_time)
+
+
+
+# Step 81: Ticket activity history tests
+
+class TicketActivityHistoryTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.department = Department.objects.create(
+            name='History Test Support'
+        )
+
+        cls.employee = User.objects.create_user(
+            username='history_employee',
+            password='TestPass123!',
+            role='employee'
+        )
+
+        cls.other_employee = User.objects.create_user(
+            username='history_other_employee',
+            password='TestPass123!',
+            role='employee'
+        )
+
+        cls.support = User.objects.create_user(
+            username='history_support',
+            password='TestPass123!',
+            role='support',
+            department=cls.department
+        )
+
+        cls.ticket = Ticket.objects.create(
+            reporter=cls.employee,
+            division='employee',
+            title='History test complaint',
+            description='Testing activity records.',
+            department=cls.department,
+            status='submitted'
+        )
+
+    def test_activity_stores_actor_and_timestamp(self):
+        activity = TicketActivity.objects.create(
+            ticket=self.ticket,
+            actor=self.employee,
+            action='created',
+            new_status='submitted'
+        )
+
+        self.assertEqual(activity.actor, self.employee)
+        self.assertIsNotNone(activity.created_at)
+
+    def test_activity_stores_status_transition(self):
+        activity = TicketActivity.objects.create(
+            ticket=self.ticket,
+            actor=self.support,
+            action='claimed',
+            old_status='submitted',
+            new_status='in_progress'
+        )
+
+        self.assertEqual(activity.old_status, 'submitted')
+        self.assertEqual(activity.new_status, 'in_progress')
+
+    def test_activities_are_chronological(self):
+        first = TicketActivity.objects.create(
+            ticket=self.ticket,
+            actor=self.employee,
+            action='created'
+        )
+
+        second = TicketActivity.objects.create(
+            ticket=self.ticket,
+            actor=self.support,
+            action='claimed'
+        )
+
+        activities = list(self.ticket.activities.all())
+
+        self.assertEqual(activities, [first, second])
+
+    def test_reporter_can_view_own_history(self):
+        TicketActivity.objects.create(
+            ticket=self.ticket,
+            actor=self.employee,
+            action='created',
+            description='History visible to reporter.'
+        )
+
+        self.client.force_login(self.employee)
+
+        response = self.client.get(
+            reverse('ticket_detail', args=[self.ticket.pk])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            'History visible to reporter.'
+        )
+
+    def test_other_employee_cannot_view_history(self):
+        self.client.force_login(self.other_employee)
+
+        response = self.client.get(
+            reverse('ticket_detail', args=[self.ticket.pk])
+        )
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_support_can_view_department_ticket_history(self):
+        TicketActivity.objects.create(
+            ticket=self.ticket,
+            actor=self.employee,
+            action='created',
+            description='Support history test.'
+        )
+
+        self.client.force_login(self.support)
+
+        response = self.client.get(
+            reverse(
+                'support_ticket_detail',
+                args=[self.ticket.pk]
+            )
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            'Support history test.'
+        )
+
+
+
+    def test_claiming_ticket_creates_activity(self):
+        self.client.force_login(self.support)
+
+        response = self.client.post(
+            reverse(
+                'claim_support_ticket',
+                args=[self.ticket.pk]
+            )
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        self.ticket.refresh_from_db()
+
+        self.assertEqual(
+            self.ticket.status,
+            'in_progress'
+        )
+
+        self.assertEqual(
+            self.ticket.assigned_to,
+            self.support
+        )
+
+        activity = self.ticket.activities.get(
+            action='claimed'
+        )
+
+        self.assertEqual(activity.actor, self.support)
+        self.assertEqual(activity.old_status, 'submitted')
+        self.assertEqual(activity.new_status, 'in_progress')
+        self.assertIsNotNone(activity.created_at)
+
+
+
+    def test_resolving_ticket_creates_activity(self):
+        self.ticket.status = 'in_progress'
+        self.ticket.assigned_to = self.support
+        self.ticket.save()
+
+        self.client.force_login(self.support)
+
+        response = self.client.post(
+            reverse(
+                'resolve_support_ticket',
+                args=[self.ticket.pk]
+            ),
+            {
+                'resolution_summary':
+                    'The reported issue has been fixed.'
+            }
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        self.ticket.refresh_from_db()
+
+        self.assertEqual(
+            self.ticket.status,
+            'resolved'
+        )
+
+        self.assertEqual(
+            self.ticket.resolution_summary,
+            'The reported issue has been fixed.'
+        )
+
+        self.assertIsNotNone(self.ticket.resolved_at)
+
+        activity = self.ticket.activities.get(
+            action='resolved'
+        )
+
+        self.assertEqual(activity.actor, self.support)
+        self.assertEqual(activity.old_status, 'in_progress')
+        self.assertEqual(activity.new_status, 'resolved')
+        self.assertIsNotNone(activity.created_at)
+
+
+
+    def test_reopening_ticket_creates_activity(self):
+        self.ticket.status = 'resolved'
+        self.ticket.assigned_to = self.support
+        self.ticket.resolution_summary = 'Issue fixed.'
+        self.ticket.resolved_at = timezone.now()
+        self.ticket.save()
+
+        self.client.force_login(self.employee)
+
+        response = self.client.post(
+            reverse(
+                'reopen_ticket',
+                args=[self.ticket.pk]
+            ),
+            {
+                'reopening_reason':
+                    'The issue is still happening.'
+            }
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        self.ticket.refresh_from_db()
+
+        self.assertEqual(self.ticket.status, 'reopened')
+        self.assertIsNone(self.ticket.assigned_to)
+
+        activity = self.ticket.activities.get(
+            action='reopened'
+        )
+
+        self.assertEqual(activity.actor, self.employee)
+        self.assertEqual(activity.old_status, 'resolved')
+        self.assertEqual(activity.new_status, 'reopened')
+        self.assertIn(
+            'The issue is still happening.',
+            activity.description
+        )
+
+
+    def test_closing_ticket_creates_activity(self):
+        self.ticket.status = 'resolved'
+        self.ticket.assigned_to = self.support
+        self.ticket.resolution_summary = 'Issue fixed.'
+        self.ticket.resolved_at = timezone.now()
+        self.ticket.save()
+
+        self.client.force_login(self.employee)
+
+        response = self.client.post(
+            reverse(
+                'confirm_ticket_resolution',
+                args=[self.ticket.pk]
+            )
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        self.ticket.refresh_from_db()
+
+        self.assertEqual(
+            self.ticket.status,
+            'closed'
+        )
+
+        activity = self.ticket.activities.get(
+            action='closed'
+        )
+
+        self.assertEqual(
+            activity.actor,
+            self.employee
+        )
+
+        self.assertEqual(
+            activity.old_status,
+            'resolved'
+        )
+
+        self.assertEqual(
+            activity.new_status,
+            'closed'
+        )
+
+        self.assertIsNotNone(
+            activity.created_at
+        )
+
+
+    def test_manual_routing_creates_activity(self):
+        admin = User.objects.create_user(
+            username='history_route_admin',
+            password='TestPass123!',
+            role='admin'
+        )
+
+        Ticket.objects.filter(
+            pk=self.ticket.pk
+        ).update(department=None)
+
+        self.client.force_login(admin)
+
+        response = self.client.post(
+            reverse(
+                'admin_route_ticket',
+                args=[self.ticket.pk]
+            ),
+            {'department': self.department.pk}
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        self.ticket.refresh_from_db()
+
+        self.assertEqual(
+            self.ticket.department,
+            self.department
+        )
+
+        activity = self.ticket.activities.get(
+            action='department_routed'
+        )
+
+        self.assertEqual(activity.actor, admin)
+        self.assertIn(
+            self.department.name,
+            activity.description
+        )
+
+    def test_department_correction_creates_activity(self):
+        admin = User.objects.create_user(
+            username='history_correction_admin',
+            password='TestPass123!',
+            role='admin'
+        )
+
+        new_department = Department.objects.create(
+            name='History Correction Department'
+        )
+
+        self.client.force_login(admin)
+
+        response = self.client.post(
+            reverse(
+                'correct_ticket_department',
+                args=[self.ticket.pk]
+            ),
+            {'department': new_department.pk}
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        self.ticket.refresh_from_db()
+
+        self.assertEqual(
+            self.ticket.department,
+            new_department
+        )
+
+        activity = self.ticket.activities.get(
+            action='department_corrected'
+        )
+
+        self.assertEqual(activity.actor, admin)
+        self.assertIn(
+            new_department.name,
+            activity.description
+        )
+
+
+
+    def test_complete_ticket_lifecycle_history(self):
+        self.client.force_login(self.support)
+
+        # Claim ticket
+        self.client.post(
+            reverse('claim_support_ticket', args=[self.ticket.pk])
+        )
+
+        # Resolve ticket
+        self.client.post(
+            reverse('resolve_support_ticket', args=[self.ticket.pk]),
+            {'resolution_summary': 'Issue fixed successfully.'}
+        )
+
+        # Reporter confirms resolution
+        self.client.force_login(self.employee)
+
+        self.client.post(
+            reverse('confirm_ticket_resolution', args=[self.ticket.pk])
+        )
+
+        self.ticket.refresh_from_db()
+
+        self.assertEqual(self.ticket.status, 'closed')
+
+        activities = list(
+            self.ticket.activities.values_list(
+                'action', flat=True
+            )
+        )
+
+        self.assertEqual(
+            activities,
+            ['claimed', 'resolved', 'closed']
+        )
+
+        transitions = list(
+            self.ticket.activities.values_list(
+                'old_status', 'new_status'
+            )
+        )
+
+        self.assertEqual(
+            transitions,
+            [
+                ('submitted', 'in_progress'),
+                ('in_progress', 'resolved'),
+                ('resolved', 'closed')
+            ]
+        )
+
+
+    def test_invalid_claim_does_not_create_activity(self):
+        self.client.force_login(self.support)
+
+        # First claim succeeds.
+        self.client.post(
+            reverse('claim_support_ticket', args=[self.ticket.pk])
+        )
+
+        self.assertEqual(
+            self.ticket.activities.filter(action='claimed').count(),
+            1
+        )
+
+        # Attempt to claim the same ticket again.
+        self.client.post(
+            reverse('claim_support_ticket', args=[self.ticket.pk])
+        )
+
+        # Failed attempt must not create another record.
+        self.assertEqual(
+            self.ticket.activities.filter(action='claimed').count(),
+            1
+        )
+
+    def test_invalid_resolution_creates_no_activity(self):
+        self.client.force_login(self.support)
+
+        # Submitted tickets cannot be resolved directly.
+        self.client.post(
+            reverse('resolve_support_ticket', args=[self.ticket.pk]),
+            {'resolution_summary': 'Issue fixed.'}
+        )
+
+        self.ticket.refresh_from_db()
+
+        self.assertEqual(self.ticket.status, 'submitted')
+        self.assertFalse(
+            self.ticket.activities.filter(action='resolved').exists()
+        )
+
+    def test_invalid_reopening_creates_no_activity(self):
+        self.client.force_login(self.employee)
+
+        # Only resolved tickets can be reopened.
+        self.client.post(
+            reverse('reopen_ticket', args=[self.ticket.pk]),
+            {'reopening_reason': 'Issue still exists.'}
+        )
+
+        self.ticket.refresh_from_db()
+
+        self.assertEqual(self.ticket.status, 'submitted')
+        self.assertFalse(
+            self.ticket.activities.filter(action='reopened').exists()
+        )
+
+    def test_invalid_closure_creates_no_activity(self):
+        self.client.force_login(self.employee)
+
+        # Only resolved tickets can be confirmed and closed.
+        self.client.post(
+            reverse(
+                'confirm_ticket_resolution',
+                args=[self.ticket.pk]
+            )
+        )
+
+        self.ticket.refresh_from_db()
+
+        self.assertEqual(self.ticket.status, 'submitted')
+        self.assertFalse(
+            self.ticket.activities.filter(action='closed').exists()
+        )
+
+
+
+    def test_other_department_cannot_view_ticket_history(self):
+        other_department = Department.objects.create(
+            name='History Other Department'
+        )
+
+        other_support = User.objects.create_user(
+            username='history_other_support',
+            password='TestPass123!',
+            role='support',
+            department=other_department
+        )
+
+        TicketActivity.objects.create(
+            ticket=self.ticket,
+            actor=self.employee,
+            action='created',
+            description='Private ticket history.'
+        )
+
+        self.client.force_login(other_support)
+
+        response = self.client.get(
+            reverse(
+                'support_ticket_detail',
+                args=[self.ticket.pk]
+            )
+        )
+
+        self.assertEqual(response.status_code, 404)
+
+
+class TicketDurationTests(TestCase):
+
+    def test_response_duration_not_recorded(self):
+        ticket = Ticket(
+            created_at=timezone.now(),
+            first_response_at=None
+        )
+
+        self.assertIsNone(ticket.response_duration)
+
+    def test_response_duration_calculation(self):
+        submitted = timezone.now()
+
+        ticket = Ticket(
+            created_at=submitted,
+            first_response_at=submitted + timedelta(hours=2)
+        )
+
+        self.assertEqual(
+            ticket.response_duration,
+            timedelta(hours=2)
+        )
+
+    def test_resolution_duration_not_recorded(self):
+        ticket = Ticket(
+            created_at=timezone.now(),
+            resolved_at=None
+        )
+
+        self.assertIsNone(ticket.resolution_duration)
+
+    def test_resolution_duration_calculation(self):
+        submitted = timezone.now()
+
+        ticket = Ticket(
+            created_at=submitted,
+            resolved_at=submitted + timedelta(hours=5)
+        )
+
+        self.assertEqual(
+            ticket.resolution_duration,
+            timedelta(hours=5)
+        )
+
+    def test_durations_preserved_after_status_changes(self):
+        submitted = timezone.now()
+
+        ticket = Ticket(
+            created_at=submitted,
+            first_response_at=submitted + timedelta(hours=1),
+            resolved_at=submitted + timedelta(hours=4),
+            status='resolved'
+        )
+
+        original_response = ticket.response_duration
+        original_resolution = ticket.resolution_duration
+
+        ticket.status = 'closed'
+
+        self.assertEqual(
+            ticket.response_duration,
+            original_response
+        )
+        self.assertEqual(
+            ticket.resolution_duration,
+            original_resolution
+        )
+
+        ticket.status = 'reopened'
+
+        self.assertEqual(
+            ticket.response_duration,
+            original_response
+        )
+        self.assertEqual(
+            ticket.resolution_duration,
+            original_resolution
+        )

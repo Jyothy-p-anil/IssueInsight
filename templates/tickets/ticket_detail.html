@@ -46,6 +46,53 @@
                 <p>{{ ticket.category|default:"Not specified" }}</p>
             </div>
 
+<!-- Step 81: Chronological ticket activity history -->
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header">
+        <strong>Ticket Activity History</strong>
+    </div>
+
+    <div class="card-body">
+        {% for activity in activities %}
+            <div class="border-start border-2 ps-3 mb-3">
+                <strong>{{ activity.get_action_display|default:activity.action }}</strong>
+
+                {% if activity.old_status or activity.new_status %}
+                    <div class="small">
+                        {% if activity.old_status %}
+                            {{ activity.old_status|title }}
+                        {% endif %}
+
+                        {% if activity.old_status and activity.new_status %}
+                            &rarr;
+                        {% endif %}
+
+                        {% if activity.new_status %}
+                            {{ activity.new_status|title }}
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+                {% if activity.description %}
+                    <div>{{ activity.description }}</div>
+                {% endif %}
+
+                <div class="text-muted small">
+                    {% if activity.actor %}
+                        By {{ activity.actor.username }} &middot;
+                    {% endif %}
+                    {{ activity.created_at|date:"d M Y, h:i A" }}
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-muted mb-0">
+                No activity history recorded for this ticket.
+            </p>
+        {% endfor %}
+    </div>
+</div>
+
             {% if ticket.division == 'employee' %}
                 <div class="col-md-6">
                     <strong>Floor / Location</strong>

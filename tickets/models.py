@@ -161,6 +161,21 @@ class Ticket(models.Model):
         return timezone.now() >= (
             self.resolved_at + timedelta(hours=72)
         )
+    
+    @property
+    def response_duration(self):
+        if not self.first_response_at:
+            return None
+
+        return self.first_response_at - self.created_at
+
+    @property
+    def resolution_duration(self):
+        if not self.resolved_at:
+            return None
+
+        return self.resolved_at - self.created_at
+
 
     def __str__(self):
         return self.title
@@ -191,3 +206,46 @@ class TicketMessage(models.Model):
 
     def __str__(self):
         return f'Message #{self.pk} on Ticket #{self.ticket_id}'
+
+
+# Step 81: Ticket activity and status history
+
+class TicketActivity(models.Model):
+
+    ticket = models.ForeignKey(
+        Ticket,
+        on_delete=models.CASCADE,
+        related_name='activities'
+    )
+
+    actor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+
+    action = models.CharField(max_length=50)
+
+    old_status = models.CharField(
+        max_length=20,
+        blank=True
+    )
+
+    new_status = models.CharField(
+        max_length=20,
+        blank=True
+    )
+
+    description = models.TextField(blank=True)
+
+    created_at = models.DateTimeField(
+        default=timezone.now,
+        editable=False
+    )
+
+    class Meta:
+        ordering = ['created_at', 'id']
+
+    def __str__(self):
+        return f'{self.action} - Ticket #{self.ticket_id}'

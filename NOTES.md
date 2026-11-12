@@ -781,3 +781,64 @@ Rules:
   Added ten automated tests covering permissions,
   valid corrections, invalid departments, HTTP methods
   and timestamp updates. Full regression tests passed.
+
+
+
+-----------------------------------------------------
+
+  - Step 81 (Module 8): Implemented ticket activity
+  and lifecycle history using TicketActivity.
+
+  Recorded ticket creation, Admin routing, department
+  correction, Support Staff claiming, resolution,
+  reporter confirmation and reopening.
+
+  Added actor, timestamp, previous status, new status
+  and descriptive history information.
+
+  Displayed chronological activity timelines on
+  authorized reporter and Support Staff ticket pages.
+
+  Added transactional protection for ticket changes
+  and their associated history records.
+
+  Verified lifecycle transitions, invalid operations,
+  department isolation and regression tests.
+
+  Step 81 completed.
+
+  Remaining Module 8 work:
+  Response-duration and resolution-duration tracking,
+  followed by the final checklist audit.
+
+
+-----------------------------------------------------
+
+  - Step 82 (Module 8): Implemented response and
+  resolution duration tracking.
+
+  Added Ticket.response_duration and
+  Ticket.resolution_duration properties using
+  existing timestamps.
+
+  Response duration measures elapsed time from
+  complaint submission to the first public
+  Support Staff response.
+
+  Resolution duration measures elapsed time from
+  complaint submission to resolution.
+
+  Displayed both durations on the Support Staff
+  ticket detail page, including messages when
+  timestamps are unavailable.
+
+  Added five automated tests covering missing
+  timestamps, duration calculations and preservation
+  of calculated values when status changes.
+
+  Verified Django system checks, migrations and
+  full regression tests.
+
+  Step 82 completed.
+  Checklist items 142 and 143 completed.
+  Final Module 8 checklist audit remains pending.
