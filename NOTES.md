@@ -897,3 +897,57 @@ Escalation currently records a request for further technical review. It does not
 - templates/tickets/notification_list.html
 - templates/tickets/ticket_detail.html
 - templates/tickets/support_ticket_detail.html
+
+
+
+---
+
+## Module 10 — Scope Review and Closure
+
+**Status:** Closed after scope revision. No Module 10 features retained for implementation.
+
+### Shared Issue Verification — Removed
+
+An initial prototype was developed to allow Employees to
+verify shared workplace complaints reported by others.
+
+The prototype included:
+- Shared-issue classification on Employee complaints.
+- Verification model and database migrations.
+- Employee verification interface and permissions.
+- Duplicate and self-verification restrictions.
+- Verification tests.
+
+Following the scope review, this feature was removed
+because it overlapped with the planned AI-assisted
+similarity detection and incident grouping workflow.
+
+The prototype code was restored to the previous
+committed state. Migrations 0011 and 0012 were reversed
+and removed.
+
+### Deferred to Module 11
+
+- AI detection of related complaints.
+- Related-ticket suggestions and Support Staff review.
+- Incident records, confirmation and ticket linking.
+- Incident overview and progress visibility.
+- Recurring Customer product issue detection.
+- Repeated complaint summaries.
+- Incident permissions and tests.
+
+Automatic incident update propagation was removed
+from the approved scope.
+
+### Verification
+
+- Django ticket tests: 204 passed.
+- Applied ticket migrations end at 0010.
+- Git working tree confirmed clean before
+  documentation changes.
+
+### Final Decision
+
+Module 10 is closed without retaining the shared-issue
+verification prototype. The incident-related workflow
+will be implemented in Module 11 alongside AI integration.
