@@ -951,3 +951,43 @@ from the approved scope.
 Module 10 is closed without retaining the shared-issue
 verification prototype. The incident-related workflow
 will be implemented in Module 11 alongside AI integration.
+
+
+## Module 11 — AI Classification and Urgency Detection
+
+**Status:** In progress — AI category suggestions and urgency detection implemented; similarity detection and incident workflows pending.
+
+### AI Category Suggestions
+
+- Added local sentence-transformer-based category prediction.
+- Added category suggestion functionality to Employee and Customer complaint forms.
+- Suggestions are optional; reporters can choose a different category.
+- Added supporting text preprocessing, embeddings, reference data, validation and prediction services.
+- Added automated tests for category suggestions.
+
+### AI Urgency Detection
+
+- Added rule-based urgency detection using complaint descriptions.
+- Urgency levels: High, Medium and Low.
+- Added `Ticket.urgency` with migration `0011_ticket_urgency.py`.
+- Urgency is automatically calculated when Employee and Customer complaints are submitted.
+- Urgency is stored in the database and displayed on reporter and Support Staff ticket details.
+- Existing tickets receive the default Low value; this is not a historical AI assessment.
+
+### Verification
+
+- Confirmed urgency persistence for Employee and Customer submissions.
+- Verified urgency display on reporter and Support Staff detail pages.
+- Removed two placeholder persistence tests.
+- Full Django test suite passed before documentation updates.
+- Category prediction and urgency detection are separate features.
+
+### Remaining Module 11 Scope
+
+- AI similarity detection and related-ticket suggestions.
+- Support Staff review and incident confirmation.
+- Incident records, ticket linking and progress visibility.
+- Recurring Customer product issue detection and summaries.
+- Associated permissions and automated tests.
+
+**Module 11 remains in progress.**

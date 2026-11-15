@@ -102,7 +102,12 @@ path(
     account_views.change_user_status,
     name='change_user_status'
 ),
-
+# Module 11 — AI category suggestion
+path(
+    'tickets/ai/suggest-category/',
+    views.suggest_ticket_category,
+    name='suggest_ticket_category'
+),
 # Employee Complaint Submission and Ticket Viewing URLs
 
 path(

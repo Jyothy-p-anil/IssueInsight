@@ -1,4 +1,5 @@
 
+from django.template import response
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
@@ -1533,6 +1534,30 @@ class EmployeeComplaintSubmissionTests(TestCase):
 
         self.assertEqual(invalid_candidates, [])
 
+    def test_detected_high_urgency_is_saved(self):
+        self.client.force_login(self.employee)
+
+        response = self.client.post(
+        reverse('submit_employee_complaint'),
+        {
+            'title': 'Server Outage',
+            'description': (
+                'The server is down and employees '
+                'cannot access the system.'
+            ),
+            'category': self.employee_category.pk,
+            'floor': 'Second Floor',
+        }
+    )
+
+        self.assertRedirects(response, reverse('employee_my_tickets'))
+
+        ticket = Ticket.objects.get(title='Server Outage')
+
+        self.assertEqual(ticket.urgency, 'high')
+        self.assertEqual(ticket.status, 'submitted')
+        self.assertEqual(ticket.department, self.department)
+
 
 class CustomerComplaintSubmissionTests(TestCase):
 
@@ -2052,6 +2077,30 @@ class CustomerComplaintSubmissionTests(TestCase):
         employee_response = self.client.get(url)
         self.assertEqual(employee_response.status_code, 302)
 
+    def test_detected_medium_urgency_is_saved(self):
+        self.client.force_login(self.customer)
+
+        response = self.client.post(
+            reverse('submit_customer_complaint'),
+        {
+            'title': 'Application Crashing',
+            'description': (
+                'The application keeps crashing '
+                'when generating reports.'
+            ),
+            'category': self.customer_category.pk,
+            'product': self.active_product.pk,
+        }
+    )
+
+        self.assertRedirects(response, reverse('customer_my_tickets'))
+
+        ticket = Ticket.objects.get(title='Application Crashing')
+
+        self.assertEqual(ticket.urgency, 'medium')
+        self.assertEqual(ticket.status, 'submitted')
+        self.assertEqual(ticket.department, self.department)
+
 
 class ReporterTicketDetailTests(TestCase):
 
@@ -2238,6 +2287,35 @@ class ReporterTicketDetailTests(TestCase):
             'Replies are unavailable'
         )
         self.assertNotContains(response, 'Send Message')
+
+    def test_employee_detail_displays_high_urgency(self):
+        self.employee_ticket.urgency = 'high'
+        self.employee_ticket.save(update_fields=['urgency'])
+
+        self.client.force_login(self.employee)
+
+        response = self.client.get(
+            reverse('ticket_detail', args=[self.employee_ticket.pk])
+    )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Urgency:')
+        self.assertContains(response, 'High')
+
+
+    def test_customer_detail_displays_medium_urgency(self):
+        self.customer_ticket.urgency = 'medium'
+        self.customer_ticket.save(update_fields=['urgency'])
+
+        self.client.force_login(self.customer)
+
+        response = self.client.get(
+            reverse('ticket_detail', args=[self.customer_ticket.pk])
+    )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Urgency:')
+        self.assertContains(response, 'Medium')
 
 class ReporterTicketListFilterTests(TestCase):
 
@@ -3265,6 +3343,19 @@ class SupportQueueAndClaimTests(TestCase):
             department=None,
             status='submitted'
         )
+    def test_support_detail_displays_low_urgency(self):
+        self.assigned_a.urgency = 'low'
+        self.assigned_a.save(update_fields=['urgency'])
+
+        self.client.force_login(self.staff_a)
+
+        response = self.client.get(
+            reverse('support_ticket_detail', args=[self.assigned_a.pk])
+    )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Urgency:')
+        self.assertContains(response, 'Low')
 
     def test_non_support_roles_cannot_access_support_lists(self):
 

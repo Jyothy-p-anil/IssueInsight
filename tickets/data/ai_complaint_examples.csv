@@ -1,0 +1,55 @@
+example_id,division,expected_category,description
+EX001,employee,IT Issues,My office laptop cannot connect to the company Wi-Fi.
+EX002,employee,IT Issues,The VPN disconnects whenever I try to access internal applications.
+EX003,employee,IT Issues,My assigned laptop will not start even when connected to power.
+EX004,employee,IT Issues,I cannot access the shared network drive from my workstation.
+EX005,employee,Facilities Issues,The air conditioner on Floor 2 is not cooling the shared workspace.
+EX006,employee,Facilities Issues,Our second-floor office is unusually hot because the AC stopped working.
+EX007,employee,Facilities Issues,There is no drinking water in the shared pantry on Floor 1.
+EX008,employee,Facilities Issues,Water is leaking from the ceiling near the meeting room.
+EX009,employee,Administration Issues,My employee ID card has not been issued after onboarding.
+EX010,employee,Administration Issues,The visitor entry approval has been pending since Monday.
+EX011,employee,Administration Issues,I need an update on my office seating allocation.
+EX012,employee,Administration Issues,My parking access request has not been processed.
+EX013,employee,Other,I have a workplace concern that does not match the listed categories.
+EX014,employee,Other,I need assistance with an issue that is not covered by the available options.
+EX015,employee,Printer Issue,The printer near reception is showing a paper jam error.
+EX016,employee,Printer Issue,The shared printer on Floor 3 produces blank pages.
+EX017,employee,Printer Issue,I cannot print documents because the office printer is offline.
+EX018,employee,Printer Issue,The printer keeps jamming even after the paper tray is cleared.
+EX019,customer,Login & Access,I cannot sign in even though my password is correct.
+EX020,customer,Login & Access,The password reset link says it has expired immediately.
+EX021,customer,Login & Access,Two-factor authentication codes are not arriving.
+EX022,customer,Login & Access,My account is locked after several failed login attempts.
+EX023,customer,Software Errors,The application crashes when I click Save.
+EX024,customer,Software Errors,An unexpected error appears when I open the project settings page.
+EX025,customer,Software Errors,The export button throws a server error every time.
+EX026,customer,Software Errors,The app closes suddenly while I am editing a record.
+EX027,customer,Performance Issues,The dashboard takes more than a minute to load.
+EX028,customer,Performance Issues,Searching through records has become extremely slow.
+EX029,customer,Performance Issues,The application freezes for several seconds when switching tabs.
+EX030,customer,Performance Issues,Pages load slowly during normal business hours.
+EX031,customer,Data & Reports,The monthly sales report shows totals that do not match our records.
+EX032,customer,Data & Reports,Some transactions are missing from the downloaded report.
+EX033,customer,Data & Reports,The dashboard chart displays outdated data after refresh.
+EX034,customer,Data & Reports,The generated report contains duplicate entries.
+EX035,customer,"Billing, Account & Subscription",My subscription was charged twice this month.
+EX036,customer,"Billing, Account & Subscription",I upgraded my plan but the new features are still unavailable.
+EX037,customer,"Billing, Account & Subscription",The invoice lists the wrong billing address.
+EX038,customer,"Billing, Account & Subscription",I cancelled the subscription but received another renewal charge.
+EX039,customer,Security & Privacy,I noticed a login to my account from an unfamiliar device.
+EX040,customer,Security & Privacy,A user without permission can view another team's private records.
+EX041,customer,Security & Privacy,My account settings changed without my authorization.
+EX042,customer,Security & Privacy,Sensitive customer details appear visible to an unauthorized user.
+EX043,customer,Setup & Integration,The application cannot connect to our CRM integration.
+EX044,customer,Setup & Integration,The setup wizard fails at the database connection step.
+EX045,customer,Setup & Integration,Webhook events are not reaching our configured endpoint.
+EX046,customer,Setup & Integration,I cannot complete the initial installation because configuration validation fails.
+EX047,customer,Other,I need help with a product issue that does not fit the available categories.
+EX048,customer,Other,I have a general product-related request that is not listed here.
+EX049,employee,,Help.
+EX050,customer,,It is broken.
+EX051,employee,,
+EX052,customer,,???
+EX053,employee,,The system is not working and I need help.
+EX054,customer,,The page is slow and sometimes shows an error.

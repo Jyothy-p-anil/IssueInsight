@@ -42,6 +42,24 @@
                 </div>
             {% endfor %}
 
+            <div class="mb-3">
+                <button
+                    type="button"
+                    class="btn btn-outline-primary"
+                    id="ai-suggest-button"
+                    data-url="{% url 'suggest_ticket_category' %}">
+                    Suggest Category with AI
+                </button>
+
+                <div
+                    id="ai-suggestion-result"
+                    class="small mt-2"
+                    role="status"
+                    aria-live="polite">
+                </div>
+            </div>
+
+
             <button type="submit"
                     class="btn btn-primary">
                 Submit Complaint
@@ -55,5 +73,8 @@
         </form>
     </div>
 </div>
+
+{% load static %}
+<script src="{% static 'js/ai_category_suggestion.js' %}"></script>
 
 {% endblock %}

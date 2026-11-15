@@ -19,6 +19,15 @@ from .models import Notification
 from .services.notifications import create_notification
 
 
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+
+from .services.ai_category_prediction import (
+    suggest_complaint_category,
+    assess_category_suggestion,
+    validate_suggested_category,
+)
+
 
 
 
@@ -40,6 +49,12 @@ from .forms import (
 from django.db import transaction
 
 from django.views.decorators.http import require_POST
+
+
+from .services.ai_urgency_detection import detect_complaint_urgency
+
+
+
 
 @login_required
 def home(request):
@@ -106,6 +121,9 @@ def submit_employee_complaint(request):
             ticket.status = 'submitted'
 
             ticket.department = ticket.category.department
+            urgency_result = detect_complaint_urgency(ticket.description)
+            ticket.urgency = urgency_result["urgency"]
+            
 
             
             with transaction.atomic():
@@ -122,7 +140,9 @@ def submit_employee_complaint(request):
 
             messages.success(
                 request,
-                f'Complaint #{ticket.pk} submitted successfully.'
+                f'Complaint #{ticket.pk} submitted successfully. '
+                #f'Suggested urgency: {urgency_result["urgency"].title()}. '
+                #f'{urgency_result["reason"]}'
             )
 
             return redirect('employee_my_tickets')
@@ -133,6 +153,61 @@ def submit_employee_complaint(request):
     return render(request, 'tickets/employee_complaint_form.html', {
         'form': form
     })
+#function to view employee tickets
+
+@require_POST
+@login_required
+def suggest_ticket_category(request):
+    """
+    Return an AI category suggestion without saving a ticket.
+    """
+
+    division = request.user.role
+
+    if division not in ("employee", "customer"):
+        return JsonResponse(
+            {"error": "This action is not available for your role."},
+            status=403,
+        )
+
+    description = request.POST.get("description", "")
+
+    prediction, error = suggest_complaint_category(
+        description,
+        division,
+    )
+
+    if error:
+        return JsonResponse(
+            {"error": error},
+            status=400,
+        )
+
+    category_name = prediction["suggested_category"]
+
+    if not validate_suggested_category(category_name, division):
+        return JsonResponse(
+            {"error": "Suggested category is not available."},
+            status=400,
+        )
+
+    category = Category.objects.get(
+        name=category_name,
+        division=division,
+    )
+
+    assessment = assess_category_suggestion(prediction)
+
+    return JsonResponse({
+        "category_id": category.pk,
+        "category_name": category.name,
+        "similarity_score": prediction["similarity_score"],
+        "alternatives": prediction["alternatives"],
+        "needs_review": assessment["needs_review"],
+        "reason": assessment["reason"],
+    })
+
+
 # Step 65: Shared search and filters for reporter ticket lists
 
 def apply_reporter_ticket_filters(request, tickets):
@@ -256,9 +331,11 @@ def submit_customer_complaint(request):
             ticket.reporter = request.user
             ticket.division = 'customer'
             ticket.status = 'submitted'
-
             ticket.department = ticket.category.department
+            urgency_result = detect_complaint_urgency(ticket.description)
+            ticket.urgency = urgency_result["urgency"]
 
+           
             
             with transaction.atomic():
                 ticket.save()
@@ -274,7 +351,9 @@ def submit_customer_complaint(request):
 
             messages.success(
                 request,
-                f'Complaint #{ticket.pk} submitted successfully.'
+                f'Complaint #{ticket.pk} submitted successfully. '
+                f'Suggested urgency: {urgency_result["urgency"].title()}. '
+                f'{urgency_result["reason"]}'
             )
 
             return redirect('customer_my_tickets')

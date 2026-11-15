@@ -68,6 +68,18 @@ class Ticket(models.Model):
         ('reopened', 'Reopened'),
     ]
 
+    URGENCY_CHOICES = [
+    ('low', 'Low'),
+    ('medium', 'Medium'),
+    ('high', 'High'),
+   ]
+
+    urgency = models.CharField(
+        max_length=10,
+        choices=URGENCY_CHOICES,
+        default='low',
+    )
+
     reporter = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,

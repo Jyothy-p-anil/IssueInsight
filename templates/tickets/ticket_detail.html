@@ -45,7 +45,18 @@
                 <strong>Category</strong>
                 <p>{{ ticket.category|default:"Not specified" }}</p>
             </div>
+            
+            <div class="mb-3">
+                <strong>Urgency:</strong>
 
+                {% if ticket.urgency == 'high' %}
+                    <span class="badge bg-danger">High</span>
+                {% elif ticket.urgency == 'medium' %}
+                    <span class="badge bg-warning text-dark">Medium</span>
+                {% else %}
+                    <span class="badge bg-secondary">Low</span>
+                {% endif %}
+            </div>
 <!-- Step 81: Chronological ticket activity history -->
 
 <div class="card shadow-sm mb-4">
