@@ -7,13 +7,87 @@
 <h2>{{ incident.title }}</h2>
 
 <p>{{ incident.description }}</p>
-<p>Status: {{ incident.get_status_display }}</p>
+<div class="card mb-3">
+    <div class="card-body">
+        <h5>Incident Progress</h5>
+
+        <p>
+            <strong>Current Status:</strong>
+            {{ incident.get_status_display }}
+        </p>
+
+        {% if incident.owner_id == request.user.id %}
+
+            {% if incident.status == 'open' %}
+                <form method="post"
+                      action="{% url 'support_update_incident_status' incident.pk %}">
+                    {% csrf_token %}
+                    <input type="hidden"
+                           name="status"
+                           value="in_progress">
+
+                    <button type="submit" class="btn btn-primary">
+                        Start Investigation
+                    </button>
+                </form>
+
+            {% elif incident.status == 'in_progress' %}
+                <form method="post"
+                      action="{% url 'support_update_incident_status' incident.pk %}">
+                    {% csrf_token %}
+                    <input type="hidden"
+                           name="status"
+                           value="resolved">
+
+                    <button type="submit" class="btn btn-success">
+                        Mark Incident Resolved
+                    </button>
+                </form>
+
+            {% else %}
+                <p class="text-success mb-0">
+                    This incident has been resolved.
+                </p>
+            {% endif %}
+
+        {% endif %}
+    </div>
+</div>
 <p>Department: {{ incident.department.name }}</p>
 <p>Owner: {{ incident.owner.username }}</p>
 
 <a href="{% url 'support_incident_list' %}">
     Back to Incidents
 </a>
+
+<hr>
+<h4>Investigation Updates</h4>
+
+{% if incident.owner_id == request.user.id and incident.status != 'resolved' %}
+<form method="post" action="{% url 'support_add_incident_update' incident.pk %}">
+    {% csrf_token %}
+    <textarea name="body" class="form-control mb-2"
+              maxlength="2000" required
+              placeholder="Record investigation findings or actions taken"></textarea>
+    <button type="submit" class="btn btn-primary mb-3">
+        Add Investigation Update
+    </button>
+</form>
+{% endif %}
+
+{% for update in investigation_updates %}
+<div class="card mb-2">
+    <div class="card-body">
+        <p>{{ update.body }}</p>
+        <small class="text-muted">
+            {{ update.author.username }} —
+            {{ update.created_at|date:"d M Y, h:i A" }}
+        </small>
+    </div>
+</div>
+{% empty %}
+<p>No investigation updates recorded yet.</p>
+{% endfor %}
 
 <hr>
 

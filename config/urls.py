@@ -347,7 +347,17 @@ path(
         views.support_link_incident_ticket,
         name='support_link_incident_ticket',
     ),
+# Step 205 — Incident progress tracking
 
-
+path(
+    'support/incidents/<int:incident_id>/status/',
+    views.support_update_incident_status,
+    name='support_update_incident_status',
+),
+path(
+    'support/incidents/<int:incident_id>/updates/',
+    views.support_add_incident_update,
+    name='support_add_incident_update',
+),
 
 ]

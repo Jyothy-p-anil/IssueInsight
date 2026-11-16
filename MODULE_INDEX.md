@@ -37,7 +37,8 @@ Complete — All approved Module 8 requirements implemented and verified through
 | **10. Shared Issues, Recurring Complaints and Incidents** | Scope revised: employee shared-issue verification removed; incident grouping and recurring-complaint functionality deferred to Module 11. | Closed — no retained Module 10 implementation pending. Shared-verification prototype rolled back; 204 ticket tests passed and migrations end at 0010. | No retained Module 10 feature files. See Module 11 for deferred incident functionality. | — |
 
 
-| **11. AI and Intelligent Complaint Analysis** | AI complaint classification, urgency detection, similarity detection, Support Staff incident creation and review, related complaint linking, incident overview/progress, recurring Customer product issue detection and summaries, and permissions/tests. | **Partial — Steps 203–204 implemented.** AI category suggestions, urgency detection, complaint similarity suggestions, incident creation, incident list/detail pages, department-restricted complaint search and checkbox-based linking implemented. Seven incident-view tests passed for Step 203; Step 204 search and checkbox linking manually verified. Independent AI-suggestion linking verification pending. Incident progress tracking and recurring Customer product issue analysis remain pending. | `tickets/models.py` (`Ticket.urgency`, `Incident`, `IncidentTicket`); `tickets/views.py` (`suggest_ticket_category`, `submit_employee_complaint`, `submit_customer_complaint`, `support_ticket_detail`, `support_incident_list`, `support_incident_detail`, `support_create_incident`, `support_link_incident_ticket`); `tickets/services/ai_category_prediction.py`, `tickets/services/ai_category_references.py`, `tickets/services/ai_dataset_validation.py`, `tickets/services/ai_embeddings.py`, `tickets/services/ai_model.py`, `tickets/services/ai_text_preprocessing.py`, `tickets/services/ai_urgency_detection.py`, `tickets/services/ai_complaint_similarity.py`, `tickets/services/incident_management.py`; `tickets/data/`; `static/js/`; `templates/base.html`; `templates/tickets/employee_complaint_form.html`, `templates/tickets/customer_complaint_form.html`, `templates/tickets/ticket_detail.html`, `templates/tickets/support_ticket_detail.html`, `templates/tickets/support_incident_list.html`, `templates/tickets/support_incident_detail.html`; `tickets/migrations/0011_ticket_urgency.py`, `tickets/migrations/0012_incident.py`, `tickets/migrations/0013_incidentticket_alter_incident_tickets_and_more.py`; `tickets/test_ai_category_suggestion.py`, `tickets/test_ai_urgency_detection.py`, `tickets/test_ai_complaint_similarity.py`, `tickets/test_ai_similarity_visibility.py`, `tickets/test_incident_management.py`, `tickets/test_incident_views.py`, `tickets/tests.py`; `config/urls.py`; `requirements.txt` | Module 11 implementation: `e716c75` (similarity and incident linking); Steps 203–204 commit pending |
+| **11. AI and Intelligent Complaint Analysis** | AI complaint classification, urgency detection, similarity detection, Support Staff incident creation and review, related complaint linking, incident overview/progress, recurring Customer product issue detection and summaries, and permissions/tests. | Partial — Implementation Steps 205–206 completed. Incident progress tracking and investigation updates implemented. Shared communication, incident resolution workflow, and recurring Customer product issue analysis remain pending.
+| `tickets/models.py` (`Ticket.urgency`, `Incident`, `IncidentTicket`); `tickets/views.py` (`suggest_ticket_category`, `submit_employee_complaint`, `submit_customer_complaint`, `support_ticket_detail`, `support_incident_list`, `support_incident_detail`, `support_create_incident`, `support_link_incident_ticket`); `tickets/services/ai_category_prediction.py`, `tickets/services/ai_category_references.py`, `tickets/services/ai_dataset_validation.py`, `tickets/services/ai_embeddings.py`, `tickets/services/ai_model.py`, `tickets/services/ai_text_preprocessing.py`, `tickets/services/ai_urgency_detection.py`, `tickets/services/ai_complaint_similarity.py`, `tickets/services/incident_management.py`; `tickets/data/`; `static/js/`; `templates/base.html`; `templates/tickets/employee_complaint_form.html`, `templates/tickets/customer_complaint_form.html`, `templates/tickets/ticket_detail.html`, `templates/tickets/support_ticket_detail.html`, `templates/tickets/support_incident_list.html`, `templates/tickets/support_incident_detail.html`; `tickets/migrations/0011_ticket_urgency.py`, `tickets/migrations/0012_incident.py`, `tickets/migrations/0013_incidentticket_alter_incident_tickets_and_more.py`; `tickets/test_ai_category_suggestion.py`, `tickets/test_ai_urgency_detection.py`, `tickets/test_ai_complaint_similarity.py`, `tickets/test_ai_similarity_visibility.py`, `tickets/test_incident_management.py`, `tickets/test_incident_views.py`, `tickets/tests.py`; `config/urls.py`; `requirements.txt` | Module 11 implementation: `e716c75` (similarity and incident linking); Steps 203–204 commit pending |
 
 
 | **12. Dashboards and Analytics** | Role-specific reporting and analytics | Partial: initial dashboard destinations exist; analytics not yet implemented | `tickets/views.py` (`employee_dashboard`, `customer_dashboard`, `support_dashboard`, `admin_dashboard`, `dashboard_redirect`); `templates/role_dashboard.html` | `2f17578632`, `e4f6c84546` |
@@ -55,6 +56,22 @@ Complete — All approved Module 8 requirements implemented and verified through
 | Reply or add internal notes on support tickets | No | No | Yes, when assigned | No |
 | Manage user accounts | No | No | No | Yes |
 | Route a pending/unassigned complaint | No | No | No | Yes |
+
+
+| **15. Integration Testing...** | ... |
+
+## Development Numbering Convention
+
+- Module number: Functional area of the project.
+- Checklist requirement number: Number from the master checklist.
+- Implementation step number: Chronological development record.
+
+Historical step numbers are preserved.
+
+## Module 3 — Permission matrix (current implemented behavior)
+
+
+
 
 Superusers have elevated access through the role decorator, but individual views may still apply object-level restrictions. The test coverage is for existing workflows, not every future feature.
 

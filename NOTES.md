@@ -1041,3 +1041,28 @@ will be implemented in Module 11 alongside AI integration.
   complaint display manually.
 - AI-suggestion linking requires independent manual verification.
 - Module 11 remains in progress.
+
+
+
+
+### Implementation Steps 205–206 — Incident Progress and Investigation Updates (Module 11)
+
+**Step 205 — Incident Progress Tracking**
+- Added incident status transitions: Open → In Progress → Resolved.
+- Restricted status changes to the incident owner.
+- Preserved individual linked complaint statuses.
+- Added incident progress controls and automated tests.
+
+**Step 206 — Investigation Updates**
+- Added IncidentUpdate model with author and timestamp.
+- Incident owner can record investigation findings and actions.
+- Updates are visible to Support Staff in the same department.
+- Other staff cannot create updates.
+- Resolved incidents cannot receive investigation updates.
+- Linked complaint statuses remain unchanged.
+- Manual verification completed.
+- Six automated investigation-update tests completed.
+
+**Remaining:** Shared incident communication, incident resolution summary, linked complaint notifications, and recurring-issue analysis.
+
+Module 11 remains in progress.

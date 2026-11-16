@@ -369,3 +369,20 @@ class IncidentTicket(models.Model):
                 name='unique_incident_ticket_link',
             ),
         ]
+
+
+class IncidentUpdate(models.Model):
+    incident = models.ForeignKey(
+        Incident,
+        on_delete=models.CASCADE,
+        related_name='investigation_updates',
+    )
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+    )
+    body = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['created_at', 'id']

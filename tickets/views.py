@@ -67,6 +67,8 @@ from .services.incident_management import (
 )
 
 
+from .models import Incident, IncidentTicket, IncidentUpdate
+
 @login_required
 def home(request):
     return render(request, 'home.html')
@@ -1740,6 +1742,9 @@ def support_incident_detail(request, incident_id):
         'search_results': search_results,
         'ai_suggestions': ai_suggestions,
         'ai_error': ai_error,
+        'investigation_updates': incident.investigation_updates.select_related(
+    'author'
+    ),
     })
 
 
@@ -1816,5 +1821,86 @@ def support_link_incident_ticket(request, incident_id):
         messages.error(request, error)
     else:
         messages.success(request, f'{len(tickets)} complaint(s) linked successfully.')
+
+    return redirect('support_incident_detail', incident_id=incident.pk)
+
+
+# Step 205 — Incident progress tracking
+
+@role_required('support')
+@require_POST
+def support_update_incident_status(request, incident_id):
+    incident = get_object_or_404(
+        Incident,
+        pk=incident_id,
+        department_id=request.user.department_id,
+    )
+
+    if incident.owner_id != request.user.pk:
+        messages.error(
+            request,
+            'Only the incident owner can update its status.'
+        )
+        return redirect(
+            'support_incident_detail',
+            incident_id=incident.pk,
+        )
+
+    transitions = {
+        'open': 'in_progress',
+        'in_progress': 'resolved',
+    }
+
+    new_status = request.POST.get('status', '')
+
+    if transitions.get(incident.status) != new_status:
+        messages.error(
+            request,
+            'Invalid incident status transition.'
+        )
+        return redirect(
+            'support_incident_detail',
+            incident_id=incident.pk,
+        )
+
+    incident.status = new_status
+    incident.save(update_fields=['status', 'updated_at'])
+
+    messages.success(
+        request,
+        'Incident status updated successfully.'
+    )
+
+    return redirect(
+        'support_incident_detail',
+        incident_id=incident.pk,
+    )
+
+
+@role_required('support')
+@require_POST
+def support_add_incident_update(request, incident_id):
+    incident = get_object_or_404(
+        Incident,
+        pk=incident_id,
+        department_id=request.user.department_id,
+    )
+
+    if incident.owner_id != request.user.pk:
+        messages.error(request, 'Only the incident owner can add updates.')
+    elif incident.status == 'resolved':
+        messages.error(request, 'Resolved incidents cannot receive investigation updates.')
+    else:
+        body = request.POST.get('body', '').strip()
+
+        if not body or len(body) > 2000:
+            messages.error(request, 'Enter an update of 1–2000 characters.')
+        else:
+            IncidentUpdate.objects.create(
+                incident=incident,
+                author=request.user,
+                body=body,
+            )
+            messages.success(request, 'Investigation update recorded.')
 
     return redirect('support_incident_detail', incident_id=incident.pk)
