@@ -341,7 +341,8 @@ class Incident(models.Model):
         related_name='incidents',
         blank=True,
     )
-
+    resolution_summary = models.TextField(blank=True)
+    
     created_at = models.DateTimeField(auto_now_add=True)
 
     updated_at = models.DateTimeField(auto_now=True)

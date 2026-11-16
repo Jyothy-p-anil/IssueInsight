@@ -1066,3 +1066,17 @@ will be implemented in Module 11 alongside AI integration.
 **Remaining:** Shared incident communication, incident resolution summary, linked complaint notifications, and recurring-issue analysis.
 
 Module 11 remains in progress.
+
+
+### Implementation Step 207 — Mandatory Incident Resolution Summary (Module 11)
+
+- Added `Incident.resolution_summary` with a database migration.
+- Required a non-empty resolution summary before an incident can transition from In Progress to Resolved.
+- Restricted incident resolution to its owner.
+- Displayed the saved resolution summary on the incident detail page.
+- Prevented duplicate resolution and invalid status transitions.
+- Updated existing incident progress tests for the mandatory summary.
+- Added five automated resolution-summary tests.
+- Manual verification and full regression testing completed.
+
+Module 11 remains in progress.

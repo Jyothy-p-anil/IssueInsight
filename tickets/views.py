@@ -1863,8 +1863,33 @@ def support_update_incident_status(request, incident_id):
             incident_id=incident.pk,
         )
 
-    incident.status = new_status
-    incident.save(update_fields=['status', 'updated_at'])
+    if new_status == 'resolved':
+        resolution_summary = request.POST.get(
+            'resolution_summary', ''
+        ).strip()
+
+        if not resolution_summary or len(resolution_summary) > 2000:
+            messages.error(
+                request,
+                'Enter a resolution summary of 1–2000 characters.'
+            )
+            return redirect(
+                'support_incident_detail',
+                incident_id=incident.pk,
+            )
+
+        incident.resolution_summary = resolution_summary
+        incident.status = 'resolved'
+        incident.save(
+            update_fields=[
+                'status',
+                'resolution_summary',
+                'updated_at',
+            ]
+        )
+    else:
+        incident.status = new_status
+        incident.save(update_fields=['status', 'updated_at'])
 
     messages.success(
         request,
@@ -1875,6 +1900,7 @@ def support_update_incident_status(request, incident_id):
         'support_incident_detail',
         incident_id=incident.pk,
     )
+
 
 
 @role_required('support')

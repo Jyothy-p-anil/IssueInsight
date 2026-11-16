@@ -4,6 +4,14 @@ from django.urls import reverse
 
 from tickets.models import Department, Incident, Ticket
 
+
+from django.contrib.auth import get_user_model
+from django.test import TestCase
+from django.urls import reverse
+from tickets.models import Department, Incident
+
+
+
 User = get_user_model()
 
 
@@ -89,7 +97,9 @@ class IncidentProgressTests(TestCase):
 
         self.client.post(
             self.url,
-            {'status': 'resolved'},
+            {'status': 'resolved',
+            'resolution_summary': 'The issue was investigated and repaired successfully.',
+            }
         )
 
         self.incident.refresh_from_db()
@@ -176,3 +186,88 @@ class IncidentProgressTests(TestCase):
 
         self.incident.refresh_from_db()
         self.assertEqual(self.incident.status, 'resolved')
+
+
+
+
+class IncidentResolutionSummaryTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.department = Department.objects.create(
+            name='Resolution Test Department'
+        )
+        cls.owner = get_user_model().objects.create_user(
+            username='resolution_owner',
+            password='TestPass123!',
+            role='support',
+            department=cls.department,
+        )
+        cls.other_staff = get_user_model().objects.create_user(
+            username='resolution_other',
+            password='TestPass123!',
+            role='support',
+            department=cls.department,
+        )
+        cls.incident = Incident.objects.create(
+            title='Test resolution',
+            description='Testing mandatory summary',
+            department=cls.department,
+            owner=cls.owner,
+            status='in_progress',
+        )
+
+    def resolve(self, summary):
+        return self.client.post(
+            reverse(
+                'support_update_incident_status',
+                args=[self.incident.pk],
+            ),
+            {
+                'status': 'resolved',
+                'resolution_summary': summary,
+            },
+        )
+
+    def test_owner_can_resolve_with_summary(self):
+        self.client.force_login(self.owner)
+        self.resolve('Water connection repaired.')
+
+        self.incident.refresh_from_db()
+        self.assertEqual(self.incident.status, 'resolved')
+        self.assertEqual(
+            self.incident.resolution_summary,
+            'Water connection repaired.',
+        )
+
+    def test_empty_summary_is_rejected(self):
+        self.client.force_login(self.owner)
+        self.resolve('   ')
+
+        self.incident.refresh_from_db()
+        self.assertEqual(self.incident.status, 'in_progress')
+
+    def test_other_staff_cannot_resolve(self):
+        self.client.force_login(self.other_staff)
+        self.resolve('Unauthorized resolution.')
+
+        self.incident.refresh_from_db()
+        self.assertEqual(self.incident.status, 'in_progress')
+
+    def test_summary_length_limit(self):
+        self.client.force_login(self.owner)
+        self.resolve('A' * 2001)
+
+        self.incident.refresh_from_db()
+        self.assertEqual(self.incident.status, 'in_progress')
+
+    def test_resolved_incident_cannot_be_resolved_again(self):
+        self.client.force_login(self.owner)
+        self.resolve('First resolution.')
+        self.resolve('Second resolution.')
+
+        self.incident.refresh_from_db()
+        self.assertEqual(
+            self.incident.resolution_summary,
+            'First resolution.',
+        )

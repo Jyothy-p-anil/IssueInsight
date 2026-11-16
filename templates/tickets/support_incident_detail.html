@@ -38,7 +38,22 @@
                     <input type="hidden"
                            name="status"
                            value="resolved">
-
+                    {% if incident.status == 'in_progress' %}
+                    <div class="mb-3">
+                        <label for="resolution_summary" class="form-label">
+                            Resolution Summary
+                        </label>
+                        <textarea
+                            id="resolution_summary"
+                            name="resolution_summary"
+                            class="form-control"
+                            rows="4"
+                            maxlength="2000"
+                            required
+                            placeholder="Explain the problem, action taken and final outcome"
+                        ></textarea>
+                    </div>
+                    {% endif %}
                     <button type="submit" class="btn btn-success">
                         Mark Incident Resolved
                     </button>
@@ -109,6 +124,12 @@
 {% empty %}
     <p>No linked complaints.</p>
 {% endfor %}
+
+{% if incident.status == 'resolved' and incident.resolution_summary %}
+<h4>Resolution Summary</h4>
+<p>{{ incident.resolution_summary }}</p>
+<hr>
+{% endif %}
 
 <hr>
 
