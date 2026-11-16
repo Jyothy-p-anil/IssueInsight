@@ -26,6 +26,7 @@ from .services.ai_category_prediction import (
     suggest_complaint_category,
     assess_category_suggestion,
     validate_suggested_category,
+    
 )
 
 
@@ -70,7 +71,10 @@ from .services.incident_management import (
 from .models import Incident, IncidentTicket, IncidentUpdate
 
 
-
+from .services.recurring_product_issues import (
+    get_recurring_product_issues,
+    get_recurring_issue_groups,
+)
 
 
 @login_required
@@ -1968,3 +1972,55 @@ def support_add_incident_update(request, incident_id):
             messages.success(request, 'Investigation update recorded.')
 
     return redirect('support_incident_detail', incident_id=incident.pk)
+
+@role_required('support')
+def support_recurring_product_issues(request):
+
+    if not request.user.department_id:
+        messages.warning(
+            request,
+            'Your account has no support department assigned.'
+        )
+        return redirect('support_dashboard')
+
+    department_id = request.user.department_id
+
+    products = get_recurring_product_issues(
+        department_id=department_id
+    )
+
+    selected_product = None
+    groups = []
+    analysis_error = None
+
+    product_id = request.GET.get('product_id', '')
+
+    if product_id.isdecimal():
+
+        selected_product = next(
+            (
+                product for product in products
+                if product['product_id'] == int(product_id)
+            ),
+            None,
+        )
+
+        if selected_product:
+            groups, analysis_error = get_recurring_issue_groups(
+                product_id=int(product_id),
+                department_id=department_id,
+            )
+
+            if groups is None:
+                groups = []
+
+    return render(
+        request,
+        'tickets/support_recurring_product_issues.html',
+        {
+            'products': products,
+            'selected_product': selected_product,
+            'groups': groups,
+            'analysis_error': analysis_error,
+        }
+    )

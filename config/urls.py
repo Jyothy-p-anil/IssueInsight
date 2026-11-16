@@ -359,5 +359,9 @@ path(
     views.support_add_incident_update,
     name='support_add_incident_update',
 ),
-
+path(
+    'support/recurring-issues/',
+    views.support_recurring_product_issues,
+    name='support_recurring_product_issues',
+),
 ]

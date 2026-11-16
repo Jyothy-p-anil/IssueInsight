@@ -1,0 +1,109 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Recurring Product Issues | IssueInsight{% endblock %}
+
+{% block content %}
+
+<h2>Recurring Product Issues</h2>
+
+<p class="text-muted">
+    Customer complaints reported repeatedly for products
+    handled by your department.
+</p>
+
+<h4>Products with Repeated Complaints</h4>
+
+{% for product in products %}
+
+<div class="card mb-3">
+    <div class="card-body">
+
+        <h5>{{ product.product_name }}</h5>
+
+        <p>
+            Total complaints:
+            <strong>{{ product.complaint_count }}</strong>
+        </p>
+
+        {% if product.product_id %}
+
+        <a
+            href="{% url 'support_recurring_product_issues' %}?product_id={{ product.product_id }}"
+            class="btn btn-primary btn-sm"
+        >
+            Analyze Similar Issues
+        </a>
+
+        {% else %}
+
+        <p class="text-muted">
+            Similarity analysis is available for registered products only.
+        </p>
+
+        {% endif %}
+
+    </div>
+</div>
+
+{% empty %}
+
+<p>No recurring product complaints found.</p>
+
+{% endfor %}
+
+
+{% if selected_product %}
+
+<hr>
+
+<h4>
+    Similar Issues — {{ selected_product.product_name }}
+</h4>
+
+{% if analysis_error %}
+
+<div class="alert alert-warning">
+    Analysis unavailable: {{ analysis_error }}
+</div>
+
+{% endif %}
+
+{% for group in groups %}
+
+<div class="card mb-3">
+    <div class="card-body">
+
+        <h5>{{ group.summary }}</h5>
+
+        <p>
+            Similar complaints:
+            <strong>{{ group.complaint_count }}</strong>
+        </p>
+
+        <h6>Related Tickets</h6>
+
+        <ul>
+            {% for ticket_id in group.ticket_ids %}
+            <li>
+                <a href="{% url 'support_ticket_detail' ticket_id %}">
+                    Ticket #{{ ticket_id }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+
+    </div>
+</div>
+
+{% empty %}
+
+{% if not analysis_error %}
+<p>No similar complaint groups found for this product.</p>
+{% endif %}
+
+{% endfor %}
+
+{% endif %}
+
+{% endblock %}

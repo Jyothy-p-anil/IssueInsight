@@ -1095,3 +1095,43 @@ Module 11 remains in progress.
 - Manual verification and full regression tests passed.
 
 Module 11 remains in progress.
+
+
+### Implementation — Recurring Customer Product Issue Analysis (Module 11)
+
+**Product Complaint Frequency**
+- Added detection of products receiving repeated Customer complaints.
+- A product appears when at least two qualifying complaints exist.
+- Included registered products and manually entered Other products.
+- Restricted results to the logged-in Support Staff member's department.
+
+**AI Similarity Grouping**
+- Used sentence-transformer embeddings to compare complaint descriptions.
+- Grouped similar complaints belonging to the same registered product.
+- Applied a default similarity threshold of 0.70.
+- Prevented duplicate ticket membership across detected groups.
+- Kept complaint frequency counting separate from semantic similarity analysis.
+- Unregistered products currently support frequency counts only.
+
+**Support Staff Interface**
+- Added a Recurring Product Issues page and sidebar link.
+- Displayed product names and complaint counts.
+- Added an Analyze Similar Issues action for registered products.
+- Displayed related ticket links for detected groups.
+- Restricted analysis to the Support Staff member's department.
+- Handled empty results and analysis errors.
+
+**Verification**
+- Added seven recurring-product service tests.
+- Added eight page and permission tests.
+- Manually verified InvoiceApp with two similar complaints.
+- Manually verified PayrollPro with repeated complaints but no qualifying similarity group.
+- Verified department-based restrictions and role access through automated tests.
+- Django system checks and regression tests completed.
+
+**Remaining Considerations**
+- Final sidebar visibility policy requires a separate decision.
+- AI grouping for manually entered Other products remains unsupported.
+- Final Module 11 checklist audit remains pending.
+
+Module 11 remains in progress until the final checklist audit.
