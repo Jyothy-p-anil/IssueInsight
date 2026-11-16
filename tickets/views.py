@@ -74,8 +74,8 @@ from .models import Incident, IncidentTicket, IncidentUpdate
 from .services.recurring_product_issues import (
     get_recurring_product_issues,
     get_recurring_issue_groups,
+    get_recurring_other_product_issue_groups,
 )
-
 
 @login_required
 def home(request):
@@ -1973,13 +1973,20 @@ def support_add_incident_update(request, incident_id):
 
     return redirect('support_incident_detail', incident_id=incident.pk)
 
+
+
 @role_required('support')
 def support_recurring_product_issues(request):
-
     if not request.user.department_id:
         messages.warning(
             request,
             'Your account has no support department assigned.'
+        )
+        return redirect('support_dashboard')
+    if request.user.department.name != 'Product Support':
+        messages.error(
+            request,
+            'Only Product Support Staff can access recurring product issues.'
         )
         return redirect('support_dashboard')
 
@@ -1994,9 +2001,11 @@ def support_recurring_product_issues(request):
     analysis_error = None
 
     product_id = request.GET.get('product_id', '')
+    other_product_name = request.GET.get(
+        'other_product_name', ''
+    ).strip()
 
     if product_id.isdecimal():
-
         selected_product = next(
             (
                 product for product in products
@@ -2011,8 +2020,27 @@ def support_recurring_product_issues(request):
                 department_id=department_id,
             )
 
-            if groups is None:
-                groups = []
+    elif other_product_name:
+        selected_product = next(
+            (
+                product for product in products
+                if product['product_id'] is None
+                and product['product_name'].casefold()
+                == other_product_name.casefold()
+            ),
+            None,
+        )
+
+        if selected_product:
+            groups, analysis_error = (
+                get_recurring_other_product_issue_groups(
+                    product_name=selected_product['product_name'],
+                    department_id=department_id,
+                )
+            )
+
+    if groups is None:
+        groups = []
 
     return render(
         request,
@@ -2022,5 +2050,5 @@ def support_recurring_product_issues(request):
             'selected_product': selected_product,
             'groups': groups,
             'analysis_error': analysis_error,
-        }
+        },
     )

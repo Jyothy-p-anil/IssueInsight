@@ -15,7 +15,7 @@ class RecurringProductPageTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.department = Department.objects.create(
-            name='Recurring Product Support'
+            name='Product Support'
         )
         cls.other_department = Department.objects.create(
             name='Other Recurring Support'
@@ -203,3 +203,13 @@ class RecurringProductPageTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
         mock_groups.assert_not_called()
+
+    def test_other_support_department_cannot_access_page(self):
+        self.client.force_login(self.other_support)
+
+        response = self.client.get(self.url)
+
+        self.assertRedirects(
+            response,
+            reverse('support_dashboard'),
+        )

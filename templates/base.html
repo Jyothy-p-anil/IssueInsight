@@ -188,10 +188,12 @@
                                 href="{% url 'support_incident_list' %}">
                                 Incidents
                             </a>
+                            {% if request.user.department and request.user.department.name == 'Product Support' %}
                             <a class="nav-link"
                             href="{% url 'support_recurring_product_issues' %}">
                                 Recurring Product Issues
                             </a>
+                            {% endif %}
 
                         {% endif %}
 

@@ -26,22 +26,23 @@
             <strong>{{ product.complaint_count }}</strong>
         </p>
 
+        
         {% if product.product_id %}
-
-        <a
-            href="{% url 'support_recurring_product_issues' %}?product_id={{ product.product_id }}"
-            class="btn btn-primary btn-sm"
-        >
-            Analyze Similar Issues
-        </a>
-
+            <a
+                href="{% url 'support_recurring_product_issues' %}?product_id={{ product.product_id }}"
+                class="btn btn-primary btn-sm"
+            >
+                Analyze Similar Issues
+            </a>
         {% else %}
-
-        <p class="text-muted">
-            Similarity analysis is available for registered products only.
-        </p>
-
+            <a
+                href="{% url 'support_recurring_product_issues' %}?other_product_name={{ product.product_name|urlencode }}"
+                class="btn btn-primary btn-sm"
+            >
+                Analyze Similar Issues
+            </a>
         {% endif %}
+
 
     </div>
 </div>

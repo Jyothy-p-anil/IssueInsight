@@ -144,3 +144,89 @@ def get_recurring_issue_groups(
     )
 
     return groups, None
+
+
+def get_recurring_other_product_issue_groups(
+    product_name,
+    min_complaints=2,
+    similarity_threshold=0.70,
+    department_id=None,
+):
+    product_name = (product_name or '').strip()
+
+    if not product_name:
+        return [], None
+
+    tickets_query = Ticket.objects.filter(
+        division='customer',
+        product__isnull=True,
+        other_product_name__iexact=product_name,
+    )
+
+    if department_id is not None:
+        tickets_query = tickets_query.filter(
+            department_id=department_id
+        )
+
+    tickets = list(
+        tickets_query.order_by('created_at', 'pk')
+    )
+
+    if len(tickets) < min_complaints:
+        return [], None
+
+    vectors = []
+    valid_tickets = []
+
+    for ticket in tickets:
+        vector, error = generate_complaint_embedding(
+            ticket.description
+        )
+
+        if error:
+            return None, error
+
+        valid_tickets.append(ticket)
+        vectors.append(vector)
+
+    groups = []
+    assigned_ids = set()
+
+    for index, anchor in enumerate(valid_tickets):
+        if anchor.pk in assigned_ids:
+            continue
+
+        members = [anchor]
+        assigned_ids.add(anchor.pk)
+
+        for other_index in range(index + 1, len(valid_tickets)):
+            candidate = valid_tickets[other_index]
+
+            if candidate.pk in assigned_ids:
+                continue
+
+            similarity = float(
+                np.dot(vectors[index], vectors[other_index])
+            )
+
+            if similarity >= similarity_threshold:
+                members.append(candidate)
+                assigned_ids.add(candidate.pk)
+
+        if len(members) >= min_complaints:
+            groups.append({
+                'summary': anchor.title,
+                'complaint_count': len(members),
+                'ticket_ids': [
+                    ticket.pk for ticket in members
+                ],
+                'statuses': [
+                    ticket.status for ticket in members
+                ],
+            })
+
+    groups.sort(
+        key=lambda group: -group['complaint_count']
+    )
+
+    return groups, None
