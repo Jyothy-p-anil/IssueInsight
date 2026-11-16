@@ -69,6 +69,10 @@ from .services.incident_management import (
 
 from .models import Incident, IncidentTicket, IncidentUpdate
 
+
+
+
+
 @login_required
 def home(request):
     return render(request, 'home.html')
@@ -1830,76 +1834,110 @@ def support_link_incident_ticket(request, incident_id):
 @role_required('support')
 @require_POST
 def support_update_incident_status(request, incident_id):
-    incident = get_object_or_404(
-        Incident,
-        pk=incident_id,
-        department_id=request.user.department_id,
-    )
+    redirect_url = 'support_incident_detail'
 
-    if incident.owner_id != request.user.pk:
-        messages.error(
-            request,
-            'Only the incident owner can update its status.'
-        )
-        return redirect(
-            'support_incident_detail',
-            incident_id=incident.pk,
+    with transaction.atomic():
+        incident = get_object_or_404(
+            Incident.objects.select_for_update(),
+            pk=incident_id,
+            department_id=request.user.department_id,
         )
 
-    transitions = {
-        'open': 'in_progress',
-        'in_progress': 'resolved',
-    }
-
-    new_status = request.POST.get('status', '')
-
-    if transitions.get(incident.status) != new_status:
-        messages.error(
-            request,
-            'Invalid incident status transition.'
-        )
-        return redirect(
-            'support_incident_detail',
-            incident_id=incident.pk,
-        )
-
-    if new_status == 'resolved':
-        resolution_summary = request.POST.get(
-            'resolution_summary', ''
-        ).strip()
-
-        if not resolution_summary or len(resolution_summary) > 2000:
+        if incident.owner_id != request.user.pk:
             messages.error(
                 request,
-                'Enter a resolution summary of 1–2000 characters.'
+                'Only the incident owner can update its status.'
             )
-            return redirect(
-                'support_incident_detail',
-                incident_id=incident.pk,
+            return redirect(redirect_url, incident_id=incident.pk)
+
+        transitions = {
+            'open': 'in_progress',
+            'in_progress': 'resolved',
+        }
+
+        new_status = request.POST.get('status', '')
+
+        if transitions.get(incident.status) != new_status:
+            messages.error(
+                request,
+                'Invalid incident status transition.'
+            )
+            return redirect(redirect_url, incident_id=incident.pk)
+
+        if new_status == 'resolved':
+            summary = request.POST.get(
+                'resolution_summary', ''
+            ).strip()
+
+            if not summary or len(summary) > 2000:
+                messages.error(
+                    request,
+                    'Enter a resolution summary of 1–2000 characters.'
+                )
+                return redirect(redirect_url, incident_id=incident.pk)
+
+            incident.resolution_summary = summary
+            incident.status = 'resolved'
+            incident.save(
+                update_fields=[
+                    'status',
+                    'resolution_summary',
+                    'updated_at',
+                ]
             )
 
-        incident.resolution_summary = resolution_summary
-        incident.status = 'resolved'
-        incident.save(
-            update_fields=[
-                'status',
-                'resolution_summary',
-                'updated_at',
-            ]
-        )
-    else:
-        incident.status = new_status
-        incident.save(update_fields=['status', 'updated_at'])
+            public_text = (
+                f'Incident #{incident.pk} — {incident.title} '
+                f'has been resolved.\n'
+                f'Resolution summary: {summary}\n\n'
+                'This is an incident-level update. '
+                'The linked complaint must still be handled '
+                'individually by its assigned Support Staff.'
+            )
+
+            linked_tickets = incident.tickets.select_related(
+                'reporter', 'assigned_to'
+            )
+
+            for ticket in linked_tickets:
+                TicketMessage.objects.create(
+                    ticket=ticket,
+                    author=request.user,
+                    body=public_text,
+                    is_internal=False,
+                )
+
+                recipients = {
+                    ticket.reporter_id: ticket.reporter,
+                }
+
+                if ticket.assigned_to_id:
+                    recipients[ticket.assigned_to_id] = ticket.assigned_to
+
+                for recipient in recipients.values():
+                    create_notification(
+                        recipient=recipient,
+                        ticket=ticket,
+                        message=(
+                            f'Incident #{incident.pk} resolved. '
+                            f'Review the update on Ticket #{ticket.pk}.'
+                        ),
+                        event_key=(
+                            f'incident_{incident.pk}_'
+                            f'resolved_ticket_{ticket.pk}'
+                        ),
+                    )
+
+        else:
+            incident.status = new_status
+            incident.save(update_fields=['status', 'updated_at'])
 
     messages.success(
         request,
         'Incident status updated successfully.'
     )
 
-    return redirect(
-        'support_incident_detail',
-        incident_id=incident.pk,
-    )
+    return redirect(redirect_url, incident_id=incident_id)
 
 
 

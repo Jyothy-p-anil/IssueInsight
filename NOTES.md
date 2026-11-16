@@ -993,7 +993,7 @@ will be implemented in Module 11 alongside AI integration.
 - Similarity suggestions do not automatically create or merge incidents.
 - Added automated tests for similarity detection and visibility.
 
-### Incident Creation and Linking — Steps 202I–202K
+### Incident Creation and Linking — Steps 
 
 - Added Incident records with title, description, department, owner and status.
 - The Support Staff member creating an incident becomes its owner.
@@ -1020,7 +1020,7 @@ will be implemented in Module 11 alongside AI integration.
 
 **Module 11 remains in progress.**
 
-### Step 203 — Incident Management Interface
+### — Incident Management Interface
 
 - Added Support Staff incident list and detail pages.
 - Added incident creation from a complaint.
@@ -1029,7 +1029,7 @@ will be implemented in Module 11 alongside AI integration.
 - Added incident navigation to the Support Staff sidebar.
 - All 7 incident-view tests passed.
 
-### Step 204 — Improved Complaint Linking
+### — Improved Complaint Linking
 
 - Added checkbox-based complaint selection.
 - Added department-restricted complaint search by title,
@@ -1045,15 +1045,15 @@ will be implemented in Module 11 alongside AI integration.
 
 
 
-### Implementation Steps 205–206 — Incident Progress and Investigation Updates (Module 11)
+### Implementation  — Incident Progress and Investigation Updates (Module 11)
 
-**Step 205 — Incident Progress Tracking**
+**— Incident Progress Tracking**
 - Added incident status transitions: Open → In Progress → Resolved.
 - Restricted status changes to the incident owner.
 - Preserved individual linked complaint statuses.
 - Added incident progress controls and automated tests.
 
-**Step 206 — Investigation Updates**
+** — Investigation Updates**
 - Added IncidentUpdate model with author and timestamp.
 - Incident owner can record investigation findings and actions.
 - Updates are visible to Support Staff in the same department.
@@ -1068,7 +1068,7 @@ will be implemented in Module 11 alongside AI integration.
 Module 11 remains in progress.
 
 
-### Implementation Step 207 — Mandatory Incident Resolution Summary (Module 11)
+### Implementation  — Mandatory Incident Resolution Summary (Module 11)
 
 - Added `Incident.resolution_summary` with a database migration.
 - Required a non-empty resolution summary before an incident can transition from In Progress to Resolved.
@@ -1078,5 +1078,20 @@ Module 11 remains in progress.
 - Updated existing incident progress tests for the mandatory summary.
 - Added five automated resolution-summary tests.
 - Manual verification and full regression testing completed.
+
+Module 11 remains in progress.
+
+
+### Implementation — Incident Resolution Communication (Module 11)
+
+- Added automatic public messages to all linked complaints when an incident is resolved.
+- Messages include the incident title and resolution summary.
+- Added notifications for complaint reporters and assigned Support Staff.
+- Reused the existing TicketMessage and notification service.
+- Preserved individual complaint statuses and assignments.
+- Prevented duplicate messages and notifications on repeated resolution attempts.
+- Used a database transaction for incident resolution and communication.
+- Added six automated tests covering messages, notifications, permissions, validation, duplicate prevention and complaint independence.
+- Manual verification and full regression tests passed.
 
 Module 11 remains in progress.
