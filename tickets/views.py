@@ -56,6 +56,17 @@ from .services.ai_urgency_detection import detect_complaint_urgency
 
 from tickets.services.ai_complaint_similarity import find_similar_complaints
 
+
+
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError
+from .models import Incident
+from .services.incident_management import (
+    create_incident,
+    link_ticket_to_incident,
+)
+
+
 @login_required
 def home(request):
     return render(request, 'home.html')
@@ -1662,3 +1673,109 @@ def escalate_support_ticket(request, ticket_id):
         'support_ticket_detail',
         ticket_id=ticket_id
     )
+
+
+
+# Module 11 — Incident management
+
+@role_required('support')
+def support_incident_list(request):
+    incidents = Incident.objects.filter(
+        department_id=request.user.department_id
+    ).select_related('owner').prefetch_related(
+        'tickets'
+    ).order_by('-created_at')
+
+    return render(
+        request,
+        'tickets/support_incident_list.html',
+        {'incidents': incidents},
+    )
+
+
+@role_required('support')
+def support_incident_detail(request, incident_id):
+    incident = get_object_or_404(
+        Incident.objects.select_related('owner', 'department'),
+        pk=incident_id,
+        department_id=request.user.department_id,
+    )
+
+    linked_tickets = incident.tickets.select_related(
+        'assigned_to', 'reporter'
+    ).order_by('pk')
+
+    return render(
+        request,
+        'tickets/support_incident_detail.html',
+        {
+            'incident': incident,
+            'linked_tickets': linked_tickets,
+        },
+    )
+
+
+@role_required('support')
+@require_POST
+def support_create_incident(request, ticket_id):
+    ticket = get_object_or_404(
+        Ticket,
+        pk=ticket_id,
+        department_id=request.user.department_id,
+    )
+
+    try:
+        incident = create_incident(
+            user=request.user,
+            title=request.POST.get('title', ''),
+            description=request.POST.get('description', ''),
+            ticket=ticket,
+        )
+    except (ValidationError, IntegrityError) as exc:
+        if isinstance(exc, ValidationError):
+            error = '; '.join(exc.messages)
+        else:
+            error = 'This complaint is already linked to an incident.'
+        messages.error(request, error)
+        return redirect('support_ticket_detail', ticket_id=ticket.pk)
+
+    messages.success(request, 'Incident created successfully.')
+    return redirect('support_incident_detail', incident_id=incident.pk)
+
+
+@role_required('support')
+@require_POST
+def support_link_incident_ticket(request, incident_id):
+    incident = get_object_or_404(
+        Incident,
+        pk=incident_id,
+        department_id=request.user.department_id,
+    )
+
+    ticket_id = request.POST.get('ticket_id', '')
+    if not ticket_id.isdecimal():
+        messages.error(request, 'Enter a valid complaint ID.')
+        return redirect('support_incident_detail', incident_id=incident.pk)
+
+    ticket = get_object_or_404(
+        Ticket,
+        pk=int(ticket_id),
+        department_id=request.user.department_id,
+    )
+
+    try:
+        link_ticket_to_incident(
+            user=request.user,
+            incident=incident,
+            ticket=ticket,
+        )
+    except (ValidationError, IntegrityError) as exc:
+        if isinstance(exc, ValidationError):
+            error = '; '.join(exc.messages)
+        else:
+            error = 'This complaint is already linked to an incident.'
+        messages.error(request, error)
+    else:
+        messages.success(request, 'Complaint linked successfully.')
+
+    return redirect('support_incident_detail', incident_id=incident.pk)
