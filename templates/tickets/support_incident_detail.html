@@ -1,0 +1,103 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Incident #{{ incident.pk }} | IssueInsight{% endblock %}
+
+{% block content %}
+<h2>{{ incident.title }}</h2>
+
+<p>{{ incident.description }}</p>
+<p>Status: {{ incident.get_status_display }}</p>
+<p>Department: {{ incident.department.name }}</p>
+<p>Owner: {{ incident.owner.username }}</p>
+
+<a href="{% url 'support_incident_list' %}">
+    Back to Incidents
+</a>
+
+<hr>
+
+<h4>Linked Complaints</h4>
+
+{% for ticket in linked_tickets %}
+    <div class="card mb-2">
+        <div class="card-body">
+            <a href="{% url 'support_ticket_detail' ticket.pk %}">
+                #{{ ticket.pk }} — {{ ticket.title }}
+            </a>
+            <p>Status: {{ ticket.get_status_display }}</p>
+            <p>
+                Assigned to:
+                {{ ticket.assigned_to.username|default:"Unassigned" }}
+            </p>
+        </div>
+    </div>
+{% empty %}
+    <p>No linked complaints.</p>
+{% endfor %}
+
+<hr>
+
+<h4>Link Related Complaints</h4>
+<p class="text-muted small">Review each complaint before linking it. Only unlinked complaints from your department are available.</p>
+
+{% if ai_error %}
+    <p class="text-muted small">AI suggestions are currently unavailable. Use complaint search instead.</p>
+{% endif %}
+
+{% if ai_suggestions %}
+    <h5>AI-Suggested Related Complaints</h5>
+    <form method="post" action="{% url 'support_link_incident_ticket' incident.pk %}">
+        {% csrf_token %}
+        {% for match in ai_suggestions %}
+            <div class="form-check border rounded p-3 ps-5 mb-2">
+                <input class="form-check-input" type="checkbox" name="ticket_ids"
+                       value="{{ match.ticket_id }}" id="ai-{{ match.ticket_id }}">
+                <label class="form-check-label" for="ai-{{ match.ticket_id }}">
+                    <strong>Ticket #{{ match.ticket_id }} — {{ match.title }}</strong>
+                    <span class="badge bg-info text-dark">Similarity: {{ match.similarity_score|floatformat:2 }}</span>
+                    <span class="badge bg-secondary">{{ match.status|title }}</span>
+                </label>
+                <a class="d-block small mt-1" href="{% url 'support_ticket_detail' match.ticket_id %}">
+                    Review complaint details
+                </a>
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Link Selected AI Suggestions</button>
+    </form>
+{% else %}
+    <p class="text-muted">No available AI-related complaints were found.</p>
+{% endif %}
+
+<hr>
+<h5>Search Department Complaints</h5>
+<form method="get" class="d-flex gap-2 mb-3">
+    <input type="search" name="q" value="{{ search_query }}" maxlength="100"
+           class="form-control" placeholder="Search title, description, or complaint ID"
+           aria-label="Search department complaints">
+    <button type="submit" class="btn btn-outline-primary">Search</button>
+</form>
+
+{% if search_query %}
+    {% if search_results %}
+        <form method="post" action="{% url 'support_link_incident_ticket' incident.pk %}">
+            {% csrf_token %}
+            {% for ticket in search_results %}
+                <div class="form-check border rounded p-3 ps-5 mb-2">
+                    <input class="form-check-input" type="checkbox" name="ticket_ids"
+                           value="{{ ticket.pk }}" id="search-{{ ticket.pk }}">
+                    <label class="form-check-label" for="search-{{ ticket.pk }}">
+                        <strong>Ticket #{{ ticket.pk }} — {{ ticket.title }}</strong>
+                        <span class="badge bg-secondary">{{ ticket.get_status_display }}</span>
+                    </label>
+                    <p class="small text-muted mb-1">{{ ticket.description|truncatechars:160 }}</p>
+                    <a class="small" href="{% url 'support_ticket_detail' ticket.pk %}">Review complaint details</a>
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">Link Selected Search Results</button>
+        </form>
+    {% else %}
+        <p class="text-muted">No available complaints match your search.</p>
+    {% endif %}
+{% endif %}
+{% endblock %}

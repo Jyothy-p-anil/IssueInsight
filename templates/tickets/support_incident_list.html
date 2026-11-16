@@ -1,0 +1,33 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Incidents | IssueInsight{% endblock %}
+
+{% block content %}
+<h2>Department Incidents</h2>
+
+<p>
+    <a href="{% url 'support_department_queue' %}">
+        Back to Department Queue
+    </a>
+</p>
+
+{% for incident in incidents %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5>
+                <a href="{% url 'support_incident_detail' incident.pk %}">
+                    {{ incident.title }}
+                </a>
+            </h5>
+
+            <p>{{ incident.description }}</p>
+            <p>Status: {{ incident.get_status_display }}</p>
+            <p>Owner: {{ incident.owner.username }}</p>
+            <p>Linked complaints: {{ incident.tickets.count }}</p>
+        </div>
+    </div>
+{% empty %}
+    <p>No incidents have been created for your department.</p>
+{% endfor %}
+{% endblock %}

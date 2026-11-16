@@ -1019,3 +1019,25 @@ will be implemented in Module 11 alongside AI integration.
 
 
 **Module 11 remains in progress.**
+
+### Step 203 — Incident Management Interface
+
+- Added Support Staff incident list and detail pages.
+- Added incident creation from a complaint.
+- Added complaint linking to existing incidents.
+- Restricted incident access to the Support Staff department.
+- Added incident navigation to the Support Staff sidebar.
+- All 7 incident-view tests passed.
+
+### Step 204 — Improved Complaint Linking
+
+- Added checkbox-based complaint selection.
+- Added department-restricted complaint search by title,
+  keyword or complaint ID.
+- Added AI-suggested complaint selection.
+- Removed the need to manually enter complaint IDs.
+- Preserved one-incident-per-ticket protection.
+- Verified search results, checkbox linking and linked
+  complaint display manually.
+- AI-suggestion linking requires independent manual verification.
+- Module 11 remains in progress.

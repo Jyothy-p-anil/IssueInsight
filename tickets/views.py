@@ -1695,24 +1695,52 @@ def support_incident_list(request):
 
 @role_required('support')
 def support_incident_detail(request, incident_id):
+    # Step 204 — searchable incident candidates and AI suggestions.
     incident = get_object_or_404(
         Incident.objects.select_related('owner', 'department'),
         pk=incident_id,
         department_id=request.user.department_id,
     )
-
     linked_tickets = incident.tickets.select_related(
         'assigned_to', 'reporter'
     ).order_by('pk')
 
-    return render(
-        request,
-        'tickets/support_incident_detail.html',
-        {
-            'incident': incident,
-            'linked_tickets': linked_tickets,
-        },
-    )
+    # Only unlinked complaints in this department may be selected.
+    available = Ticket.objects.filter(
+        department_id=incident.department_id,
+    ).exclude(incidents__isnull=False)
+
+    query = request.GET.get('q', '').strip()[:100]
+    search_results = []
+    if query:
+        conditions = Q(title__icontains=query) | Q(description__icontains=query)
+        candidate_id = query.lstrip('#')
+        if candidate_id.isascii() and candidate_id.isdecimal() and len(candidate_id) <= 18:
+            conditions |= Q(pk=int(candidate_id))
+        search_results = list(
+            available.filter(conditions).order_by('-created_at')[:20]
+        )
+
+    ai_suggestions = []
+    ai_error = None
+    anchor = linked_tickets.first()
+    if anchor:
+        matches, ai_error = find_similar_complaints(
+            anchor, limit=10, min_similarity=0.60,
+            department_id=incident.department_id,
+        )
+        if matches:
+            allowed = set(available.values_list('pk', flat=True))
+            ai_suggestions = [m for m in matches if m['ticket_id'] in allowed]
+
+    return render(request, 'tickets/support_incident_detail.html', {
+        'incident': incident,
+        'linked_tickets': linked_tickets,
+        'search_query': query,
+        'search_results': search_results,
+        'ai_suggestions': ai_suggestions,
+        'ai_error': ai_error,
+    })
 
 
 @role_required('support')
@@ -1752,30 +1780,41 @@ def support_link_incident_ticket(request, incident_id):
         department_id=request.user.department_id,
     )
 
-    ticket_id = request.POST.get('ticket_id', '')
-    if not ticket_id.isdecimal():
-        messages.error(request, 'Enter a valid complaint ID.')
+    # Accept only IDs chosen from the rendered suggestions/search results.
+    raw_ids = request.POST.getlist('ticket_ids')
+    if not raw_ids or len(raw_ids) > 20 or any(
+        not value.isascii() or not value.isdecimal() or len(value) > 18
+        for value in raw_ids
+    ):
+        messages.error(request, 'Select one or more valid complaints (maximum 20).')
         return redirect('support_incident_detail', incident_id=incident.pk)
 
-    ticket = get_object_or_404(
-        Ticket,
-        pk=int(ticket_id),
-        department_id=request.user.department_id,
-    )
+    ids = [int(value) for value in raw_ids]
+    if len(set(ids)) != len(ids):
+        messages.error(request, 'Select each complaint only once.')
+        return redirect('support_incident_detail', incident_id=incident.pk)
+
+    tickets = list(Ticket.objects.filter(
+        pk__in=ids, department_id=incident.department_id,
+    ))
+    if len(tickets) != len(ids):
+        messages.error(request, 'One or more selected complaints are unavailable.')
+        return redirect('support_incident_detail', incident_id=incident.pk)
 
     try:
-        link_ticket_to_incident(
-            user=request.user,
-            incident=incident,
-            ticket=ticket,
-        )
+        # One transaction: do not partially link a batch on validation failure.
+        with transaction.atomic():
+            for ticket in tickets:
+                link_ticket_to_incident(
+                    user=request.user, incident=incident, ticket=ticket,
+                )
     except (ValidationError, IntegrityError) as exc:
         if isinstance(exc, ValidationError):
             error = '; '.join(exc.messages)
         else:
-            error = 'This complaint is already linked to an incident.'
+            error = 'A selected complaint is already linked to an incident.'
         messages.error(request, error)
     else:
-        messages.success(request, 'Complaint linked successfully.')
+        messages.success(request, f'{len(tickets)} complaint(s) linked successfully.')
 
     return redirect('support_incident_detail', incident_id=incident.pk)

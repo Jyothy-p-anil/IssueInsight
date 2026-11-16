@@ -322,4 +322,32 @@ path(
 
 
 
+    # Module 11 — Incident management
+
+    path(
+        'support/incidents/',
+        views.support_incident_list,
+        name='support_incident_list',
+    ),
+
+    path(
+        'support/incidents/<int:incident_id>/',
+        views.support_incident_detail,
+        name='support_incident_detail',
+    ),
+
+    path(
+        'support/tickets/<int:ticket_id>/create-incident/',
+        views.support_create_incident,
+        name='support_create_incident',
+    ),
+
+    path(
+        'support/incidents/<int:incident_id>/link-ticket/',
+        views.support_link_incident_ticket,
+        name='support_link_incident_ticket',
+    ),
+
+
+
 ]
