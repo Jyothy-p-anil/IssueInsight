@@ -955,7 +955,8 @@ will be implemented in Module 11 alongside AI integration.
 
 ## Module 11 — AI Classification and Urgency Detection
 
-**Status:** In progress — AI category suggestions and urgency detection implemented; similarity detection and incident workflows pending.
+**Status:** In progress — AI category suggestions, urgency detection, complaint similarity suggestions, and initial incident creation/linking implemented. Incident UI, progress tracking, and recurring-issue analysis remain pending.
+
 
 ### AI Category Suggestions
 
@@ -982,12 +983,39 @@ will be implemented in Module 11 alongside AI integration.
 - Full Django test suite passed before documentation updates.
 - Category prediction and urgency detection are separate features.
 
+
+### Complaint Similarity Detection
+
+- Implemented local sentence-transformer-based complaint similarity detection.
+- Uses all-MiniLM-L6-v2 embeddings and cosine similarity.
+- Similarity suggestions are restricted to the appropriate complaint division and department.
+- Support Staff can review related complaints from the ticket detail page.
+- Similarity suggestions do not automatically create or merge incidents.
+- Added automated tests for similarity detection and visibility.
+
+### Incident Creation and Linking — Steps 202I–202K
+
+- Added Incident records with title, description, department, owner and status.
+- The Support Staff member creating an incident becomes its owner.
+- Incidents can contain multiple complaints from the same department.
+- Each complaint retains its existing Support Staff assignment and status.
+- A complaint can belong to only one incident.
+- Added IncidentTicket as the explicit intermediate model.
+- Migration 0013 preserves the existing linking table and adds a unique database index on ticket_id.
+- Added service-level validation and database-level duplicate-link protection.
+- Verified incident permissions, creation, linking and duplicate prevention.
+- All 11 incident-management tests passed.
+- Full regression suite and migration status verified.
+
+
+
+
 ### Remaining Module 11 Scope
 
-- AI similarity detection and related-ticket suggestions.
-- Support Staff review and incident confirmation.
-- Incident records, ticket linking and progress visibility.
+- Support Staff incident review and confirmation interface.
+- Incident overview and progress tracking.
 - Recurring Customer product issue detection and summaries.
-- Associated permissions and automated tests.
+- Remaining incident permissions, integration tests and UI verification.
+
 
 **Module 11 remains in progress.**

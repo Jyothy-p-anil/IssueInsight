@@ -303,3 +303,69 @@ class Notification(models.Model):
 
     def __str__(self):
         return f'Notification for {self.recipient.username}'
+
+
+class Incident(models.Model):
+
+    STATUS_CHOICES = [
+        ('open', 'Open'),
+        ('in_progress', 'In Progress'),
+        ('resolved', 'Resolved'),
+    ]
+
+    title = models.CharField(max_length=200)
+
+    description = models.TextField()
+
+    department = models.ForeignKey(
+        Department,
+        on_delete=models.PROTECT,
+        related_name='incidents'
+    )
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name='owned_incidents'
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='open'
+    )
+
+    tickets = models.ManyToManyField(
+        Ticket,
+        through='IncidentTicket',
+        related_name='incidents',
+        blank=True,
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
+
+
+class IncidentTicket(models.Model):
+    incident = models.ForeignKey(
+        Incident,
+        on_delete=models.CASCADE,
+    )
+
+    ticket = models.OneToOneField(
+        Ticket,
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        db_table = 'tickets_incident_tickets'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['incident', 'ticket'],
+                name='unique_incident_ticket_link',
+            ),
+        ]

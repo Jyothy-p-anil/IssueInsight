@@ -54,7 +54,7 @@ from django.views.decorators.http import require_POST
 from .services.ai_urgency_detection import detect_complaint_urgency
 
 
-
+from tickets.services.ai_complaint_similarity import find_similar_complaints
 
 @login_required
 def home(request):
@@ -525,6 +525,32 @@ def support_ticket_detail(request, ticket_id):
         department_id=request.user.department_id
     )
 
+        # AI suggestions restricted to the Support Staff department.
+    similar_complaints, similarity_error = find_similar_complaints(
+        ticket,
+        limit=5,
+        min_similarity=0.60,
+        department_id=request.user.department_id,
+    )
+
+    if similarity_error:
+        similar_complaints = []
+
+    # The similarity service compares tickets by division.
+    # Apply department restrictions before displaying results.
+        # The similarity service compares tickets by division.
+    # Apply department restrictions before displaying results.
+    permitted_ids = set(
+        Ticket.objects.filter(
+            department_id=request.user.department_id
+        ).values_list('pk', flat=True)
+    )
+
+    similar_complaints = [
+        match for match in similar_complaints
+        if match['ticket_id'] in permitted_ids
+    ]
+
     can_claim = (
         ticket.assigned_to_id is None
         and ticket.status in ('submitted', 'reopened')
@@ -550,6 +576,7 @@ def support_ticket_detail(request, ticket_id):
             'reply_form': SupportMessageForm(),
             'can_reply': can_reply,
             'activities': ticket.activities.select_related('actor').all(),
+            'similar_complaints': similar_complaints,
         }
     )
 
