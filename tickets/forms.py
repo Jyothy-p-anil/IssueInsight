@@ -1,7 +1,7 @@
 
 
 from django import forms
-from .models import Ticket, Category, Product, Department, TicketMessage
+from .models import Ticket, Category, Product, Department, TicketMessage,Announcement
 
 
 from .services.category_suggestions import get_suggestion_candidates
@@ -402,3 +402,24 @@ class ProductForm(forms.ModelForm):
             )
 
         return name
+
+class AnnouncementForm(forms.ModelForm):
+
+    class Meta:
+        model = Announcement
+        fields = ('title', 'content', 'is_published')
+
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter announcement title',
+            }),
+            'content': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 5,
+                'placeholder': 'Enter announcement details',
+            }),
+            'is_published': forms.CheckboxInput(attrs={
+                'class': 'form-check-input',
+            }),
+        }
