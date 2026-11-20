@@ -4,6 +4,7 @@ from django.urls import path
 from django.contrib.auth import views as auth_views
 from tickets import views
 from accounts import views as account_views
+from tickets import views as ticket_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -364,4 +365,37 @@ path(
     views.support_recurring_product_issues,
     name='support_recurring_product_issues',
 ),
+
+path(
+    'management/announcements/',
+    views.manage_announcements,
+    name='manage_announcements'
+),
+path(
+    'management/announcements/<int:announcement_id>/edit/',
+    views.edit_announcement,
+    name='edit_announcement'
+),
+path(
+    'management/announcements/<int:announcement_id>/delete/',
+    views.delete_announcement,
+    name='delete_announcement'
+),
+path(
+    "contact-directory/",
+    ticket_views.public_contact_directory,
+    name="public_contact_directory",
+),
+
+path(
+    "faq/",
+    ticket_views.public_faq,
+    name="public_faq",
+),
+
+
+
+
+
+
 ]

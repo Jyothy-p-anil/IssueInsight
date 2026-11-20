@@ -1,7 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from accounts.decorators import role_required
-
+from datetime import timedelta
+from django.utils import timezone
 from django.utils import timezone
 from datetime import date
 from django.db.models import Q
@@ -10,14 +11,13 @@ from django.db.models import Q
 from django.contrib import messages
 
 
-from .models import Ticket, Department, Category, Product, TicketActivity, TicketActivity
+from .models import Ticket, Department, Category, Product, TicketActivity, TicketActivity,Announcement
 
 from django.db import transaction
 
 from .models import Notification
 
-from .services.notifications import create_notification
-
+from .services.notifications import create_notification 
 
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
@@ -44,6 +44,7 @@ from .forms import (
     TicketResolutionForm,
     TicketReopeningForm,
     TicketMessage,
+    AnnouncementForm,
 
 )
 
@@ -77,36 +78,380 @@ from .services.recurring_product_issues import (
     get_recurring_other_product_issue_groups,
 )
 
-@login_required
+
+from django.db.models import Avg, F, DurationField, ExpressionWrapper
+
+
+from .services.public_holidays import get_kerala_public_holidays 
+
+import calendar
+
+
+#--------------------------
+
+
+
 def home(request):
-    return render(request, 'home.html')
-    
+    announcements = Announcement.objects.filter(
+        is_published=True
+    ).order_by('-created_at')
+
+    today = timezone.localdate()
+    year = today.year
+    month = today.month
+
+    public_holidays = get_kerala_public_holidays(year)
+
+    holiday_lookup = {}
+
+    for holiday in public_holidays:
+        holiday_lookup.setdefault(
+            holiday["date"], []
+        ).append(holiday["name"])
+
+    calendar_data = []
+
+    for month_number in range(1, 13):
+        weeks = []
+
+        for week in calendar.monthcalendar(year, month_number):
+            days = []
+
+            for day in week:
+                date_string = (
+                    f"{year}-{month_number:02d}-{day:02d}"
+                    if day else None
+                )
+
+                days.append({
+                    "day": day,
+                    "date": date_string,
+                    "holidays": holiday_lookup.get(
+                        date_string, []
+                    ),
+                })
+
+            weeks.append(days)
+
+        calendar_data.append({
+            "number": month_number,
+            "name": calendar.month_name[month_number],
+            "weeks": weeks,
+        })
+
+    return render(
+        request,
+        'home.html',
+        {
+            'announcements': announcements,
+            'public_holidays': public_holidays,
+            'calendar_data': calendar_data,
+            'current_month': month,
+            'current_year': year,
+        }
+    )
+
+#FAQ and Contact Directory pages are public, no login required
+def public_faq(request):
+    return render(request, "tickets/public_faq.html")
+
+def public_contact_directory(request):
+    return render(
+        request,
+        "tickets/public_contact_directory.html",
+    )
+
 @role_required('employee')
 def employee_dashboard(request):
+    tickets = Ticket.objects.filter(
+        reporter=request.user,
+        division='employee',
+    )
+
+    status_counts = {
+        status: tickets.filter(status=status).count()
+        for status, label in Ticket.STATUS_CHOICES
+    }
+
+    recent_tickets = tickets.order_by(
+        '-created_at'
+    )[:5]
+
     return render(request, 'role_dashboard.html', {
-        'page_title': 'Employee Dashboard'
+        'page_title': 'Employee Dashboard',
+        'total_tickets': tickets.count(),
+        'status_counts': status_counts,
+        'recent_tickets': recent_tickets,
     })
+
 
 
 @role_required('customer')
 def customer_dashboard(request):
+    tickets = Ticket.objects.filter(
+        reporter=request.user,
+        division='customer',
+    )
+
+    status_counts = {
+        status: tickets.filter(status=status).count()
+        for status, label in Ticket.STATUS_CHOICES
+    }
+
+    recent_tickets = tickets.order_by('-created_at')[:5]
+
     return render(request, 'role_dashboard.html', {
-        'page_title': 'Customer Dashboard'
+        'page_title': 'Customer Dashboard',
+        'total_tickets': tickets.count(),
+        'status_counts': status_counts,
+        'recent_tickets': recent_tickets,
     })
 
 
 @role_required('support')
 def support_dashboard(request):
+    department = request.user.department
+
+    if department is None:
+        return render(request, 'role_dashboard.html', {
+            'page_title': 'Support Staff Dashboard',
+            'department_missing': True,
+        })
+
+    tickets = Ticket.objects.filter(
+        department_id=request.user.department_id
+    )
+
+    assigned_tickets = tickets.filter(
+        assigned_to=request.user
+    )
+
+    unassigned_tickets = tickets.filter(
+        assigned_to__isnull=True,
+        status__in=['submitted', 'reopened']
+    )
+
+    resolved_by_me = assigned_tickets.filter(
+        status='resolved'
+    )
+    status_chart_labels = [
+        label for value, label in Ticket.STATUS_CHOICES
+    ]
+
+    status_chart_counts = [
+        tickets.filter(status=value).count()
+        for value, label in Ticket.STATUS_CHOICES
+    ]
+    # Weekly complaint trends for the last four weeks.
+    # The current week and three preceding weeks are included.
+    today = timezone.localdate()
+    current_week_start = today - timedelta(days=today.weekday())
+
+    trend_labels = []
+    trend_received = []
+    trend_resolved = []
+
+    for weeks_ago in range(3, -1, -1):
+        week_start = current_week_start - timedelta(weeks=weeks_ago)
+        week_end = week_start + timedelta(weeks=1)
+
+        received_count = tickets.filter(
+            created_at__date__gte=week_start,
+            created_at__date__lt=week_end,
+        ).count()
+
+        resolved_count = tickets.filter(
+            resolved_at__date__gte=week_start,
+            resolved_at__date__lt=week_end,
+        ).count()
+
+        trend_labels.append(week_start.strftime('%d %b'))
+        trend_received.append(received_count)
+        trend_resolved.append(resolved_count)
+    response_stats = tickets.filter(
+        first_response_at__isnull=False
+    ).aggregate(
+        average=Avg(
+            ExpressionWrapper(
+                F('first_response_at') - F('created_at'),
+                output_field=DurationField()
+            )
+        )
+    )
+
+    resolution_stats = tickets.filter(
+        resolved_at__isnull=False
+    ).aggregate(
+        average=Avg(
+            ExpressionWrapper(
+                F('resolved_at') - F('created_at'),
+                output_field=DurationField()
+            )
+        )
+    )
+
+    def format_hours(duration):
+        if duration is None:
+            return 'N/A'
+        hours = duration.total_seconds() / 3600
+        return f'{hours:.1f} hrs'
+    
     return render(request, 'role_dashboard.html', {
-        'page_title': 'Support Staff Dashboard'
+        'page_title': 'Support Staff Dashboard',
+        'department_name': department.name,
+        'department_total': tickets.count(),
+        'assigned_to_me': assigned_tickets.count(),
+        'resolved_by_me': resolved_by_me.count(),
+        'unassigned_count': unassigned_tickets.count(),
+        'avg_response_time': format_hours(response_stats['average']),
+        'avg_resolution_time': format_hours(resolution_stats['average']),
+        'status_chart_labels': status_chart_labels,
+        'status_chart_counts': status_chart_counts,
+        'trend_labels': trend_labels,
+        'trend_received': trend_received,
+        'trend_resolved': trend_resolved,
     })
 
 
 @role_required('admin')
 def admin_dashboard(request):
+    tickets = Ticket.objects.all()
+
+    # Admin Dashboard filters.
+    selected_department = request.GET.get('department', '')
+    selected_division = request.GET.get('division', '')
+
+    # Filter by department, if valid.
+    if selected_department.isdigit():
+        if Department.objects.filter(
+            pk=int(selected_department)
+        ).exists():
+            tickets = tickets.filter(
+                department_id=int(selected_department)
+            )
+        else:
+            selected_department = ''
+    else:
+        selected_department = ''
+
+    # Filter by complaint division, if valid.
+    if selected_division in ['employee', 'customer']:
+        tickets = tickets.filter(
+            division=selected_division
+        )
+    else:
+        selected_division = ''
+
+
+    # Company-wide weekly trends: current week and
+    # the three preceding weeks.
+    today = timezone.localdate()
+    current_week_start = today - timedelta(days=today.weekday())
+
+    admin_trend_labels = []
+    admin_trend_received = []
+    admin_trend_resolved = []
+
+    for weeks_ago in range(3, -1, -1):
+        week_start = current_week_start - timedelta(weeks=weeks_ago)
+        week_end = week_start + timedelta(weeks=1)
+
+        received_count = tickets.filter(
+            created_at__date__gte=week_start,
+            created_at__date__lt=week_end,
+        ).count()
+
+        resolved_count = tickets.filter(
+            resolved_at__date__gte=week_start,
+            resolved_at__date__lt=week_end,
+        ).count()
+
+        admin_trend_labels.append(week_start.strftime('%d %b'))
+        admin_trend_received.append(received_count)
+        admin_trend_resolved.append(resolved_count)
+
+
+    # Company-wide complaint status distribution.
+    admin_status_labels = [
+        label for value, label in Ticket.STATUS_CHOICES
+    ]
+
+    admin_status_counts = [
+        tickets.filter(status=value).count()
+        for value, label in Ticket.STATUS_CHOICES
+    ]
+
+
+
+    # Department-wise complaint distribution.
+    departments = Department.objects.order_by('name')
+
+    department_chart_labels = []
+    department_chart_counts = []
+
+    for department in departments:
+        department_chart_labels.append(department.name)
+        department_chart_counts.append(
+            tickets.filter(department=department).count()
+        )
+
+    # Complaints awaiting department routing.
+    unrouted_count = tickets.filter(
+        department__isnull=True
+    ).count()
+
+    if unrouted_count:
+        department_chart_labels.append('Not Yet Routed')
+        department_chart_counts.append(unrouted_count)
+
+
+    total_tickets = tickets.count()
+
+    employee_tickets = tickets.filter(
+        division='employee'
+    ).count()
+
+    customer_tickets = tickets.filter(
+        division='customer'
+    ).count()
+
+    unassigned_tickets = tickets.filter(
+        assigned_to__isnull=True,
+        status__in=['submitted', 'reopened']
+    ).count()
+
+    resolved_tickets = tickets.filter(
+        status='resolved'
+    ).count()
+
+    closed_tickets = tickets.filter(
+        status='closed'
+    ).count()
+
     return render(request, 'role_dashboard.html', {
-        'page_title': 'Admin Dashboard'
+        'page_title': 'Admin Dashboard',
+        'admin_total': total_tickets,
+        'admin_employee_total': employee_tickets,
+        'admin_customer_total': customer_tickets,
+        'admin_unassigned': unassigned_tickets,
+        'admin_resolved': resolved_tickets,
+        'admin_closed': closed_tickets,
+        'department_chart_labels': department_chart_labels,
+        'department_chart_counts': department_chart_counts,
+        'admin_status_labels': admin_status_labels,
+        'admin_status_counts': admin_status_counts,
+        'admin_trend_labels': admin_trend_labels,
+        'admin_trend_received': admin_trend_received,
+        'admin_trend_resolved': admin_trend_resolved,
+        'departments': Department.objects.order_by('name'),
+        'selected_department': selected_department,
+        'selected_division': selected_division,
     })
+
+
+
+
+
 
 @login_required
 def dashboard_redirect(request):
@@ -2052,3 +2397,94 @@ def support_recurring_product_issues(request):
             'analysis_error': analysis_error,
         },
     )
+
+# Module 12: Admin announcement management
+
+@role_required('admin')
+def manage_announcements(request):
+
+    if request.method == 'POST':
+        form = AnnouncementForm(request.POST)
+
+        if form.is_valid():
+            announcement = form.save()
+
+            messages.success(
+                request,
+                f'{announcement.title} added successfully.'
+            )
+
+            return redirect('manage_announcements')
+
+    else:
+        form = AnnouncementForm()
+
+    announcements = Announcement.objects.all()
+
+    return render(
+        request,
+        'tickets/admin_announcements.html',
+        {
+            'announcements': announcements,
+            'form': form,
+        }
+    )
+
+# Module 12: Edit announcement
+
+@role_required('admin')
+def edit_announcement(request, announcement_id):
+
+    announcement = get_object_or_404(
+        Announcement,
+        pk=announcement_id
+    )
+
+    if request.method == 'POST':
+        form = AnnouncementForm(
+            request.POST,
+            instance=announcement
+        )
+
+        if form.is_valid():
+            form.save()
+
+            messages.success(
+                request,
+                'Announcement updated successfully.'
+            )
+
+            return redirect('manage_announcements')
+
+    else:
+        form = AnnouncementForm(instance=announcement)
+
+    return render(
+        request,
+        'tickets/admin_announcement_edit.html',
+        {
+            'form': form,
+            'announcement': announcement,
+        }
+    )
+
+# Module 12: Delete public announcement
+
+@role_required('admin')
+@require_POST
+def delete_announcement(request, announcement_id):
+
+    announcement = get_object_or_404(
+        Announcement,
+        pk=announcement_id
+    )
+
+    title = announcement.title
+    announcement.delete()
+
+    messages.success(
+        request,
+        f'{title} deleted successfully.'
+    )
+
+    return redirect('manage_announcements')

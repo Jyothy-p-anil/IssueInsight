@@ -18,4 +18,243 @@
 
 </div>
 
+<div class="row g-4 mt-3">
+    <div class="col-12 col-lg-6">
+
+<!-- Module 12: Public Announcements -->
+
+<section>
+
+    <h3 class="mb-3">Public Announcements</h3>
+
+    {% for announcement in announcements %}
+
+        <div class="card mb-3">
+            <div class="card-body">
+
+                <h5 class="card-title">
+                    {{ announcement.title }}
+                </h5>
+
+                <p class="text-muted small">
+                    {{ announcement.created_at|date:"d M Y" }}
+                </p>
+
+                <p class="card-text">
+                    {{ announcement.content|linebreaksbr }}
+                </p>
+
+            </div>
+        </div>
+
+    {% empty %}
+
+        <p class="text-muted">
+            No public announcements available.
+        </p>
+
+    {% endfor %}
+
+</section>
+    </div>
+    <div class="col-12 col-lg-6">
+<!-- Module 12: Kerala Public Holiday Calendar -->
+
+<section>
+    <h3 class="mb-3">Kerala Public Holidays</h3>
+
+    {% if public_holidays %}
+
+        <div class="card">
+            <div class="card-body">
+
+                <!-- Month navigation -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <button type="button"
+                            class="btn btn-outline-secondary btn-sm"
+                            onclick="changeHolidayMonth(-1)">
+                        &larr; Previous
+                    </button>
+
+                    <h4 id="holiday-month-title" class="mb-0"></h4>
+
+                    <button type="button"
+                            class="btn btn-outline-secondary btn-sm"
+                            onclick="changeHolidayMonth(1)">
+                        Next &rarr;
+                    </button>
+                </div>
+
+                <!-- Monthly calendars -->
+                {% for month in calendar_data %}
+
+                    <div class="holiday-month"
+                         data-month="{{ month.number }}"
+                         style="display: none;">
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered text-center holiday-calendar">
+                                <thead>
+                                    <tr>
+                                        <th>Mon</th>
+                                        <th>Tue</th>
+                                        <th>Wed</th>
+                                        <th>Thu</th>
+                                        <th>Fri</th>
+                                        <th>Sat</th>
+                                        <th>Sun</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {% for week in month.weeks %}
+                                        <tr>
+                                            {% for day in week %}
+                                                <td>
+                                                    {% if day.day %}
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-sm w-100 holiday-day {% if day.holidays %}text-danger fw-bold{% endif %}"
+                                                            data-date="{{ day.date }}"
+                                                            data-holidays="{{ day.holidays|join:'; ' }}"
+                                                            onclick="showHolidayDetails(this)">
+                                                            {{ day.day }}
+                                                        </button>
+                                                    {% endif %}
+                                                </td>
+                                            {% endfor %}
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                {% endfor %}
+
+                <p class="small text-muted">
+                    <span class="text-danger fw-bold">Red dates</span>
+                    indicate Kerala public holidays.
+                    Select a date to view details.
+                </p>
+
+                <!-- Selected date details -->
+                <div id="holiday-details"
+                     class="alert alert-light border"
+                     aria-live="polite">
+                    Select a date to view holiday information.
+                </div>
+
+            </div>
+        </div>
+
+    {% else %}
+        <p class="text-muted">
+            Public holiday information is currently unavailable.
+        </p>
+    {% endif %}
+</section>
+    </div>
+</div>
+<div class="mt-4 text-center">
+    <a href="{% url 'public_contact_directory' %}"
+       class="btn btn-outline-primary">
+        Contact Directory
+    </a>
+    <a href="{% url 'public_faq' %}"
+   class="btn btn-outline-primary ms-2">
+    Frequently Asked Questions
+</a>
+</div>
+
+<style>
+    .holiday-calendar {
+        table-layout: fixed;
+    }
+
+    .holiday-calendar td {
+        width: 14.28%;
+        vertical-align: middle;
+        padding: 8px;
+    }
+
+    .holiday-day {
+        min-height: 40px;
+    }
+
+    .holiday-day:hover {
+        background-color: #f1f3f5;
+    }
+
+    .holiday-day.selected {
+        background-color: #dee2e6;
+        border: 1px solid #6c757d;
+    }
+</style>
+
+<script>
+    const holidayMonths = [
+        "January", "February", "March", "April",
+        "May", "June", "July", "August",
+        "September", "October", "November", "December"
+    ];
+
+    let activeHolidayMonth = Number("{{ current_month }}");
+
+    function renderHolidayMonth() {
+        document.querySelectorAll(".holiday-month").forEach(function (element) {
+            element.style.display =
+                Number(element.dataset.month) === activeHolidayMonth
+                    ? "block"
+                    : "none";
+        });
+
+        document.getElementById("holiday-month-title").textContent =
+            holidayMonths[activeHolidayMonth - 1] + " {{ current_year }}";
+
+        document.getElementById("holiday-details").textContent =
+            "Select a date to view holiday information.";
+    }
+
+    function changeHolidayMonth(direction) {
+        activeHolidayMonth += direction;
+
+        if (activeHolidayMonth < 1) {
+            activeHolidayMonth = 12;
+        }
+
+        if (activeHolidayMonth > 12) {
+            activeHolidayMonth = 1;
+        }
+
+        document.querySelectorAll(".holiday-day").forEach(function (button) {
+            button.classList.remove("selected");
+        });
+
+        renderHolidayMonth();
+    }
+
+    function showHolidayDetails(button) {
+        document.querySelectorAll(".holiday-day").forEach(function (element) {
+            element.classList.remove("selected");
+        });
+
+        button.classList.add("selected");
+
+        const date = button.dataset.date;
+        const holidays = button.dataset.holidays;
+
+        const details = document.getElementById("holiday-details");
+
+        if (holidays) {
+            details.textContent = date + " — " + holidays;
+        } else {
+            details.textContent = date + " — No public holiday recorded.";
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", renderHolidayMonth);
+</script>
+
+
 {% endblock %}

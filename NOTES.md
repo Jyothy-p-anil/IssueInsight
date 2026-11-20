@@ -1189,3 +1189,107 @@ Implemented and verified:
 
 Module 11 implementation completed.
 Next: Module 12 — Dashboards and Analytics.
+
+
+## Module 12 — Dashboards and Analytics (In Progress)
+
+### Employee Dashboard
+- Added personal complaint counts by status.
+- Added interactive status-card filtering.
+- Added five most recent complaints and View All Complaints link.
+- Restricted statistics to the logged-in employee.
+
+### Customer Dashboard
+- Added personal product complaint counts by status.
+- Reused interactive filtering and recent complaint layout.
+- Added View All Complaints link.
+- Restricted statistics to the logged-in customer.
+
+### Support Staff Dashboard
+- Added department-specific complaint statistics.
+- Added Assigned to Me, Currently Resolved by Me and Unassigned Queue counts.
+- Added average first-response and resolution durations.
+- Added Complaints by Status bar chart.
+- Added weekly Received vs Resolved line chart.
+- Added missing-department handling.
+- Added six dedicated Support Dashboard tests.
+
+
+
+### Admin Dashboard
+- Added six company-wide complaint statistics:
+  Total, Employee, Customer, Unassigned, Resolved and Closed.
+- Added department-wise complaint distribution chart.
+- Included complaints awaiting department routing.
+- Added company-wide complaint status distribution chart.
+- Added weekly Received vs Resolved trend chart.
+- Added Department and Complaint Type filters.
+- Applied filters consistently across statistics and charts.
+- Added ten dedicated Admin Dashboard tests.
+- Verified Admin Dashboard charts and combined filtering.
+
+### Public Home — Announcements
+- Enabled homepage access for anonymous visitors.
+- Added public announcement model and database migration 0016.
+- Added Admin-only announcement creation, editing and deletion.
+- Added publication controls for draft and published announcements.
+- Added Manage Announcements to the Admin navigation.
+- Displayed published announcements on Public Home.
+- Kept unpublished announcements hidden from public visitors.
+- Added nine automated Announcement tests.
+- Verified announcement management and public visibility.
+
+
+### Verification
+- Django system check passed.
+- Full regression suite: 312 tests passed.
+- Added 10 Admin Dashboard tests.
+- Latest full regression suite: 341 tests passed.
+
+
+
+### Public Home — Kerala Holiday Calendar
+- Integrated the free India Calendar API for Kerala public holidays.
+- Retrieved Kerala-specific holiday records using region=KL and scope=state.
+- Added API timeout handling and 24-hour Django caching.
+- Handled API failures without breaking Public Home.
+- Replaced the holiday table with an interactive monthly calendar.
+- Highlighted holiday dates in red.
+- Added previous/next month navigation and clickable holiday details.
+- Supported multiple holidays on the same date.
+- Arranged Public Announcements and the calendar in a responsive two-column layout.
+- Added 10 automated tests for the holiday service and calendar rendering.
+- Manually verified calendar navigation and date selection.
+
+
+### Module 12 — Final Completion Summary
+
+Status: Complete — implementation and functional verification finished.
+
+Completed:
+- Employee, Customer, Support Staff and Admin dashboards.
+- Public Home accessible without login.
+- Admin-managed public announcements with create, edit, publish/unpublish and delete functionality.
+- Published-only announcement visibility.
+- Kerala Public Holiday Calendar using India Calendar API.
+- 24-hour holiday caching and API failure handling.
+- Monthly calendar navigation, highlighted holiday dates and clickable holiday details.
+- Public Contact Directory with four contact sections.
+- Public FAQs with five expandable questions.
+- Automated tests for announcements, holiday calendar, contact directory and FAQs.
+- Full regression testing: 348 tests passed.
+
+Scope decisions:
+- Company closure notices use existing public announcements.
+- Separate company closure, vacation and employee leave management excluded.
+
+Deferred to UI Design Module:
+- Improve Public Home layout and visual hierarchy.
+- Reconsider Contact Directory and FAQ link placement.
+- Refine announcement and holiday calendar styling.
+- Preserve existing functionality during redesign.
+
+Remaining:
+- No functional development pending in Module 12.
+- Final UI refinements deferred to UI Design Module.
+
