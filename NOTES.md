@@ -1346,5 +1346,21 @@ Module 13 in progress. Admin complaint search and filtering implemented. Reporti
 - Added five automated CSV export tests.
 - Full regression: 376 tests passed.
 
+
+### Module 13 — Steps 5A–5D: PDF Report Export
+
+- Installed ReportLab for PDF generation.
+- Created `tickets/services/pdf_reports.py`.
+- Added PDF download to Admin Complaint Reports.
+- PDF includes complaint totals, status, department, source, urgency and category breakdowns.
+- Included resolution rate and average response/resolution times.
+- PDF export supports All Time, Last 30 Days and Custom Date Range.
+- Restricted PDF export to Admin users.
+- Added five automated PDF export tests using pypdf.
+- Full regression: 381 tests passed.
+
 ### Current Status
-Module 13 in progress. Admin search, advanced filtering, company-wide reporting and CSV export implemented. Support Staff reporting and PDF generation pending.
+Module 13 in progress. Admin search, advanced filtering, company-wide reporting, CSV export and PDF export implemented. Support Staff reporting remains pending.
+
+
+
