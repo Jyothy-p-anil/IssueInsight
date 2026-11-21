@@ -138,3 +138,26 @@ This is an academic development project configured for local execution.
 ## Repository
 
 https://github.com/Jyothy-p-anil/IssueInsight
+
+
+## Module 15 — Integration Testing and Final Delivery
+
+### Automated Verification
+- Django system check completed.
+- Full regression suite: 393 tests passed.
+- No pending model migrations.
+
+### Manual Integration Testing
+- Employee complaint submission, assignment, acknowledgement, resolution and closure — Passed.
+- Customer complaint submission, assignment, acknowledgement, resolution and closure — Passed.
+- Reporter reopening of a resolved complaint — Passed.
+- Reporter ticket privacy — Passed.
+- Support Staff internal-note privacy — Passed.
+- Admin reporting and CSV/PDF exports — Passed.
+
+### Documentation
+- Created `README.md` with project overview, features, installation, configuration, testing and limitations.
+- Existing `requirements.txt` and `.gitignore` retained.
+
+### Status
+Integration testing and README documentation completed. Final delivery verification pending.
