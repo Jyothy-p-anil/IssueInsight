@@ -91,7 +91,7 @@ from django.http import HttpResponse
 
 
 from tickets.services.pdf_reports import generate_admin_report_pdf
-
+from django.db.models import Count
 
 
 #--------------------------
@@ -407,14 +407,19 @@ def support_reports(request):
 
 
     # Module 13 — Department category statistics
+    
     category_report = [
         {
-            'name': category.name,
-            'count': tickets.filter(category=category).count(),
+            'name': item['category__name'],
+            'count': item['count'],
         }
-        for category in Category.objects.filter(
-            department=department
-        ).order_by('name')
+        for item in tickets.filter(
+            category__isnull=False
+        ).values(
+            'category__name'
+        ).annotate(
+            count=Count('id')
+        ).order_by('category__name')
     ]
 
     category_report.append({

@@ -186,6 +186,38 @@ class SupportReportsTests(TestCase):
             response.context['average_resolution_hours'], 6.0
         )
 
+    
+    def test_corrected_department_category_count(self):
+        other_category = Category.objects.create(
+            name='IT Hardware Test',
+            division='employee',
+            department=self.other_department,
+        )
+
+        Ticket.objects.filter(
+            pk=self.ticket2.pk
+        ).update(
+            category=other_category
+        )
+
+        response = self.client.get(self.url)
+
+        categories = {
+            item['name']: item['count']
+            for item in response.context['category_report']
+        }
+
+        self.assertEqual(
+            categories['AC Maintenance Test'], 1
+        )
+        self.assertEqual(
+            categories['IT Hardware Test'], 1
+        )
+        self.assertEqual(
+            sum(categories.values()), 2
+        )
+
+
     def test_last_30_days(self):
         response = self.client.get(
             self.url, {'period': 'last30'}
