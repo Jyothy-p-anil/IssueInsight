@@ -365,6 +365,11 @@ path(
     views.support_recurring_product_issues,
     name='support_recurring_product_issues',
 ),
+path(
+    'support/reports/',
+    views.support_reports,
+    name='support_reports'
+),
 
 path(
     'management/announcements/',

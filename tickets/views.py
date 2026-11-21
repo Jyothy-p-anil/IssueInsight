@@ -320,6 +320,172 @@ def support_dashboard(request):
     })
 
 
+# Module 13 — Support Staff department reporting
+@role_required('support')
+def support_reports(request):
+    department = request.user.department
+
+    if department is None:
+        return render(request, 'tickets/support_reports.html', {
+            'department_missing': True,
+        })
+
+   
+    tickets = Ticket.objects.filter(
+        department_id=department.id
+    )
+
+    selected_period = request.GET.get('period', 'all')
+    date_from = request.GET.get('date_from', '')
+    date_to = request.GET.get('date_to', '')
+    today = timezone.localdate()
+    filter_error = ''
+
+    if selected_period == 'last30':
+        start_date = today - timedelta(days=29)
+        tickets = tickets.filter(
+            created_at__date__gte=start_date,
+            created_at__date__lte=today,
+        )
+
+    elif selected_period == 'custom':
+        try:
+            if not date_from or not date_to:
+                raise ValueError('Both dates are required.')
+
+            start_date = date.fromisoformat(date_from)
+            end_date = date.fromisoformat(date_to)
+
+            if start_date > end_date:
+                raise ValueError('Invalid date range.')
+
+            tickets = tickets.filter(
+                created_at__date__gte=start_date,
+                created_at__date__lte=end_date,
+            )
+
+        except ValueError:
+            filter_error = 'Please enter a valid date range.'
+            selected_period = 'all'
+            date_from = ''
+            date_to = ''
+
+    else:
+        selected_period = 'all'
+
+    total = tickets.count()
+
+
+    status_report = [
+        {
+            'label': label,
+            'count': tickets.filter(status=value).count(),
+        }
+        for value, label in Ticket.STATUS_CHOICES
+    ]
+
+    urgency_report = [
+        {
+            'label': label,
+            'count': tickets.filter(urgency=value).count(),
+        }
+        for value, label in Ticket.URGENCY_CHOICES
+    ]
+
+    assigned_count = tickets.filter(
+        assigned_to__isnull=False
+    ).count()
+
+    unassigned_count = tickets.filter(
+        assigned_to__isnull=True
+    ).count()
+
+    completed_count = tickets.filter(
+        status__in=['resolved', 'closed']
+    ).count()
+
+
+
+    # Module 13 — Department category statistics
+    category_report = [
+        {
+            'name': category.name,
+            'count': tickets.filter(category=category).count(),
+        }
+        for category in Category.objects.filter(
+            department=department
+        ).order_by('name')
+    ]
+
+    category_report.append({
+        'name': 'Uncategorised',
+        'count': tickets.filter(category__isnull=True).count(),
+    })
+
+    # Department resolution performance
+    response_stats = tickets.filter(
+        first_response_at__isnull=False
+    ).aggregate(
+        average=Avg(
+            ExpressionWrapper(
+                F('first_response_at') - F('created_at'),
+                output_field=DurationField()
+            )
+        )
+    )
+
+    resolution_stats = tickets.filter(
+        resolved_at__isnull=False
+    ).aggregate(
+        average=Avg(
+            ExpressionWrapper(
+                F('resolved_at') - F('created_at'),
+                output_field=DurationField()
+            )
+        )
+    )
+
+    def average_hours(duration):
+        if duration is None:
+            return None
+        return round(duration.total_seconds() / 3600, 2)
+
+    average_response_hours = average_hours(
+        response_stats['average']
+    )
+    average_resolution_hours = average_hours(
+        resolution_stats['average']
+    )
+
+    resolution_rate = (
+        round(completed_count / total * 100, 2)
+        if total else 0
+    )
+
+
+    return render(request, 'tickets/support_reports.html', {
+        'department_name': department.name,
+        'total': total,
+        'status_report': status_report,
+        'urgency_report': urgency_report,
+        'assigned_count': assigned_count,
+        'unassigned_count': unassigned_count,
+        'completed_count': completed_count,
+
+        'selected_period': selected_period,
+        'date_from': date_from,
+        'date_to': date_to,
+        'filter_error': filter_error,
+
+
+        'category_report': category_report,
+        'average_response_hours': average_response_hours,
+        'average_resolution_hours': average_resolution_hours,
+        'resolution_rate': resolution_rate,
+
+
+    })
+
 # Module 13 — Admin company-wide reporting
 
 

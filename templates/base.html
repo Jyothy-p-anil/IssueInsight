@@ -177,6 +177,13 @@
 
                         {% elif user.role == 'support' %}
 
+                            
+                            <a class="nav-link"
+                            href="{% url 'support_reports' %}">
+                                Department Reports
+                            </a>
+
+
                             <a class="nav-link"
                             href="{% url 'support_dashboard' %}">
                                 Support Dashboard
