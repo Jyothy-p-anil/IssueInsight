@@ -12,6 +12,11 @@ from tickets.models import Category, Department, Ticket
 import csv
 from io import StringIO
 
+from io import BytesIO
+from pypdf import PdfReader
+
+
+
 User = get_user_model()
 
 
@@ -248,4 +253,75 @@ class AdminReportsTests(TestCase):
             'text/csv',
             response.get('Content-Type', '')
         )
+    
+    def read_pdf_text(self, response):
+        reader = PdfReader(BytesIO(response.content))
+        return '\n'.join(
+            page.extract_text() or ''
+            for page in reader.pages
+        )
+
+    def test_pdf_export_downloads(self):
+        response = self.client.get(
+            self.url, {'export': 'pdf'}
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response['Content-Type'],
+            'application/pdf'
+        )
+        self.assertIn(
+            'attachment',
+            response['Content-Disposition']
+        )
+        self.assertTrue(response.content.startswith(b'%PDF-'))
+
+    def test_pdf_contains_report_sections(self):
+        response = self.client.get(
+            self.url, {'export': 'pdf'}
+        )
+        text = self.read_pdf_text(response)
+
+        self.assertIn('IssueInsight - Complaint Report', text)
+        self.assertIn('Total Complaints: 3', text)
+        self.assertIn('Complaints by Status', text)
+        self.assertIn('Complaints by Department', text)
+        self.assertIn('Complaints by Category', text)
+        self.assertIn('Resolution Performance', text)
+
+    def test_pdf_contains_correct_statistics(self):
+        response = self.client.get(
+            self.url, {'export': 'pdf'}
+        )
+        text = self.read_pdf_text(response)
+
+        self.assertIn('Test Maintenance', text)
+        self.assertIn('66.67%', text)
+        self.assertIn('1.5 hours', text)
+        self.assertIn('5.5 hours', text)
+
+    def test_pdf_respects_last_30_days(self):
+        response = self.client.get(self.url, {
+            'period': 'last30',
+            'export': 'pdf',
+        })
+        text = self.read_pdf_text(response)
+
+        self.assertIn('Last 30 Days', text)
+        self.assertIn('Total Complaints: 2', text)
+
+    def test_non_admin_cannot_export_pdf(self):
+        self.client.force_login(self.employee)
+
+        response = self.client.get(
+            self.url, {'export': 'pdf'}
+        )
+
+        self.assertNotEqual(response.status_code, 200)
+        self.assertNotEqual(
+            response.get('Content-Type', ''),
+            'application/pdf'
+        )
+
 
