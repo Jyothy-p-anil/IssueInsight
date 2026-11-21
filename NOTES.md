@@ -1446,4 +1446,27 @@ Remaining:
 - Applied responsive styling across reporter pages.
 - Verification: Django checks, regression tests and manual UI review completed.
 
-Module 14 remains in progress. Support Staff and Admin UI refinement is pending.
+
+
+## Module 15 — Integration Testing and Final Delivery
+
+### Automated Verification
+- Django system check passed.
+- Full regression suite: 393 tests passed.
+- No pending database migrations.
+
+### Manual Integration Testing
+- Employee complaint lifecycle — Passed.
+- Customer complaint lifecycle — Passed.
+- Reporter reopening — Passed.
+- Reporter ticket privacy — Passed.
+- Internal-note privacy — Passed.
+- Admin reporting and CSV/PDF exports — Passed.
+
+### Documentation
+- README.md created with installation, features, roles, testing and limitations.
+- requirements.txt and .gitignore verified.
+
+### Status
+Integration testing completed.
+Final delivery documentation and repository verification pending.
