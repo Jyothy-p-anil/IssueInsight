@@ -164,8 +164,7 @@
                             </td>
 
                             <td>
-                                {% if ticket.department and not ticket.assigned_to and ticket.status == 'submitted' or ticket.department and not ticket.assigned_to and ticket.status == 'reopened' %}
-                                    <form method="post"
+{% if ticket.department and not ticket.assigned_to and ticket.status == 'submitted' or ticket.department and not ticket.assigned_to and ticket.status == 'reopened' %}                                    <form method="post"
                                         action="{% url 'correct_ticket_department' ticket.pk %}">
                                         {% csrf_token %}
 
