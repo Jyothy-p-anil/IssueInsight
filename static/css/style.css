@@ -553,3 +553,445 @@ main {
         padding: 22px;
     }
 }
+
+/* Module 14 — Role Dashboard Header */
+
+.ii-dashboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 28px 32px;
+    margin-bottom: 28px;
+    background: linear-gradient(120deg, #f0f5fb, #ffffff 75%);
+    border: 1px solid #e3eaf2;
+    border-radius: 16px;
+}
+
+.ii-dashboard-header h1 {
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    margin-bottom: 10px;
+}
+
+.ii-dashboard-description {
+    color: #64748b;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+.ii-dashboard-header .btn {
+    flex-shrink: 0;
+    padding: 10px 18px;
+    font-weight: 600;
+}
+
+@media (max-width: 767px) {
+    .ii-dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 24px 20px;
+    }
+}
+
+/* Module 14 — Dashboard Statistics */
+
+.ii-dashboard-section {
+    margin-bottom: 28px;
+}
+
+.ii-section-heading {
+    margin-bottom: 20px;
+}
+
+.ii-section-heading h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0;
+}
+
+.ii-stat-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    height: 100%;
+    min-height: 160px;
+    padding: 24px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.ii-stat-card:hover {
+    border-color: #a8c1df;
+    box-shadow: 0 5px 18px rgba(15, 23, 42, 0.06);
+}
+
+.ii-stat-card:focus-visible {
+    outline: 2px solid var(--ii-primary);
+    outline-offset: 3px;
+}
+
+.ii-stat-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.ii-stat-value {
+    font-size: 2.3rem;
+    font-weight: 800;
+    color: #244a7d;
+    line-height: 1.3;
+    margin: 10px 0;
+}
+
+.ii-stat-footer {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    margin-top: auto;
+}
+
+/* Module 14 — Recent Complaints */
+
+.ii-recent-section {
+    margin-bottom: 32px;
+}
+
+.ii-recent-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.ii-recent-header h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0;
+}
+
+.ii-recent-description {
+    color: #64748b;
+    font-size: 0.85rem;
+    margin-bottom: 16px;
+}
+
+.ii-recent-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.ii-recent-table thead th {
+    background: #f8fafc;
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.ii-recent-table tbody td {
+    padding: 18px 20px;
+    font-size: 0.88rem;
+    border-bottom: 1px solid #edf0f4;
+}
+
+.ii-recent-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.ii-recent-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.ii-ticket-link {
+    color: #244a7d;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.ii-ticket-link:hover {
+    text-decoration: underline;
+}
+
+.ii-status-label {
+    display: inline-block;
+    background: #eef2f7;
+    color: #475569;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.ii-ticket-date {
+    color: #64748b;
+    white-space: nowrap;
+}
+
+/* Empty states */
+
+.ii-empty-state {
+    text-align: center;
+    background: #ffffff;
+    border: 1px dashed #cbd5e1;
+    border-radius: 14px;
+    padding: 48px 24px;
+}
+
+.ii-empty-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    background: #eef2f7;
+    border-radius: 14px;
+    color: #64748b;
+    font-size: 1.5rem;
+    margin-bottom: 18px;
+}
+
+.ii-empty-state h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.ii-empty-state p {
+    color: #64748b;
+    font-size: 0.9rem;
+    max-width: 400px;
+    margin: 0 auto 20px;
+}
+
+.ii-empty-message {
+    padding: 24px;
+    text-align: center;
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+@media (max-width: 767px) {
+    .ii-recent-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .ii-recent-table thead th,
+    .ii-recent-table tbody td {
+        padding: 12px;
+    }
+}
+
+
+/* Module 14 — Complaint Submission Forms */
+
+.ii-form-header {
+    background: linear-gradient(120deg, #f0f5fb, #ffffff 75%);
+    border: 1px solid #e3eaf2;
+    border-radius: 16px;
+    padding: 32px 36px;
+    margin-bottom: 24px;
+}
+
+.ii-form-header h1 {
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    margin-bottom: 12px;
+}
+
+.ii-form-header h1 span {
+    color: var(--ii-primary);
+}
+
+.ii-form-lead {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 8px;
+}
+
+.ii-form-description {
+    color: #64748b;
+    font-size: 0.94rem;
+    line-height: 1.7;
+    max-width: 650px;
+    margin-bottom: 0;
+}
+
+.ii-complaint-form-card {
+    max-width: 850px;
+    margin: 0 auto 32px;
+    border-radius: 14px;
+}
+
+.ii-complaint-form-card .card-body {
+    padding: 30px;
+}
+
+.ii-form-section-heading {
+    margin-bottom: 24px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--ii-border);
+}
+
+.ii-form-section-heading h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.ii-form-section-heading p {
+    color: var(--ii-muted);
+    font-size: 0.88rem;
+    margin-bottom: 0;
+}
+
+.ii-complaint-form-card .form-label {
+    font-weight: 600;
+    font-size: 0.88rem;
+    margin-bottom: 8px;
+}
+
+.ii-complaint-form-card .form-control,
+.ii-complaint-form-card .form-select {
+    padding: 10px 12px;
+    min-height: 42px;
+}
+
+.ii-complaint-form-card textarea {
+    min-height: 130px;
+}
+
+@media (max-width: 767px) {
+    .ii-form-header {
+        padding: 24px 20px;
+    }
+
+    .ii-complaint-form-card .card-body {
+        padding: 20px;
+    }
+}
+
+
+
+/* Module 14 — My Tickets */
+
+.ii-tickets-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 30px 34px;
+    margin-bottom: 24px;
+    background: linear-gradient(120deg, #f0f5fb, #ffffff 75%);
+    border: 1px solid #e3eaf2;
+    border-radius: 16px;
+}
+
+.ii-tickets-header h1 {
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    margin-bottom: 10px;
+}
+
+.ii-tickets-header h1 span {
+    color: var(--ii-primary);
+}
+
+.ii-tickets-description {
+    color: #64748b;
+    font-size: 0.94rem;
+    margin-bottom: 0;
+}
+
+.ii-tickets-header .btn {
+    flex-shrink: 0;
+    padding: 10px 18px;
+    font-weight: 600;
+}
+
+.ii-tickets-card {
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 32px;
+}
+
+.ii-tickets-table thead th {
+    background: #f8fafc;
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 16px;
+    white-space: nowrap;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.ii-tickets-table tbody td {
+    padding: 16px;
+    font-size: 0.86rem;
+    border-bottom: 1px solid #edf0f4;
+}
+
+.ii-tickets-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.ii-tickets-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.ii-tickets-table .btn-sm {
+    white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+    .ii-tickets-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 24px 20px;
+    }
+}
+
+
+/* Module 14 — Ticket Detail */
+
+.ii-ticket-detail-header {
+    background: linear-gradient(120deg, #f0f5fb, #ffffff 75%);
+    border: 1px solid #e3eaf2;
+    border-radius: 16px;
+    padding: 30px 34px;
+}
+
+.ii-ticket-detail-header h2 {
+    font-size: clamp(1.6rem, 2.8vw, 2.3rem);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    margin-bottom: 0;
+}
+
+.ii-ticket-detail-header .badge {
+    padding: 9px 13px;
+    font-size: 0.8rem;
+    border-radius: 8px;
+}
+
+@media (max-width: 767px) {
+    .ii-ticket-detail-header {
+        padding: 24px 20px;
+    }
+}

@@ -5,14 +5,33 @@
 
 {% block content %}
 
-<h2>Submit Software Complaint</h2>
 
-<p class="text-muted">
-    Report an issue with one of our software products.
-</p>
+<header class="ii-form-header">
+    <p class="ii-resource-eyebrow mb-2">
+        ISSUEINSIGHT / PRODUCT SUPPORT
+    </p>
 
-<div class="card shadow-sm mt-4">
+    <h1>Report a <span>Software Issue.</span></h1>
+
+    <p class="ii-form-lead">
+        Help us understand the problem.
+    </p>
+
+    <p class="ii-form-description">
+        Share the details of your software issue so the
+        Product Support team can review your complaint.
+    </p>
+</header>
+
+
+
+<div class="card ii-complaint-form-card">
     <div class="card-body">
+        <div class="ii-form-section-heading">
+            <h2>Complaint Details</h2>
+            <p>Complete the fields below to submit your complaint.</p>
+        </div>
+
 
         <form method="post">
             {% csrf_token %}

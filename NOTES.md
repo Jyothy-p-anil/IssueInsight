@@ -1432,3 +1432,18 @@ Remaining:
 - Preserved existing functionality and role permissions.
 - Verification: Django system check and full regression suite passed.
 - Module 14 remains in progress; role-specific UI refinement is pending.
+
+
+
+## Module 14 — Employee and Customer UI Completion
+
+- Refined the shared Employee and Customer dashboard.
+- Improved complaint statistics cards and recent complaints table.
+- Updated workplace and software complaint submission forms.
+- Refined My Tickets pages while preserving existing filters.
+- Improved ticket detail layout and corrected nested sections.
+- Preserved AI category suggestions, conversations, resolution confirmation and reopening.
+- Applied responsive styling across reporter pages.
+- Verification: Django checks, regression tests and manual UI review completed.
+
+Module 14 remains in progress. Support Staff and Admin UI refinement is pending.

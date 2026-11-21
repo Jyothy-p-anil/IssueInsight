@@ -5,14 +5,33 @@
 
 {% block content %}
 
-<h2>Submit Workplace Complaint</h2>
 
-<p class="text-muted">
-    Report an issue you are experiencing at work.
-</p>
+<header class="ii-form-header">
+    <p class="ii-resource-eyebrow mb-2">
+        ISSUEINSIGHT / WORKPLACE SUPPORT
+    </p>
 
-<div class="card shadow-sm mt-4">
+    <h1>Report a <span>Workplace Issue.</span></h1>
+
+    <p class="ii-form-lead">
+        Tell us what needs attention.
+    </p>
+
+    <p class="ii-form-description">
+        Describe the workplace issue you are experiencing.
+        Your complaint will be directed to the appropriate support team.
+    </p>
+</header>
+
+
+
+<div class="card ii-complaint-form-card">
     <div class="card-body">
+        <div class="ii-form-section-heading">
+            <h2>Complaint Details</h2>
+            <p>Complete the fields below to submit your complaint.</p>
+        </div>
+
 
         <form method="post">
             {% csrf_token %}

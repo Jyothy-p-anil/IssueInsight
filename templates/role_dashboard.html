@@ -5,94 +5,210 @@
 
 {% block content %}
 
-<h2>{{ page_title }}</h2>
-<p class="text-muted">Welcome, {{ user.username }}.</p>
+
+<!-- Module 14 — Dashboard Header -->
+
+<header class="ii-dashboard-header">
+    <div>
+        <p class="ii-resource-eyebrow mb-2">
+            ISSUEINSIGHT / MY WORKSPACE
+        </p>
+
+        <h1>{{ page_title }}</h1>
+
+        <p class="ii-dashboard-description">
+            Welcome back, {{ user.username }}.
+            Here's an overview of your complaints and their progress.
+        </p>
+    </div>
+
+    {% if user.role == 'employee' %}
+        <a href="{% url 'submit_employee_complaint' %}"
+           class="btn btn-primary">
+            + New Complaint
+        </a>
+    {% elif user.role == 'customer' %}
+        <a href="{% url 'submit_customer_complaint' %}"
+           class="btn btn-primary">
+            + New Complaint
+        </a>
+    {% endif %}
+</header>
+
 
 {% if user.role == 'employee' or user.role == 'customer' %}
 
-<h4 class="mt-4 mb-3">My Complaint Overview</h4>
+<!-- Complaint Statistics -->
 
-<div class="row g-3 mb-4">
+<section class="ii-dashboard-section">
 
-    <div class="col-md-4">
-        <button type="button"
-                class="card p-3 w-100 text-start dashboard-filter"
-                data-status="all">
-            <h6>Total Complaints</h6>
-            <h3>{{ total_tickets }}</h3>
-        </button>
+    <div class="ii-section-heading">
+        <div>
+            <p class="ii-resource-eyebrow mb-2">
+                COMPLAINT SUMMARY
+            </p>
+            <h2>My Complaint Overview</h2>
+        </div>
     </div>
 
-    {% for status, count in status_counts.items %}
-    <div class="col-md-4">
-        <button type="button"
-                class="card p-3 w-100 text-start dashboard-filter"
-                data-status="{{ status }}">
-            <h6>
-                {% if status == 'in_progress' %}
-                    In Progress
-                {% else %}
-                    {{ status|title }}
-                {% endif %}
-            </h6>
-            <h3>{{ count }}</h3>
-        </button>
+    <div class="row g-3 mb-4">
+
+        <div class="col-12 col-sm-6 col-xl-4">
+            <button type="button"
+                    class="ii-stat-card dashboard-filter"
+                    data-status="all">
+
+                <span class="ii-stat-label">
+                    Total Complaints
+                </span>
+
+                <span class="ii-stat-value">
+                    {{ total_tickets }}
+                </span>
+
+                <span class="ii-stat-footer">
+                    All submitted complaints
+                </span>
+            </button>
+        </div>
+
+        {% for status, count in status_counts.items %}
+        <div class="col-12 col-sm-6 col-xl-4">
+            <button type="button"
+                    class="ii-stat-card dashboard-filter"
+                    data-status="{{ status }}">
+
+                <span class="ii-stat-label">
+                    {% if status == 'in_progress' %}
+                        In Progress
+                    {% else %}
+                        {{ status|title }}
+                    {% endif %}
+                </span>
+
+                <span class="ii-stat-value">
+                    {{ count }}
+                </span>
+
+                <span class="ii-stat-footer">
+                    Click to filter recent complaints
+                </span>
+            </button>
+        </div>
+        {% endfor %}
+
     </div>
-    {% endfor %}
 
-</div>
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="mb-0">Recent Complaints</h4>
+</section>
 
-{% if user.role == 'employee' %}
-    <a href="{% url 'employee_my_tickets' %}"
-       class="btn btn-outline-primary btn-sm">
-        View All Complaints
-    </a>
-{% elif user.role == 'customer' %}
-    <a href="{% url 'customer_my_tickets' %}"
-       class="btn btn-outline-primary btn-sm">
-        View All Complaints
-    </a>
-{% endif %}
-</div>
+<!-- Module 14 — Recent Complaints -->
 
-<p class="text-muted small" id="filter-description">
-    Showing the 5 most recent complaints.
-</p>
+<section class="ii-recent-section">
 
-{% if recent_tickets %}
-<div class="table-responsive">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Complaint</th>
-                <th>Status</th>
-                <th>Submitted</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for ticket in recent_tickets %}
-            <tr class="complaint-row" data-status="{{ ticket.status }}">
-                <td>
-                    <a href="{% url 'ticket_detail' ticket.pk %}">
-                        {{ ticket.title }}
-                    </a>
-                </td>
-                <td>{{ ticket.get_status_display }}</td>
-                <td>{{ ticket.created_at|date:"d M Y" }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+    <div class="ii-recent-header">
+        <div>
+            <p class="ii-resource-eyebrow mb-2">
+                RECENT ACTIVITY
+            </p>
+            <h2>Recent Complaints</h2>
+        </div>
 
-<p id="no-matching-complaints" class="text-muted d-none">
-    No complaints with this status among your 5 most recent complaints.
-</p>
-{% else %}
-<p class="text-muted">You have not submitted any complaints yet.</p>
-{% endif %}
+        {% if user.role == 'employee' %}
+            <a href="{% url 'employee_my_tickets' %}"
+               class="btn btn-outline-primary btn-sm">
+                View All Complaints &rarr;
+            </a>
+        {% elif user.role == 'customer' %}
+            <a href="{% url 'customer_my_tickets' %}"
+               class="btn btn-outline-primary btn-sm">
+                View All Complaints &rarr;
+            </a>
+        {% endif %}
+    </div>
+
+    <p class="ii-recent-description" id="filter-description">
+        Showing the 5 most recent complaints.
+    </p>
+
+    {% if recent_tickets %}
+
+        <div class="ii-recent-card">
+            <div class="table-responsive">
+                <table class="table ii-recent-table mb-0">
+                    <thead>
+                        <tr>
+                            <th scope="col">Complaint</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Submitted</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for ticket in recent_tickets %}
+                            <tr class="complaint-row"
+                                data-status="{{ ticket.status }}">
+
+                                <td>
+                                    <a href="{% url 'ticket_detail' ticket.pk %}"
+                                       class="ii-ticket-link">
+                                        {{ ticket.title }}
+                                    </a>
+                                </td>
+
+                                <td>
+                                    <span class="ii-status-label">
+                                        {{ ticket.get_status_display }}
+                                    </span>
+                                </td>
+
+                                <td class="ii-ticket-date">
+                                    {{ ticket.created_at|date:"d M Y" }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <p id="no-matching-complaints"
+               class="ii-empty-message d-none">
+                No complaints with this status among your 5 most recent complaints.
+            </p>
+        </div>
+
+    {% else %}
+
+        <div class="ii-empty-state">
+            <div class="ii-empty-icon" aria-hidden="true">
+                &#9776;
+            </div>
+
+            <h3>No complaints yet</h3>
+
+            <p>
+                Your submitted complaints will appear here.
+                Start by reporting your first issue.
+            </p>
+
+            {% if user.role == 'employee' %}
+                <a href="{% url 'submit_employee_complaint' %}"
+                   class="btn btn-primary btn-sm">
+                    Submit Complaint
+                </a>
+            {% elif user.role == 'customer' %}
+                <a href="{% url 'submit_customer_complaint' %}"
+                   class="btn btn-primary btn-sm">
+                    Submit Complaint
+                </a>
+            {% endif %}
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+
 
 
 {% elif user.role == 'support' %}

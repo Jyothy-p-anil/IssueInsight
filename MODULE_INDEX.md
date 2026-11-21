@@ -50,7 +50,7 @@ Complete — All approved Module 8 requirements implemented and verified through
 
 
 
-| **14. User Interface Completion** | Consistent, complete role-based pages and responsive styling |Partial — shared UI styling, responsive navigation, active sidebar highlighting, and Home, Contact Directory and FAQ page refinements completed. Role-specific page refinement, accessibility review and final UI verification pending. | `templates/base.html`; `templates/tickets/`; `templates/accounts/`; `static/css/style.css` | `4b84801902`, `067cc07d58`, `716dfced43` |
+| **14. User Interface Completion** | Consistent, complete role-based pages and responsive styling |Partial — shared navigation, public pages, Employee and Customer dashboards, complaint forms, My Tickets pages and reporter ticket details refined. Support Staff UI, Admin UI,accessibility and final verification pending.| `templates/base.html`; `templates/tickets/`; `templates/accounts/`; `static/css/style.css` | `4b84801902`, `067cc07d58`, `716dfced43` |
 
 
 

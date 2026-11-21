@@ -6,23 +6,32 @@
 {% block content %}
 
 
-{% include 'tickets/_reporter_ticket_filters.html' %}
 
+<header class="ii-tickets-header">
+    <div>
+        <p class="ii-resource-eyebrow mb-2">
+            ISSUEINSIGHT / COMPLAINT TRACKING
+        </p>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>My Tickets</h2>
+        <h1>My <span>Tickets.</span></h1>
+
+        <p class="ii-tickets-description">
+            View, search and track your workplace complaints.
+        </p>
+    </div>
 
     <a href="{% url 'submit_employee_complaint' %}"
        class="btn btn-primary">
         + New Complaint
     </a>
-</div>
+</header>
 
+{% include 'tickets/_reporter_ticket_filters.html' %}
 
-<div class="card shadow-sm">
-    <div class="card-body table-responsive">
+<div class="card ii-tickets-card">
+    <div class="card-body table-responsive p-0">
 
-        <table class="table table-striped align-middle">
+        <table class="table ii-tickets-table align-middle mb-0">
             <thead>
                 <tr>
                     <th>Ticket</th>
