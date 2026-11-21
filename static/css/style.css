@@ -995,3 +995,82 @@ main {
         padding: 24px 20px;
     }
 }
+
+/* Module 14 — Support Staff Dashboard */
+
+.ii-support-header {
+    background: linear-gradient(120deg, #f0f5fb, #ffffff 75%);
+    border: 1px solid #e3eaf2;
+    border-radius: 16px;
+    padding: 34px 38px;
+    margin-bottom: 28px;
+}
+
+.ii-support-header h1 {
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    margin-bottom: 12px;
+}
+
+.ii-support-header h1 span {
+    color: var(--ii-primary);
+}
+
+.ii-support-description {
+    color: #64748b;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    max-width: 680px;
+    margin-bottom: 0;
+}
+
+.ii-support-section-heading {
+    margin-bottom: 22px;
+}
+
+.ii-support-section-heading h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.ii-support-department {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+@media (max-width: 767px) {
+    .ii-support-header {
+        padding: 24px 20px;
+    }
+}
+
+
+/* Module 14 — Clickable Support Statistics */
+
+.ii-support-stat-link {
+    color: var(--ii-text);
+    text-decoration: none;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s,
+                transform 0.2s;
+}
+
+.ii-support-stat-link:hover {
+    color: var(--ii-text);
+    border-color: #a8c1df;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+    transform: translateY(-2px);
+}
+
+.ii-support-stat-link:focus-visible {
+    outline: 2px solid var(--ii-primary);
+    outline-offset: 3px;
+}
+
+.ii-support-stat-link h3 {
+    color: var(--ii-primary);
+    font-weight: 800;
+}

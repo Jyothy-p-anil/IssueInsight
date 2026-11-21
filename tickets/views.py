@@ -215,6 +215,7 @@ def customer_dashboard(request):
     })
 
 
+
 @role_required('support')
 def support_dashboard(request):
     department = request.user.department
@@ -225,56 +226,87 @@ def support_dashboard(request):
             'department_missing': True,
         })
 
+    # Department complaints
     tickets = Ticket.objects.filter(
         department_id=request.user.department_id
     )
 
+    # Complaints assigned to this Support Staff member
     assigned_tickets = tickets.filter(
         assigned_to=request.user
     )
 
+    # Unassigned complaints waiting for action
     unassigned_tickets = tickets.filter(
         assigned_to__isnull=True,
         status__in=['submitted', 'reopened']
     )
 
+    # Currently resolved complaints assigned to this user
     resolved_by_me = assigned_tickets.filter(
         status='resolved'
     )
-    status_chart_labels = [
-        label for value, label in Ticket.STATUS_CHOICES
-    ]
 
-    status_chart_counts = [
-        tickets.filter(status=value).count()
-        for value, label in Ticket.STATUS_CHOICES
-    ]
-    # Weekly complaint trends for the last four weeks.
-    # The current week and three preceding weeks are included.
+    # Current week and previous three weeks
     today = timezone.localdate()
-    current_week_start = today - timedelta(days=today.weekday())
+    current_week_start = today - timedelta(
+        days=today.weekday()
+    )
 
-    trend_labels = []
-    trend_received = []
-    trend_resolved = []
+    # Generate chart data for a selected complaint group
+    def chart_payload(queryset):
+        status_labels = [
+            label for value, label in Ticket.STATUS_CHOICES
+        ]
 
-    for weeks_ago in range(3, -1, -1):
-        week_start = current_week_start - timedelta(weeks=weeks_ago)
-        week_end = week_start + timedelta(weeks=1)
+        status_counts = [
+            queryset.filter(status=value).count()
+            for value, label in Ticket.STATUS_CHOICES
+        ]
 
-        received_count = tickets.filter(
-            created_at__date__gte=week_start,
-            created_at__date__lt=week_end,
-        ).count()
+        trend_labels = []
+        trend_received = []
+        trend_resolved = []
 
-        resolved_count = tickets.filter(
-            resolved_at__date__gte=week_start,
-            resolved_at__date__lt=week_end,
-        ).count()
+        for weeks_ago in range(3, -1, -1):
+            week_start = current_week_start - timedelta(
+                weeks=weeks_ago
+            )
+            week_end = week_start + timedelta(weeks=1)
 
-        trend_labels.append(week_start.strftime('%d %b'))
-        trend_received.append(received_count)
-        trend_resolved.append(resolved_count)
+            received_count = queryset.filter(
+                created_at__date__gte=week_start,
+                created_at__date__lt=week_end
+            ).count()
+
+            resolved_count = queryset.filter(
+                resolved_at__date__gte=week_start,
+                resolved_at__date__lt=week_end
+            ).count()
+
+            trend_labels.append(
+                week_start.strftime('%d %b')
+            )
+            trend_received.append(received_count)
+            trend_resolved.append(resolved_count)
+
+        return {
+            'status_labels': status_labels,
+            'status_counts': status_counts,
+            'trend_labels': trend_labels,
+            'trend_received': trend_received,
+            'trend_resolved': trend_resolved,
+        }
+
+    # Chart datasets for the four dashboard cards
+    support_chart_data = {
+        'department': chart_payload(tickets),
+        'assigned': chart_payload(assigned_tickets),
+        'resolved': chart_payload(resolved_by_me),
+        'unassigned': chart_payload(unassigned_tickets),
+    }
+
+    # Average first response time
     response_stats = tickets.filter(
         first_response_at__isnull=False
     ).aggregate(
@@ -286,6 +318,7 @@ def support_dashboard(request):
         )
     )
 
+    # Average resolution time
     resolution_stats = tickets.filter(
         resolved_at__isnull=False
     ).aggregate(
@@ -300,9 +333,10 @@ def support_dashboard(request):
     def format_hours(duration):
         if duration is None:
             return 'N/A'
+
         hours = duration.total_seconds() / 3600
         return f'{hours:.1f} hrs'
-    
+
     return render(request, 'role_dashboard.html', {
         'page_title': 'Support Staff Dashboard',
         'department_name': department.name,
@@ -310,13 +344,20 @@ def support_dashboard(request):
         'assigned_to_me': assigned_tickets.count(),
         'resolved_by_me': resolved_by_me.count(),
         'unassigned_count': unassigned_tickets.count(),
-        'avg_response_time': format_hours(response_stats['average']),
-        'avg_resolution_time': format_hours(resolution_stats['average']),
-        'status_chart_labels': status_chart_labels,
-        'status_chart_counts': status_chart_counts,
-        'trend_labels': trend_labels,
-        'trend_received': trend_received,
-        'trend_resolved': trend_resolved,
+        'avg_response_time': format_hours(
+            response_stats['average']
+        ),
+        'avg_resolution_time': format_hours(
+            resolution_stats['average']
+        ),
+        'support_chart_data': support_chart_data,
+        'status_chart_labels': support_chart_data['department']['status_labels'],
+        'status_chart_counts': support_chart_data['department']['status_counts'],
+        'trend_labels': support_chart_data['department']['trend_labels'],
+        'trend_received': support_chart_data['department']['trend_received'],
+        'trend_resolved': support_chart_data['department']['trend_resolved'],
+        
+
     })
 
 
@@ -1285,21 +1326,44 @@ def support_assigned_tickets(request):
         )
         return redirect('support_dashboard')
 
+    
+    view = request.GET.get('view', 'assigned')
+
     tickets = Ticket.objects.filter(
-        department_id=request.user.department_id,
-        assigned_to=request.user
-    ).select_related(
+        department_id=request.user.department_id
+    )
+
+    if view == 'department':
+        page_title = 'Department Complaints'
+        description = 'All complaints in your department.'
+
+    elif view == 'resolved':
+        tickets = tickets.filter(
+            assigned_to=request.user,
+            status='resolved'
+        )
+        page_title = 'Currently Resolved by Me'
+        description = 'Your assigned complaints currently marked resolved.'
+
+    else:
+        tickets = tickets.filter(assigned_to=request.user)
+        page_title = 'Assigned Tickets'
+        description = 'Complaints assigned to you.'
+
+    tickets = tickets.select_related(
         'reporter', 'category'
     ).order_by('-created_at')
 
+    
     return render(
         request,
         'tickets/support_ticket_list.html',
         {
             'tickets': tickets,
-            'page_title': 'Assigned Tickets',
-            'description': 'Complaints assigned to you.',
+            'page_title': page_title,
+            'description': description,
             'empty_message': 'No tickets assigned to you.',
+            
         }
     )
 

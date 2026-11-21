@@ -212,94 +212,58 @@
 
 
 {% elif user.role == 'support' %}
-
-    {% if department_missing %}
-
-        <div class="alert alert-warning mt-4">
-            Your account has no support department assigned.
-            Please contact the administrator.
-        </div>
-
-    {% else %}
-
-        <h4 class="mt-4 mb-2">Department Overview</h4>
-        <p class="text-muted">{{ department_name }}</p>
-
-        <div class="row g-3 mb-4">
-
-            <div class="col-md-6 col-lg-3">
-                <div class="card p-3 h-100">
-                    <h6>Total Department Complaints</h6>
-                    <h3>{{ department_total }}</h3>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3">
-                <div class="card p-3 h-100">
-                    <h6>Assigned to Me</h6>
-                    <h3>{{ assigned_to_me }}</h3>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3">
-                <div class="card p-3 h-100">
-                    <h6>Currently Resolved by Me</h6>
-                    <h3>{{ resolved_by_me }}</h3>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3">
-                <div class="card p-3 h-100">
-                    <h6>Unassigned Queue</h6>
-                    <h3>{{ unassigned_count }}</h3>
-                </div>
-            </div>
-
-            </div>
-            <div class="row g-3 mb-4">
-
-        <div class="col-md-6">
-            <div class="card p-3 h-100">
-                <h6>Average First Response Time</h6>
-                <h3>{{ avg_response_time }}</h3>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="card p-3 h-100">
-                <h6>Average Resolution Time</h6>
-                <h3>{{ avg_resolution_time }}</h3>
-            </div>
-        </div>
-
+{% if department_missing %}
+<div class="alert alert-warning mt-4">Your account has no support department assigned. Please contact the administrator.</div>
+{% else %}
+<section class="ii-dashboard-section">
+  <div class="ii-support-section-heading">
+    <p class="ii-resource-eyebrow mb-2">DEPARTMENT PERFORMANCE</p>
+    <h2>Department Overview</h2>
+    <p class="ii-support-department">{{ department_name }}</p>
+  </div>
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-md-6 col-xl-3">
+      <button type="button" class="card p-3 h-100 w-100 text-start ii-support-stat-link border-primary border-2" data-filter="department" aria-pressed="true">
+        <h6>Total Department Complaints</h6><h3>{{ department_total }}</h3>
+      </button>
     </div>
-    <div class="card p-3 mb-4">
-    <h5 class="mb-3">Complaints by Status</h5>
-
-    <div style="height: 300px; position: relative;">
-        <canvas id="supportStatusChart"></canvas>
+    <div class="col-12 col-md-6 col-xl-3">
+      <button type="button" class="card p-3 h-100 w-100 text-start ii-support-stat-link" data-filter="assigned" aria-pressed="false">
+        <h6>Assigned to Me</h6><h3>{{ assigned_to_me }}</h3>
+      </button>
     </div>
-</div>
-
-{{ status_chart_labels|json_script:"support-status-labels" }}
-{{ status_chart_counts|json_script:"support-status-counts" }}
-<div class="card p-3 mb-4">
+    <div class="col-12 col-md-6 col-xl-3">
+      <button type="button" class="card p-3 h-100 w-100 text-start ii-support-stat-link" data-filter="resolved" aria-pressed="false">
+        <h6>Currently Resolved by Me</h6><h3>{{ resolved_by_me }}</h3>
+      </button>
+    </div>
+    <div class="col-12 col-md-6 col-xl-3">
+      <button type="button" class="card p-3 h-100 w-100 text-start ii-support-stat-link" data-filter="unassigned" aria-pressed="false">
+        <h6>Unassigned Queue</h6><h3>{{ unassigned_count }}</h3>
+      </button>
+    </div>
+  </div>
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-md-6"><div class="card p-3 h-100">
+      <h6>Average First Response Time</h6><h3>{{ avg_response_time }}</h3>
+    </div></div>
+    <div class="col-12 col-md-6"><div class="card p-3 h-100">
+      <h6>Average Resolution Time</h6><h3>{{ avg_resolution_time }}</h3>
+    </div></div>
+  </div>
+  <div class="card p-3 mb-4">
+    <h5 class="mb-2">Complaints by Status</h5>
+    <p class="text-muted small" id="support-filter-label">Showing all department complaints.</p>
+    <div style="height:300px;position:relative"><canvas id="supportStatusChart"></canvas></div>
+  </div>
+  <div class="card p-3 mb-4">
     <h5 class="mb-3">Complaints Received vs Resolved</h5>
-    <p class="text-muted small">
-        Weekly comparison for the current week and previous three weeks.
-    </p>
-
-    <div style="height: 300px; position: relative;">
-        <canvas id="supportTrendChart"></canvas>
-    </div>
-</div>
-
-{{ trend_labels|json_script:"support-trend-labels" }}
-{{ trend_received|json_script:"support-trend-received" }}
-{{ trend_resolved|json_script:"support-trend-resolved" }}
-
-
-    {% endif %}
+    <p class="text-muted small">Weekly comparison for the current week and previous three weeks.</p>
+    <div style="height:300px;position:relative"><canvas id="supportTrendChart"></canvas></div>
+  </div>
+</section>
+{{ support_chart_data|json_script:"support-chart-data" }}
+{% endif %}
 
 {% elif user.role == 'admin' or user.is_superuser %}
 
@@ -659,99 +623,54 @@ document.addEventListener('DOMContentLoaded', function () {
 
 {% if user.role == 'support' and not department_missing %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
-
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const canvas = document.getElementById('supportStatusChart');
-
-    if (!canvas || typeof Chart === 'undefined') {
-        return;
-    }
-
-    const labels = JSON.parse(
-        document.getElementById('support-status-labels').textContent
-    );
-
-    const counts = JSON.parse(
-        document.getElementById('support-status-counts').textContent
-    );
-
-    new Chart(canvas, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Complaints',
-                data: counts,
-                backgroundColor: '#4e79a7',
-                borderRadius: 5
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        precision: 0
-                    }
-                }
-            }
-        }
+  const source = document.getElementById('support-chart-data');
+  if (!source || typeof Chart === 'undefined') return;
+  const allData = JSON.parse(source.textContent);
+  const initial = allData.department;
+  const statusChart = new Chart(document.getElementById('supportStatusChart'), {
+    type:'bar',
+    data:{labels:initial.status_labels,datasets:[{label:'Complaints',data:initial.status_counts,backgroundColor:'#4e79a7',borderRadius:5}]},
+    options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,ticks:{precision:0}}}}
+  });
+  const trendChart = new Chart(document.getElementById('supportTrendChart'), {
+    type:'line',
+    data:{labels:initial.trend_labels,datasets:[
+      {label:'Received',data:initial.trend_received,borderColor:'#4e79a7',backgroundColor:'#4e79a7',tension:0.3},
+      {label:'Resolved',data:initial.trend_resolved,borderColor:'#59a14f',backgroundColor:'#59a14f',tension:0.3}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,ticks:{precision:0}}}}
+  });
+  const captions = {
+    department:'Showing all department complaints.',
+    assigned:'Showing complaints assigned to you.',
+    resolved:'Showing your currently resolved complaints.',
+    unassigned:'Showing unassigned department queue complaints.'
+  };
+  const buttons = document.querySelectorAll('.ii-support-stat-link[data-filter]');
+  buttons.forEach(function (button) {
+    button.addEventListener('click', function () {
+      const key = button.dataset.filter;
+      const selectedData = allData[key];
+      if (!selectedData) return;
+      buttons.forEach(function (item) {
+        const active = item === button;
+        item.classList.toggle('border-primary', active);
+        item.classList.toggle('border-2', active);
+        item.setAttribute('aria-pressed', String(active));
+      });
+      statusChart.data.labels = selectedData.status_labels;
+      statusChart.data.datasets[0].data = selectedData.status_counts;
+      statusChart.update();
+      trendChart.data.labels = selectedData.trend_labels;
+      trendChart.data.datasets[0].data = selectedData.trend_received;
+      trendChart.data.datasets[1].data = selectedData.trend_resolved;
+      trendChart.update();
+      document.getElementById('support-filter-label').textContent = captions[key];
     });
-    const trendCanvas = document.getElementById('supportTrendChart');
-
-if (trendCanvas) {
-    const trendLabels = JSON.parse(
-        document.getElementById('support-trend-labels').textContent
-    );
-
-    const received = JSON.parse(
-        document.getElementById('support-trend-received').textContent
-    );
-
-    const resolved = JSON.parse(
-        document.getElementById('support-trend-resolved').textContent
-    );
-
-    new Chart(trendCanvas, {
-        type: 'line',
-        data: {
-            labels: trendLabels,
-            datasets: [
-                {
-                    label: 'Received',
-                    data: received,
-                    borderColor: '#4e79a7',
-                    backgroundColor: '#4e79a7',
-                    tension: 0.3
-                },
-                {
-                    label: 'Resolved',
-                    data: resolved,
-                    borderColor: '#59a14f',
-                    backgroundColor: '#59a14f',
-                    tension: 0.3
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        precision: 0
-                    }
-                }
-            }
-        }
-    });
-}
-    });
-
+  });
+});
 </script>
 {% endif %}
 
