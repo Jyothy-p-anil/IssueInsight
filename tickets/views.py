@@ -88,6 +88,12 @@ import calendar
 
 import csv
 from django.http import HttpResponse
+
+
+from tickets.services.pdf_reports import generate_admin_report_pdf
+
+
+
 #--------------------------
 
 
@@ -450,7 +456,55 @@ def admin_reports(request):
     resolution_rate = (
         round(completed_count / total * 100, 2)
         if total else 0
-    )
+        )
+
+    # Module 13 — PDF report export
+    if request.GET.get('export') == 'pdf':
+        if selected_period == 'last30':
+            period_label = 'Last 30 Days'
+        elif selected_period == 'custom':
+            period_label = f'{date_from} to {date_to}'
+        else:
+            period_label = 'All Time'
+
+        def report_rows(items, label_key):
+            return [
+                (item[label_key], item['count'])
+                for item in items
+            ]
+
+        def format_hours(value):
+            return (
+                f'{value} hours'
+                if value is not None
+                else 'Not available'
+            )
+
+        report_data = {
+            'period_label': period_label,
+            'total': total,
+            'status': report_rows(status_report, 'label'),
+            'departments': report_rows(department_report, 'name'),
+            'sources': report_rows(source_report, 'label'),
+            'urgencies': report_rows(urgency_report, 'label'),
+            'categories': report_rows(category_report, 'name'),
+            'completed_count': completed_count,
+            'resolution_rate': resolution_rate,
+            'average_response': format_hours(average_response_hours),
+            'average_resolution': format_hours(average_resolution_hours),
+        }
+
+        pdf_content = generate_admin_report_pdf(report_data)
+
+        response = HttpResponse(
+            pdf_content,
+            content_type='application/pdf',
+        )
+        response['Content-Disposition'] = (
+            'attachment; filename="issueinsight_admin_report.pdf"'
+        )
+
+        return response
 
     # Module 13 — CSV report export
     if request.GET.get('export') == 'csv':
