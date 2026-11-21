@@ -1333,3 +1333,18 @@ Module 13 in progress. Admin complaint search and filtering implemented. Reporti
 - Added 12 automated reporting tests.
 - Full regression: 371 tests (verify passed result).
 - CSV and PDF export remain pending.
+
+
+
+### Module 13 — Steps 4A–4B: CSV Report Export
+
+- Added CSV download to Admin Complaint Reports.
+- Export supports All Time, Last 30 Days and Custom Date Range.
+- Included complaint totals, status, department, source, urgency and category statistics.
+- Included resolution rate and average response/resolution times.
+- Restricted CSV export to Admin users.
+- Added five automated CSV export tests.
+- Full regression: 376 tests passed.
+
+### Current Status
+Module 13 in progress. Admin search, advanced filtering, company-wide reporting and CSV export implemented. Support Staff reporting and PDF generation pending.
