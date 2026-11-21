@@ -1383,9 +1383,27 @@ Module 13 in progress. Admin complaint search and filtering implemented. Reporti
 - Support Staff: department-specific reports with interactive date filtering.
 - Support Staff CSV/PDF exports excluded as unnecessary duplication.
 
-### Current Status
 
-Module 13 reporting functionality completed. Final module review and completion verification pending.
+### Module 13 — Final Completion
 
+Status: Complete — implementation and verification finished.
 
+Completed:
+- Admin complaint search and advanced filtering.
+- Admin company-wide reporting with date filters.
+- Admin CSV and PDF report exports.
+- Support Staff department-specific reporting.
+- Department status, urgency, category and assignment statistics.
+- Resolution rate and response/resolution performance metrics.
+- Department isolation and role-based permissions.
+- Category aggregation after department correction.
+- Automated tests: 11 Support Staff reporting tests.
+- Full regression: 392 tests passed.
 
+Scope decisions:
+- CSV/PDF exports remain Admin-only.
+- Support Staff CSV/PDF exports excluded.
+
+Remaining:
+- No functional development pending in Module 13.
+- UI refinements deferred to Module 14.
