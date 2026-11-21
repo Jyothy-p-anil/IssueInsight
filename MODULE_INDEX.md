@@ -47,7 +47,10 @@ Complete — All approved Module 8 requirements implemented and verified through
 
 
 
-| **13. Search, Filtering and Reporting** | Ticket search, filters and reporting | Partial: account-management search/filtering exists | `accounts/views.py` (`manage_users` search/filtering); `templates/accounts/manage_users.html`; ticket reporting to be implemented | `b585f71486` |
+
+| **13. Search, Filtering and Reporting** | Ticket search, advanced complaint filters, Admin and Support Staff reporting, CSV export and PDF report generation. | **In progress — Admin complaint search and advanced filtering implemented.** Search supports ticket ID and title. Filters include status, department, source, category, urgency and submission date. Combined filters and Admin-only access implemented. Eleven automated tests added. Company-wide reporting, department reporting, CSV export and PDF generation pending. | `tickets/views.py` (`admin_all_complaints`); `templates/tickets/admin_all_complaints.html`; `tickets/test_admin_complaint_filters.py`; existing reporter filters in `tickets/views.py` (`apply_reporter_ticket_filters`). | Module 13 commits pending. |
+
+
 | **14. User Interface Completion** | Consistent, complete role-based pages and responsive styling | Partial | `templates/base.html`; `templates/tickets/`; `templates/accounts/`; `static/css/style.css` | `4b84801902`, `067cc07d58`, `716dfced43` |
 | **15. Integration Testing, Final Delivery and Documentation** | System-wide tests, final verification, delivery and documentation | Partial | `accounts/tests.py`; `accounts/test_module3_security.py`; `tickets/tests.py`; `NOTES.md`; `requirements.txt` | `6885ea66b8`, `ea64b763d1` |
 

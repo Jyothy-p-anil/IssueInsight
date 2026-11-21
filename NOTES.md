@@ -1293,3 +1293,32 @@ Remaining:
 - No functional development pending in Module 12.
 - Final UI refinements deferred to UI Design Module.
 
+
+## Module 13 — Search, Filtering and Reporting
+
+### Step 1 — Existing Functionality Review
+- Reviewed existing reporter search, Admin dashboard filters and ticket duration tracking.
+- Confirmed that existing functionality will be reused.
+
+### Step 2A — Admin Complaint Search
+- Added ticket ID and title search to Admin All Complaints.
+- Restricted keyword search to ticket titles to avoid unrelated description matches.
+- Verified search and clearing functionality.
+
+### Step 2B — Advanced Complaint Filtering
+- Added status, department, source, category, urgency and submission-date filters.
+- Supported combining multiple filters.
+- Preserved selected filter values after submission.
+- Verified filtering through the Admin interface.
+
+### Step 2C — Automated Tests
+- Added `tickets/test_admin_complaint_filters.py`.
+- Added 11 tests covering access permissions, search, filters, combined conditions and invalid inputs.
+
+### Step 2D — Regression Verification
+- Django system check: 0 issues.
+- Full regression: 359 tests expected; confirm successful execution before recording as passed.
+
+### Current Status
+Module 13 in progress. Admin complaint search and filtering implemented. Reporting, CSV export and PDF generation pending.
+
