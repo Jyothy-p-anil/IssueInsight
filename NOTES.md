@@ -1322,3 +1322,14 @@ Remaining:
 ### Current Status
 Module 13 in progress. Admin complaint search and filtering implemented. Reporting, CSV export and PDF generation pending.
 
+
+### Module 13 — Steps 3A–3E: Admin Reporting
+
+- Created Admin-only Complaint Reports page.
+- Added Reports link to Admin navigation.
+- Implemented All Time, Last 30 Days and Custom Date Range.
+- Added complaint breakdowns by status, department, source, urgency and category.
+- Added resolution rate and average response/resolution times.
+- Added 12 automated reporting tests.
+- Full regression: 371 tests (verify passed result).
+- CSV and PDF export remain pending.
