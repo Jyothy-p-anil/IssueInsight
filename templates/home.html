@@ -3,169 +3,190 @@
 
 {% block title %}Home | IssueInsight{% endblock %}
 
+
 {% block content %}
 
-<div class="text-center mt-5">
+<!-- Welcome Section -->
+<section class="ii-welcome">
+    <div class="ii-welcome-content">
+        <p class="ii-welcome-eyebrow">ISSUEINSIGHT · COMPLAINT MANAGEMENT</p>
 
-    <h1 class="welcome-title">Welcome to IssueInsight</h1>
-    <p class="text-muted">
-        Intelligent Complaint Analysis and Management System
-    </p>
+        <h1>Welcome to <span>IssueInsight.</span></h1>
 
-    <p>
-        Report, track and manage complaints efficiently.
-    </p>
-
-</div>
-
-<div class="row g-4 mt-3">
-    <div class="col-12 col-lg-6">
-
-<!-- Module 12: Public Announcements -->
-
-<section>
-
-    <h3 class="mb-3">Public Announcements</h3>
-
-    {% for announcement in announcements %}
-
-        <div class="card mb-3">
-            <div class="card-body">
-
-                <h5 class="card-title">
-                    {{ announcement.title }}
-                </h5>
-
-                <p class="text-muted small">
-                    {{ announcement.created_at|date:"d M Y" }}
-                </p>
-
-                <p class="card-text">
-                    {{ announcement.content|linebreaksbr }}
-                </p>
-
-            </div>
-        </div>
-
-    {% empty %}
-
-        <p class="text-muted">
-            No public announcements available.
+        <p class="ii-welcome-lead">
+            A smarter way to manage every concern.
         </p>
 
-    {% endfor %}
+        <p class="ii-welcome-subtitle">
+            Report issues, follow their progress and stay connected
+            with the support team — all in one place.
+        </p>
 
-</section>
+        <div class="ii-welcome-actions">
+            {% if user.is_authenticated %}
+                {% if user.is_superuser or user.role == 'admin' %}
+                    <a href="{% url 'admin_dashboard' %}" class="btn btn-primary">
+                        Open Dashboard &rarr;
+                    </a>
+                {% elif user.role == 'employee' %}
+                    <a href="{% url 'employee_dashboard' %}" class="btn btn-primary">
+                        Open Dashboard &rarr;
+                    </a>
+                {% elif user.role == 'customer' %}
+                    <a href="{% url 'customer_dashboard' %}" class="btn btn-primary">
+                        Open Dashboard &rarr;
+                    </a>
+                {% elif user.role == 'support' %}
+                    <a href="{% url 'support_dashboard' %}" class="btn btn-primary">
+                        Open Dashboard &rarr;
+                    </a>
+                {% endif %}
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-primary">
+                    Sign In &rarr;
+                </a>
+            {% endif %}
+        </div>
     </div>
-    <div class="col-12 col-lg-6">
-<!-- Module 12: Kerala Public Holiday Calendar -->
+</section>
 
-<section>
-    <h3 class="mb-3">Kerala Public Holidays</h3>
+<!-- Two aligned information cards -->
+<div class="row g-4 ii-home-grid">
 
-    {% if public_holidays %}
-
-        <div class="card">
-            <div class="card-body">
-
-                <!-- Month navigation -->
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <button type="button"
-                            class="btn btn-outline-secondary btn-sm"
-                            onclick="changeHolidayMonth(-1)">
-                        &larr; Previous
-                    </button>
-
-                    <h4 id="holiday-month-title" class="mb-0"></h4>
-
-                    <button type="button"
-                            class="btn btn-outline-secondary btn-sm"
-                            onclick="changeHolidayMonth(1)">
-                        Next &rarr;
-                    </button>
+    <!-- Announcements -->
+    <div class="col-12 col-xl-6 d-flex">
+        <section class="ii-info-card w-100">
+            <div class="ii-info-header">
+                <div>
+                    <p class="ii-section-eyebrow">COMPANY UPDATES</p>
+                    <h2>Announcements</h2>
                 </div>
+                <span class="ii-header-symbol" aria-hidden="true">&#9679;</span>
+            </div>
 
-                <!-- Monthly calendars -->
-                {% for month in calendar_data %}
+            <div class="ii-info-body">
+                {% for announcement in announcements %}
+                    <article class="ii-announcement">
+                        <p class="ii-announcement-date">
+                            {{ announcement.created_at|date:"d M Y" }}
+                        </p>
+                        <h3>{{ announcement.title }}</h3>
+                        <p class="ii-announcement-content">
+                            {{ announcement.content|linebreaksbr }}
+                        </p>
+                    </article>
+                {% empty %}
+                    <p class="text-muted mb-0">
+                        No public announcements available.
+                    </p>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
 
-                    <div class="holiday-month"
-                         data-month="{{ month.number }}"
-                         style="display: none;">
+    <!-- Holiday Calendar -->
+    <div class="col-12 col-xl-6 d-flex">
+        <section class="ii-info-card w-100">
+            <div class="ii-info-header">
+                <div>
+                    <p class="ii-section-eyebrow">PLAN AHEAD</p>
+                    <h2>Kerala Public Holidays</h2>
+                </div>
+                <span class="ii-header-symbol" aria-hidden="true">&#9679;</span>
+            </div>
 
-                        <div class="table-responsive">
-                            <table class="table table-bordered text-center holiday-calendar">
-                                <thead>
-                                    <tr>
-                                        <th>Mon</th>
-                                        <th>Tue</th>
-                                        <th>Wed</th>
-                                        <th>Thu</th>
-                                        <th>Fri</th>
-                                        <th>Sat</th>
-                                        <th>Sun</th>
-                                    </tr>
-                                </thead>
+            <div class="ii-info-body">
+                {% if public_holidays %}
+                    <div class="d-flex justify-content-between align-items-center gap-2 mb-3">
+                        <button type="button"
+                                class="btn btn-outline-secondary btn-sm"
+                                onclick="changeHolidayMonth(-1)">
+                            &larr;
+                        </button>
 
-                                <tbody>
-                                    {% for week in month.weeks %}
-                                        <tr>
-                                            {% for day in week %}
-                                                <td>
-                                                    {% if day.day %}
-                                                        <button
-                                                            type="button"
-                                                            class="btn btn-sm w-100 holiday-day {% if day.holidays %}text-danger fw-bold{% endif %}"
-                                                            data-date="{{ day.date }}"
-                                                            data-holidays="{{ day.holidays|join:'; ' }}"
-                                                            onclick="showHolidayDetails(this)">
-                                                            {{ day.day }}
-                                                        </button>
-                                                    {% endif %}
-                                                </td>
-                                            {% endfor %}
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
+                        <h3 id="holiday-month-title"
+                            class="ii-calendar-month mb-0"
+                            aria-live="polite"></h3>
+
+                        <button type="button"
+                                class="btn btn-outline-secondary btn-sm"
+                                onclick="changeHolidayMonth(1)">
+                            &rarr;
+                        </button>
                     </div>
 
-                {% endfor %}
+                    {% for month in calendar_data %}
+                        <div class="holiday-month"
+                             data-month="{{ month.number }}"
+                             style="display: none;">
 
-                <p class="small text-muted">
-                    <span class="text-danger fw-bold">Red dates</span>
-                    indicate Kerala public holidays.
-                    Select a date to view details.
-                </p>
+                            <div class="table-responsive">
+                                <table class="table table-bordered text-center holiday-calendar">
+                                    <thead>
+                                        <tr>
+                                            <th>Mon</th>
+                                            <th>Tue</th>
+                                            <th>Wed</th>
+                                            <th>Thu</th>
+                                            <th>Fri</th>
+                                            <th>Sat</th>
+                                            <th>Sun</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for week in month.weeks %}
+                                            <tr>
+                                                {% for day in week %}
+                                                    <td>
+                                                        {% if day.day %}
+                                                            <button type="button"
+                                                                    class="btn btn-sm w-100 holiday-day {% if day.holidays %}text-danger fw-bold{% endif %}"
+                                                                    data-date="{{ day.date }}"
+                                                                    data-holidays="{{ day.holidays|join:'; ' }}"
+                                                                    onclick="showHolidayDetails(this)">
+                                                                {{ day.day }}
+                                                            </button>
+                                                        {% endif %}
+                                                    </td>
+                                                {% endfor %}
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    {% endfor %}
 
-                <!-- Selected date details -->
-                <div id="holiday-details"
-                     class="alert alert-light border"
-                     aria-live="polite">
-                    Select a date to view holiday information.
-                </div>
+                    <p class="small text-muted mt-3">
+                        Select a date to view holiday information.
+                    </p>
 
+                    <div id="holiday-details"
+                         class="ii-holiday-details"
+                         aria-live="polite">
+                        Select a date to view holiday information.
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">
+                        Public holiday information is currently unavailable.
+                    </p>
+                {% endif %}
             </div>
-        </div>
-
-    {% else %}
-        <p class="text-muted">
-            Public holiday information is currently unavailable.
-        </p>
-    {% endif %}
-</section>
+        </section>
     </div>
 </div>
-<div class="mt-4 text-center">
-    <a href="{% url 'public_contact_directory' %}"
-       class="btn btn-outline-primary">
-        Contact Directory
+
+<!-- Useful Links -->
+<nav class="ii-home-links" aria-label="Helpful resources">
+    <a href="{% url 'public_contact_directory' %}">
+        Contact Directory &rarr;
     </a>
-    <a href="{% url 'public_faq' %}"
-   class="btn btn-outline-primary ms-2">
-    Frequently Asked Questions
-</a>
-</div>
+    <a href="{% url 'public_faq' %}">
+        Frequently Asked Questions &rarr;
+    </a>
+</nav>
+
+
 
 <style>
     .holiday-calendar {

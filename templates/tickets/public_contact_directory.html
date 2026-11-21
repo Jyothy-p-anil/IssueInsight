@@ -1,73 +1,95 @@
 
 {% extends "base.html" %}
 
+{% block title %}Contact Directory | IssueInsight{% endblock %}
+
 {% block content %}
-<div class="container mt-4 mb-5">
-    <h2>Contact Directory</h2>
-    <p class="text-muted">
-        Contact the appropriate team for assistance.
-    </p>
 
-    <div class="row g-4 mt-3">
+<div class="ii-resource-page">
 
-        <div class="col-md-6">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5>General Enquiries</h5>
-                    <p>For company information and general assistance.</p>
-                    <p class="mb-0">
-                        Email:
-                        <span class="text-muted">
-                            Add company email here
-                        </span>
-                    </p>
+    <header class="ii-resource-header">
+        <p class="ii-resource-eyebrow">SUPPORT & ASSISTANCE</p>
+        <h1>Contact <span>Directory.</span></h1>
+        <p class="ii-resource-lead">
+            Find the right team for your concern.
+        </p>
+        <p class="ii-resource-description">
+            Whether it's a workplace issue or a software problem,
+            IssueInsight helps you reach the appropriate support team.
+        </p>
+    </header>
+
+    <div class="row g-4">
+
+        <div class="col-12 col-md-6">
+            <article class="ii-contact-card">
+                <div class="ii-contact-icon">
+                    <i class="bi bi-envelope"></i>
+                    01
                 </div>
-            </div>
+                <h2>General Enquiries</h2>
+                <p>
+                    For company information and general assistance.
+                </p>
+                <div class="ii-contact-footer">
+                    <span class="ii-contact-label">CONTACT</span>
+                    <span>Company email not yet provided</span>
+                </div>
+            </article>
         </div>
 
-        <div class="col-md-6">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5>Product Support</h5>
-                    <p>For customer-reported software and product issues.</p>
-                    <p class="mb-0">
-                        Submit a complaint through IssueInsight
-                        to contact Product Support.
-                    </p>
+        <div class="col-12 col-md-6">
+            <article class="ii-contact-card">
+                <div class="ii-contact-icon">02</div>
+                <h2>Product Support</h2>
+                <p>
+                    For customer-reported software and product issues.
+                </p>
+                <div class="ii-contact-footer">
+                    <span class="ii-contact-label">HOW TO REACH US</span>
+                    <span>
+                        Submit a complaint through IssueInsight.
+                    </span>
                 </div>
-            </div>
+            </article>
         </div>
 
-        <div class="col-md-6">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5>Facilities Support</h5>
-                    <p>
-                        For workplace facilities such as
-                        air conditioning, water and cleaning.
-                    </p>
-                    <p class="mb-0">
+        <div class="col-12 col-md-6">
+            <article class="ii-contact-card">
+                <div class="ii-contact-icon">03</div>
+                <h2>Facilities Support</h2>
+                <p>
+                    For workplace facilities such as air conditioning,
+                    water and cleaning.
+                </p>
+                <div class="ii-contact-footer">
+                    <span class="ii-contact-label">HOW TO REACH US</span>
+                    <span>
                         Employees can report issues through IssueInsight.
-                    </p>
+                    </span>
                 </div>
-            </div>
+            </article>
         </div>
 
-        <div class="col-md-6">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5>IT Support</h5>
-                    <p>
-                        For internal technical issues such as
-                        computers, networks and workplace systems.
-                    </p>
-                    <p class="mb-0">
+        <div class="col-12 col-md-6">
+            <article class="ii-contact-card">
+                <div class="ii-contact-icon">04</div>
+                <h2>IT Support</h2>
+                <p>
+                    For internal technical issues such as computers,
+                    networks and workplace systems.
+                </p>
+                <div class="ii-contact-footer">
+                    <span class="ii-contact-label">HOW TO REACH US</span>
+                    <span>
                         Employees can report issues through IssueInsight.
-                    </p>
+                    </span>
                 </div>
-            </div>
+            </article>
         </div>
 
     </div>
+
 </div>
+
 {% endblock %}

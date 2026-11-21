@@ -165,3 +165,391 @@ main {
         display: block !important;
     }
 }
+
+
+/* Module 14 — Minimalist Home */
+
+/* Module 14 — Final Minimalist Home */
+
+/* Welcome */
+
+.ii-welcome {
+    background: linear-gradient(120deg, #f0f5fb, #ffffff 75%);
+    border: 1px solid #e3eaf2;
+    border-radius: 16px;
+    padding: 42px 44px;
+    margin-bottom: 28px;
+}
+
+.ii-welcome-content {
+    max-width: 760px;
+}
+
+.ii-welcome-eyebrow,
+.ii-section-eyebrow {
+    color: #64748b;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    margin-bottom: 12px;
+}
+
+.ii-welcome h1 {
+    font-size: clamp(2rem, 3.2vw, 3.1rem);
+    font-weight: 800;
+    letter-spacing: -0.045em;
+    line-height: 1.15;
+    margin-bottom: 14px;
+}
+
+.ii-welcome h1 span {
+    color: #244a7d;
+}
+
+.ii-welcome-lead {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 8px;
+}
+
+.ii-welcome-subtitle {
+    font-size: 0.96rem;
+    line-height: 1.7;
+    color: #64748b;
+    max-width: 600px;
+    margin-bottom: 22px;
+}
+
+.ii-welcome-actions .btn {
+    padding: 10px 20px;
+    font-weight: 600;
+}
+
+/* Matching information cards */
+
+.ii-home-grid {
+    align-items: stretch;
+}
+
+.ii-info-card {
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    overflow: hidden;
+    min-width: 0;
+}
+
+.ii-info-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 100px;
+    padding: 22px 26px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.ii-info-header .ii-section-eyebrow {
+    margin-bottom: 6px;
+}
+
+.ii-info-header h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+.ii-header-symbol {
+    color: #94a3b8;
+    font-size: 0.65rem;
+}
+
+.ii-info-body {
+    flex: 1;
+    padding: 24px 26px;
+}
+
+/* Announcements */
+
+.ii-announcement {
+    padding: 16px 0;
+    border-bottom: 1px solid #edf0f4;
+}
+
+.ii-announcement:first-child {
+    padding-top: 0;
+}
+
+.ii-announcement:last-child {
+    border-bottom: none;
+}
+
+.ii-announcement-date {
+    font-size: 0.76rem;
+    color: #64748b;
+    margin-bottom: 7px;
+}
+
+.ii-announcement h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.ii-announcement-content {
+    color: #475569;
+    font-size: 0.9rem;
+    line-height: 1.65;
+    margin-bottom: 0;
+}
+
+/* Calendar */
+
+.ii-calendar-month {
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.ii-info-card .holiday-calendar {
+    table-layout: fixed;
+    margin-bottom: 0;
+}
+
+.ii-info-card .holiday-calendar th,
+.ii-info-card .holiday-calendar td {
+    width: 14.285%;
+    padding: 5px 2px;
+    vertical-align: middle;
+}
+
+.ii-info-card .holiday-calendar th {
+    font-size: 0.75rem;
+}
+
+.ii-info-card .holiday-day {
+    min-height: 34px;
+    font-size: 0.8rem;
+}
+
+.ii-holiday-details {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 13px 15px;
+    font-size: 0.85rem;
+    color: #475569;
+}
+
+/* Resource links */
+
+.ii-home-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 24px;
+    margin: 26px 0 12px;
+}
+
+.ii-home-links a {
+    color: #475569;
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.ii-home-links a:hover {
+    color: #244a7d;
+    text-decoration: underline;
+}
+
+/* Mobile */
+
+@media (max-width: 767px) {
+    .ii-welcome {
+        padding: 28px 22px;
+    }
+
+    .ii-info-header {
+        padding: 18px;
+        min-height: 86px;
+    }
+
+    .ii-info-body {
+        padding: 18px;
+    }
+}
+
+
+
+/* Module 14 — Public Resource Pages */
+
+.ii-resource-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px 0 60px;
+}
+
+.ii-resource-header {
+    background: linear-gradient(120deg, #f0f5fb, #ffffff 75%);
+    border: 1px solid #e3eaf2;
+    border-radius: 16px;
+    padding: 36px 40px;
+    margin-bottom: 28px;
+}
+
+.ii-resource-eyebrow {
+    color: #64748b;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    margin-bottom: 12px;
+}
+
+.ii-resource-header h1 {
+    font-size: clamp(2rem, 3vw, 2.8rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    margin-bottom: 14px;
+}
+
+.ii-resource-header h1 span {
+    color: var(--ii-primary);
+}
+
+.ii-resource-lead {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.ii-resource-description {
+    color: #64748b;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    max-width: 650px;
+    margin-bottom: 0;
+}
+
+/* Contact Directory */
+
+.ii-contact-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 235px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 26px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.ii-contact-card:hover {
+    border-color: #c7d8ed;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+}
+
+.ii-contact-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    background: #e8f0fa;
+    color: var(--ii-primary);
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+}
+
+.ii-contact-card h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.ii-contact-card > p {
+    color: #64748b;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.ii-contact-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid #edf0f4;
+    color: #475569;
+    font-size: 0.85rem;
+}
+
+.ii-contact-label {
+    color: #64748b;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
+/* FAQ Accordion */
+
+.ii-resource-page .accordion {
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.ii-resource-page .accordion-item {
+    border: 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.ii-resource-page .accordion-item:last-child {
+    border-bottom: 0;
+}
+
+.ii-resource-page .accordion-button {
+    padding: 20px 24px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #243247;
+    background: #ffffff;
+}
+
+.ii-resource-page .accordion-button:not(.collapsed) {
+    color: var(--ii-primary);
+    background: #f0f5fb;
+    box-shadow: none;
+}
+
+.ii-resource-page .accordion-button:focus {
+    box-shadow: 0 0 0 2px rgba(36, 74, 125, 0.15);
+}
+
+.ii-resource-page .accordion-body {
+    padding: 20px 24px;
+    color: #475569;
+    line-height: 1.7;
+}
+
+/* Mobile */
+
+@media (max-width: 767px) {
+    .ii-resource-page {
+        padding-top: 8px;
+    }
+
+    .ii-resource-header {
+        padding: 26px 22px;
+    }
+
+    .ii-contact-card {
+        min-height: auto;
+        padding: 22px;
+    }
+}
