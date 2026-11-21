@@ -313,6 +313,168 @@ def support_dashboard(request):
     })
 
 
+# Module 13 — Admin company-wide reporting
+
+
+@role_required('admin')
+def admin_reports(request):
+    tickets = Ticket.objects.all()
+
+    selected_period = request.GET.get('period', 'all')
+    date_from = request.GET.get('date_from', '')
+    date_to = request.GET.get('date_to', '')
+    today = timezone.localdate()
+    filter_error = ''
+
+    if selected_period == 'last30':
+        start_date = today - timedelta(days=29)
+        tickets = tickets.filter(
+            created_at__date__gte=start_date,
+            created_at__date__lte=today,
+        )
+
+    elif selected_period == 'custom':
+        try:
+            if not date_from or not date_to:
+                raise ValueError('Both dates are required.')
+
+            start_date = date.fromisoformat(date_from)
+            end_date = date.fromisoformat(date_to)
+
+            if start_date > end_date:
+                raise ValueError('Start date is after end date.')
+
+            tickets = tickets.filter(
+                created_at__date__gte=start_date,
+                created_at__date__lte=end_date,
+            )
+
+        except ValueError:
+            filter_error = 'Please enter a valid date range.'
+            selected_period = 'all'
+            date_from = ''
+            date_to = ''
+
+    else:
+        selected_period = 'all'
+
+
+    total = tickets.count()
+
+    status_report = [
+        {
+            'label': label,
+            'count': tickets.filter(status=value).count(),
+        }
+        for value, label in Ticket.STATUS_CHOICES
+    ]
+
+    department_report = [
+        {
+            'name': department.name,
+            'count': tickets.filter(
+                department=department
+            ).count(),
+        }
+        for department in Department.objects.order_by('name')
+    ]
+
+    department_report.append({
+        'name': 'Pending Routing',
+        'count': tickets.filter(
+            department__isnull=True
+        ).count(),
+    })
+
+    source_report = [
+        {
+            'label': label,
+            'count': tickets.filter(division=value).count(),
+        }
+        for value, label in Ticket.DIVISION_CHOICES
+    ]
+
+    urgency_report = [
+        {
+            'label': label,
+            'count': tickets.filter(urgency=value).count(),
+        }
+        for value, label in Ticket.URGENCY_CHOICES
+    ]
+
+
+    # Module 13 — Category statistics
+    category_report = [
+        {
+            'name': category.name,
+            'count': tickets.filter(category=category).count(),
+        }
+        for category in Category.objects.order_by('name')
+    ]
+
+    category_report.append({
+        'name': 'Uncategorised',
+        'count': tickets.filter(category__isnull=True).count(),
+    })
+
+    # Response and resolution performance
+    response_durations = [
+        ticket.response_duration.total_seconds()
+        for ticket in tickets
+        if ticket.response_duration is not None
+    ]
+
+    resolution_durations = [
+        ticket.resolution_duration.total_seconds()
+        for ticket in tickets
+        if ticket.resolution_duration is not None
+    ]
+
+    def average_hours(durations):
+        if not durations:
+            return None
+
+        return round(
+            sum(durations) / len(durations) / 3600,
+            2
+        )
+
+    average_response_hours = average_hours(response_durations)
+    average_resolution_hours = average_hours(resolution_durations)
+
+    completed_count = tickets.filter(
+        status__in=['resolved', 'closed']
+    ).count()
+
+    resolution_rate = (
+        round(completed_count / total * 100, 2)
+        if total else 0
+    )
+
+
+    return render(
+        request,
+        'tickets/admin_reports.html',
+        {
+            'total': total,
+            'status_report': status_report,
+            'department_report': department_report,
+            'source_report': source_report,
+            'urgency_report': urgency_report,
+            'selected_period': selected_period,
+            'date_from': date_from,
+            'date_to': date_to,
+            'filter_error': filter_error,
+            'category_report': category_report,
+            'average_response_hours': average_response_hours,
+            'average_resolution_hours': average_resolution_hours,
+            'resolution_rate': resolution_rate,
+            'completed_count': completed_count,
+
+
+        }
+    )
+
 @role_required('admin')
 def admin_dashboard(request):
     tickets = Ticket.objects.all()

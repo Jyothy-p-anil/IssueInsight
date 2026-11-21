@@ -381,6 +381,14 @@ path(
     views.delete_announcement,
     name='delete_announcement'
 ),
+
+
+    path(
+        'management/reports/',
+        views.admin_reports,
+        name='admin_reports'
+    ),
+
 path(
     "contact-directory/",
     ticket_views.public_contact_directory,

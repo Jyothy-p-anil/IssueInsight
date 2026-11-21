@@ -1,0 +1,206 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Complaint Reports | IssueInsight{% endblock %}
+
+{% block content %}
+
+<h2>Complaint Reports</h2>
+<p class="text-muted">
+    Company-wide complaint statistics.
+</p>
+
+<form method="get" class="card card-body mb-4">
+
+    <div class="row g-3 align-items-end">
+
+        <div class="col-md-4">
+            <label class="form-label">Report Period</label>
+            <select name="period" class="form-select"
+                    id="report-period">
+                <option value="all"
+                    {% if selected_period == 'all' %}selected{% endif %}>
+                    All Time
+                </option>
+                <option value="last30"
+                    {% if selected_period == 'last30' %}selected{% endif %}>
+                    Last 30 Days
+                </option>
+                <option value="custom"
+                    {% if selected_period == 'custom' %}selected{% endif %}>
+                    Custom Date Range
+                </option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">From Date</label>
+            <input type="date" name="date_from"
+                   class="form-control"
+                   value="{{ date_from }}">
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">To Date</label>
+            <input type="date" name="date_to"
+                   class="form-control"
+                   value="{{ date_to }}">
+        </div>
+
+        <div class="col-md-2">
+            <button type="submit"
+                    class="btn btn-primary w-100">
+                Generate
+            </button>
+        </div>
+
+    </div>
+
+    {% if filter_error %}
+        <div class="alert alert-danger mt-3 mb-0">
+            {{ filter_error }}
+        </div>
+    {% endif %}
+
+</form>
+
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h5>Total Complaints</h5>
+        <h2>{{ total }}</h2>
+    </div>
+</div>
+
+<div class="row g-3">
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5>Complaints by Status</h5>
+                <table class="table">
+                    {% for item in status_report %}
+                    <tr>
+                        <td>{{ item.label }}</td>
+                        <td>{{ item.count }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5>Complaints by Department</h5>
+                <table class="table">
+                    {% for item in department_report %}
+                    <tr>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.count }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5>Complaints by Source</h5>
+                <table class="table">
+                    {% for item in source_report %}
+                    <tr>
+                        <td>{{ item.label }}</td>
+                        <td>{{ item.count }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5>Complaints by Urgency</h5>
+                <table class="table">
+                    {% for item in urgency_report %}
+                    <tr>
+                        <td>{{ item.label }}</td>
+                        <td>{{ item.count }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="row g-3 mt-2">
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5>Complaints by Category</h5>
+
+                <table class="table">
+                    {% for item in category_report %}
+                    <tr>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.count }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5>Resolution Performance</h5>
+
+                <table class="table">
+                    <tr>
+                        <td>Resolved or Closed</td>
+                        <td>{{ completed_count }}</td>
+                    </tr>
+                    <tr>
+                        <td>Resolution Rate</td>
+                        <td>{{ resolution_rate }}%</td>
+                    </tr>
+                    <tr>
+                        <td>Average First Response</td>
+                        <td>
+                            {% if average_response_hours is not None %}
+                                {{ average_response_hours }} hours
+                            {% else %}
+                                Not available
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Average Resolution Time</td>
+                        <td>
+                            {% if average_resolution_hours is not None %}
+                                {{ average_resolution_hours }} hours
+                            {% else %}
+                                Not available
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+{% endblock %}

@@ -134,9 +134,12 @@
                                 Software Products
                             </a>
 
-                            <span class="nav-link text-muted">
-                                Analytics (Coming Soon)
-                            </span>
+                            
+                            <a class="nav-link"
+                            href="{% url 'admin_reports' %}">
+                                Complaint Reports
+                            </a>
+
 
                         {% elif user.role == 'employee' %}
 
