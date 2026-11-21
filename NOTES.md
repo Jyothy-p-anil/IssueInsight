@@ -1359,8 +1359,32 @@ Module 13 in progress. Admin complaint search and filtering implemented. Reporti
 - Added five automated PDF export tests using pypdf.
 - Full regression: 381 tests passed.
 
+
+
+### Module 13 — Steps 6A–6E: Support Staff Department Reporting
+
+- Added Support Staff Department Reports at `/support/reports/`.
+- Added Department Reports to Support Staff navigation.
+- Restricted reports to the logged-in Support Staff member's department.
+- Added All Time, Last 30 Days and Custom Date Range filters.
+- Added complaint counts by status, urgency and category.
+- Added assigned, unassigned, resolved and closed counts.
+- Added resolution rate and average first-response/resolution times.
+- Handled Support Staff accounts without a department.
+- Added `tickets/test_support_reports.py` with 10 automated tests.
+- Verified department isolation, access permissions, date filtering and statistics.
+- Department reporting tests: 10 passed.
+- Full regression: 391 tests passed.
+
+### Module 13 — Reporting Scope Decision
+
+- Admin: company-wide reports with CSV and PDF downloads.
+- Support Staff: department-specific reports with interactive date filtering.
+- Support Staff CSV/PDF exports excluded as unnecessary duplication.
+
 ### Current Status
-Module 13 in progress. Admin search, advanced filtering, company-wide reporting, CSV export and PDF export implemented. Support Staff reporting remains pending.
+
+Module 13 reporting functionality completed. Final module review and completion verification pending.
 
 
 
