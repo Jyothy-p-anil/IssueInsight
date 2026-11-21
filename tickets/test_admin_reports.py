@@ -8,6 +8,10 @@ from django.utils import timezone
 
 from tickets.models import Category, Department, Ticket
 
+
+import csv
+from io import StringIO
+
 User = get_user_model()
 
 
@@ -178,3 +182,70 @@ class AdminReportsTests(TestCase):
         })
         self.assertTrue(response.context['filter_error'])
         self.assertEqual(response.context['total'], 3)
+    
+    def read_csv_response(self, response):
+        content = response.content.decode('utf-8-sig')
+        return list(csv.reader(StringIO(content)))
+
+    def test_csv_export_downloads(self):
+        response = self.client.get(
+            self.url, {'export': 'csv'}
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(
+            'text/csv',
+            response['Content-Type']
+        )
+        self.assertIn(
+            'attachment',
+            response['Content-Disposition']
+        )
+
+    def test_csv_export_contains_total(self):
+        response = self.client.get(
+            self.url, {'export': 'csv'}
+        )
+        rows = self.read_csv_response(response)
+
+        self.assertIn(
+            ['Total Complaints', '3'],
+            rows
+        )
+
+    def test_csv_export_contains_statistics(self):
+        response = self.client.get(
+            self.url, {'export': 'csv'}
+        )
+        rows = self.read_csv_response(response)
+
+        self.assertIn(['Resolved', '1'], rows)
+        self.assertIn(['Submitted', '1'], rows)
+        self.assertIn(['Test Maintenance', '2'], rows)
+        self.assertIn(['Resolution Rate (%)', '66.67'], rows)
+
+    def test_csv_export_respects_last_30_days(self):
+        response = self.client.get(self.url, {
+            'period': 'last30',
+            'export': 'csv',
+        })
+        rows = self.read_csv_response(response)
+
+        self.assertIn(
+            ['Total Complaints', '2'],
+            rows
+        )
+
+    def test_non_admin_cannot_export_csv(self):
+        self.client.force_login(self.employee)
+
+        response = self.client.get(
+            self.url, {'export': 'csv'}
+        )
+
+        self.assertNotEqual(response.status_code, 200)
+        self.assertNotIn(
+            'text/csv',
+            response.get('Content-Type', '')
+        )
+
