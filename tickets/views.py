@@ -1336,6 +1336,7 @@ def support_assigned_tickets(request):
     if view == 'department':
         page_title = 'Department Complaints'
         description = 'All complaints in your department.'
+        empty_message = 'No complaints in your department.'
 
     elif view == 'resolved':
         tickets = tickets.filter(
@@ -1344,16 +1345,13 @@ def support_assigned_tickets(request):
         )
         page_title = 'Currently Resolved by Me'
         description = 'Your assigned complaints currently marked resolved.'
+        empty_message = 'No resolved tickets assigned to you.'
 
     else:
         tickets = tickets.filter(assigned_to=request.user)
         page_title = 'Assigned Tickets'
         description = 'Complaints assigned to you.'
-
-    tickets = tickets.select_related(
-        'reporter', 'category'
-    ).order_by('-created_at')
-
+        empty_message = 'No tickets assigned to you.'
     
     return render(
         request,
@@ -1362,8 +1360,7 @@ def support_assigned_tickets(request):
             'tickets': tickets,
             'page_title': page_title,
             'description': description,
-            'empty_message': 'No tickets assigned to you.',
-            
+            'empty_message': empty_message,            
         }
     )
 

@@ -38,7 +38,7 @@
                     <input type="hidden"
                            name="status"
                            value="resolved">
-                    {% if incident.status == 'in_progress' %}
+                    
                     <div class="mb-3">
                         <label for="resolution_summary" class="form-label">
                             Resolution Summary
@@ -53,7 +53,7 @@
                             placeholder="Explain the problem, action taken and final outcome"
                         ></textarea>
                     </div>
-                    {% endif %}
+                    
                     <button type="submit" class="btn btn-success">
                         Mark Incident Resolved
                     </button>

@@ -109,17 +109,18 @@
                 <strong>Category</strong>
                 <p>{{ ticket.category|default:"Not specified" }}</p>
             </div>
-            <div class="mb-3">
-            <strong>Urgency:</strong>
-
-            {% if ticket.urgency == 'high' %}
-                <span class="badge bg-danger">High</span>
-            {% elif ticket.urgency == 'medium' %}
-                <span class="badge bg-warning text-dark">Medium</span>
-            {% else %}
-                <span class="badge bg-secondary">Low</span>
-            {% endif %}
-        </div>
+            <div class="col-md-6">
+                <strong>Urgency:</strong>
+                <p>
+                    {% if ticket.urgency == 'high' %}
+                        <span class="badge bg-danger">High</span>
+                    {% elif ticket.urgency == 'medium' %}
+                        <span class="badge bg-warning text-dark">Medium</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Low</span>
+                    {% endif %}
+                </p>
+            </div>
 
             <div class="col-md-6">
                 <strong>Department</strong>
@@ -215,48 +216,7 @@
         {{ ticket.description|linebreaksbr }}
     </div>
 </div>
-<!-- Step 201D: AI-related complaint suggestions -->
 
-<div class="card shadow-sm mb-4">
-    <div class="card-header">
-        <strong>AI-Detected Related Complaints</strong>
-    </div>
-
-    <div class="card-body">
-
-        <p class="text-muted small">
-            These complaints have similar descriptions.
-            Suggestions require Support Staff review.
-        </p>
-
-        {% for match in similar_complaints %}
-            <div class="border rounded p-3 mb-2">
-
-                <strong>
-                    <a href="{% url 'support_ticket_detail' match.ticket_id %}">
-                        Ticket #{{ match.ticket_id }}
-                    </a>
-                </strong>
-
-                <p class="mb-1">{{ match.title }}</p>
-
-                <span class="badge bg-info text-dark">
-                    Similarity: {{ match.similarity_score|floatformat:2 }}
-                </span>
-
-                <span class="badge bg-secondary">
-                    {{ match.status|title }}
-                </span>
-
-            </div>
-        {% empty %}
-            <p class="text-muted mb-0">
-                No related complaints detected.
-            </p>
-        {% endfor %}
-
-    </div>
-</div>
 
 <div class="card shadow-sm mb-4">
     <div class="card-header">
