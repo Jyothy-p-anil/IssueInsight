@@ -1397,8 +1397,10 @@ def add_support_message(request, ticket_id):
 
 # Step 71: Admin overview of all complaints
 
+
 @role_required('admin')
 def admin_all_complaints(request):
+    search_query = request.GET.get('q', '').strip()
 
     tickets = Ticket.objects.select_related(
         'reporter',
@@ -1408,12 +1410,81 @@ def admin_all_complaints(request):
         'product'
     ).order_by('-created_at', '-pk')
 
+    if search_query:
+        ticket_id = search_query.lstrip('#')
+
+        if ticket_id.isdigit():
+            tickets = tickets.filter(
+                Q(pk=int(ticket_id)) |
+                Q(title__icontains=search_query)
+            )
+        else:
+            tickets = tickets.filter(
+            title__icontains=search_query
+    )   
+
+    # Module 13: Advanced complaint filters
+    selected_status = request.GET.get('status', '')
+    selected_department = request.GET.get('department', '')
+    selected_division = request.GET.get('division', '')
+    selected_category = request.GET.get('category', '')
+    selected_urgency = request.GET.get('urgency', '')
+    date_from = request.GET.get('date_from', '')
+    date_to = request.GET.get('date_to', '')
+
+    if selected_status in dict(Ticket.STATUS_CHOICES):
+        tickets = tickets.filter(status=selected_status)
+
+    if selected_department.isdigit():
+        tickets = tickets.filter(department_id=int(selected_department))
+
+    if selected_division in dict(Ticket.DIVISION_CHOICES):
+        tickets = tickets.filter(division=selected_division)
+
+    if selected_category.isdigit():
+        tickets = tickets.filter(category_id=int(selected_category))
+
+    if selected_urgency in dict(Ticket.URGENCY_CHOICES):
+        tickets = tickets.filter(urgency=selected_urgency)
+
+    from datetime import date
+
+    try:
+        if date_from:
+            tickets = tickets.filter(
+                created_at__date__gte=date.fromisoformat(date_from)
+            )
+    except ValueError:
+        date_from = ''
+
+    try:
+        if date_to:
+            tickets = tickets.filter(
+                created_at__date__lte=date.fromisoformat(date_to)
+            )
+    except ValueError:
+        date_to = ''
+
     return render(
         request,
         'tickets/admin_all_complaints.html',
         {
             'tickets': tickets,
             'departments': Department.objects.order_by('name'),
+            'search_query': search_query,
+
+            'categories': Category.objects.order_by('name'),
+            'status_choices': Ticket.STATUS_CHOICES,
+            'division_choices': Ticket.DIVISION_CHOICES,
+            'urgency_choices': Ticket.URGENCY_CHOICES,
+            'selected_status': selected_status,
+            'selected_department': selected_department,
+            'selected_division': selected_division,
+            'selected_category': selected_category,
+            'selected_urgency': selected_urgency,
+            'date_from': date_from,
+            'date_to': date_to,
+
         }
     )
 
