@@ -1375,6 +1375,7 @@ Module 13 in progress. Admin complaint search and filtering implemented. Reporti
 - Verified department isolation, access permissions, date filtering and statistics.
 - Department reporting tests: 10 passed.
 - Full regression: 391 tests passed.
+- Verified category reporting remains accurate after department correction. 
 
 ### Module 13 — Reporting Scope Decision
 
