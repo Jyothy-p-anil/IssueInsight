@@ -86,7 +86,8 @@ from .services.public_holidays import get_kerala_public_holidays
 
 import calendar
 
-
+import csv
+from django.http import HttpResponse
 #--------------------------
 
 
@@ -450,6 +451,55 @@ def admin_reports(request):
         round(completed_count / total * 100, 2)
         if total else 0
     )
+
+    # Module 13 — CSV report export
+    if request.GET.get('export') == 'csv':
+        response = HttpResponse(
+            content_type='text/csv; charset=utf-8'
+        )
+        response['Content-Disposition'] = (
+            'attachment; filename="issueinsight_admin_report.csv"'
+        )
+
+        writer = csv.writer(response)
+        writer.writerow(['IssueInsight — Complaint Report'])
+        writer.writerow(['Period', selected_period])
+        writer.writerow([])
+        writer.writerow(['Total Complaints', total])
+        writer.writerow([])
+
+        def write_section(heading, items, name_key):
+            writer.writerow([heading, 'Count'])
+            for item in items:
+                writer.writerow([
+                    item[name_key],
+                    item['count'],
+                ])
+            writer.writerow([])
+
+        write_section('Status', status_report, 'label')
+        write_section('Department', department_report, 'name')
+        write_section('Source', source_report, 'label')
+        write_section('Urgency', urgency_report, 'label')
+        write_section('Category', category_report, 'name')
+
+        writer.writerow(['Resolution Performance', 'Value'])
+        writer.writerow(['Resolved or Closed', completed_count])
+        writer.writerow(['Resolution Rate (%)', resolution_rate])
+        writer.writerow([
+            'Average First Response (hours)',
+            average_response_hours
+            if average_response_hours is not None
+            else 'Not available',
+        ])
+        writer.writerow([
+            'Average Resolution Time (hours)',
+            average_resolution_hours
+            if average_resolution_hours is not None
+            else 'Not available',
+        ])
+
+        return response
 
 
     return render(
