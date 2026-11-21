@@ -1,11 +1,167 @@
 
-/* Common IssueInsight styles */
+/* IssueInsight — Shared Design System */
+
+:root {
+    --ii-primary: #244a7d;
+    --ii-primary-hover: #19375e;
+    --ii-background: #f5f7fa;
+    --ii-surface: #ffffff;
+    --ii-text: #243247;
+    --ii-muted: #64748b;
+    --ii-border: #e2e8f0;
+    --ii-radius: 10px;
+}
+
+/* General */
 
 body {
     font-family: Arial, sans-serif;
+    color: var(--ii-text);
+    background-color: var(--ii-background);
 }
 
 .welcome-title {
-    color: #244a7d;
+    color: var(--ii-primary);
     font-weight: 700;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--ii-text);
+}
+
+/* Cards */
+
+.card {
+    border: 1px solid var(--ii-border);
+    border-radius: var(--ii-radius);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.card-header {
+    background-color: var(--ii-surface);
+    border-bottom: 1px solid var(--ii-border);
+}
+
+/* Buttons */
+
+.btn {
+    border-radius: 7px;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background-color: var(--ii-primary);
+    border-color: var(--ii-primary);
+}
+
+.btn-primary:hover {
+    background-color: var(--ii-primary-hover);
+    border-color: var(--ii-primary-hover);
+}
+
+/* Forms */
+
+.form-control,
+.form-select {
+    border-radius: 7px;
+    border-color: var(--ii-border);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--ii-primary);
+    box-shadow: 0 0 0 0.2rem rgba(36, 74, 125, 0.15);
+}
+
+/* Tables */
+
+.table {
+    vertical-align: middle;
+}
+
+.table thead th {
+    color: var(--ii-muted);
+    font-weight: 600;
+    border-bottom: 2px solid var(--ii-border);
+}
+
+/* Navigation */
+
+.nav-link {
+    border-radius: 7px;
+}
+
+aside .nav-link {
+    color: var(--ii-text);
+    padding: 10px 12px;
+}
+
+aside .nav-link:hover {
+    background-color: #edf2f8;
+    color: var(--ii-primary);
+}
+
+/* Responsive adjustments */
+
+@media (max-width: 767px) {
+    main {
+        padding: 16px !important;
+    }
+
+    .card-body {
+        padding: 16px;
+    }
+
+    h1 {
+        font-size: 1.75rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+}
+
+/* Module 14 — Shared navigation layout */
+
+.navbar {
+    min-height: 60px;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    letter-spacing: 0.2px;
+}
+
+#issueInsightSidebar {
+    min-height: calc(100vh - 60px);
+}
+
+#issueInsightSidebar .nav {
+    gap: 4px;
+}
+
+#issueInsightSidebar .nav-link {
+    transition: background-color 0.15s ease,
+                color 0.15s ease;
+}
+
+main {
+    min-width: 0;
+}
+
+@media (max-width: 991.98px) {
+    #issueInsightSidebar {
+        min-height: auto;
+        border-bottom: 1px solid var(--ii-border);
+    }
+
+    #issueInsightSidebar.collapse:not(.show) {
+        display: none;
+    }
+}
+
+@media (min-width: 992px) {
+    #issueInsightSidebar {
+        display: block !important;
+    }
 }

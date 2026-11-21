@@ -21,7 +21,24 @@
 
     <!-- Top Navigation -->
     <nav class="navbar navbar-dark bg-dark">
-        <div class="container-fluid">
+
+<!-- Mobile navigation toggle -->
+<div class="d-lg-none bg-white border-bottom p-2">
+    <button
+        class="btn btn-outline-primary btn-sm"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#issueInsightSidebar"
+        aria-controls="issueInsightSidebar"
+        aria-expanded="false"
+        aria-label="Toggle navigation">
+        ☰ Menu
+    </button>
+</div>
+
+<!-- Page Layout -->
+<div class="container-fluid">
+
 
             <a class="navbar-brand" href="{% url 'home' %}">
                 IssueInsight
@@ -83,134 +100,148 @@
         <div class="row">
 
             <!-- Sidebar -->
-            <aside class="col-lg-3 col-xl-2 bg-white border-end p-3">
+            
+            <aside
+                id="issueInsightSidebar"
+                class="col-lg-3 col-xl-2 bg-white border-end p-3 collapse d-lg-block">
+
 
                 <h6 class="text-muted mb-3">Navigation</h6>
 
                 <div class="nav flex-column">
 
-                    <a class="nav-link"
-                       href="{% url 'home' %}">
-                        Home
-                    </a>
+                    
+                <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
+                href="{% url 'home' %}"
+                {% if request.resolver_match.url_name == 'home' %}aria-current="page"{% endif %}>
+                    Home
+                </a>
+
 
                     {% if user.is_authenticated %}
 
-                        
-                        {% if user.is_superuser or user.role == 'admin' %}
+                            {% if user.is_superuser or user.role == 'admin' %}
 
-                            <a class="nav-link"
-                            href="{% url 'admin_dashboard' %}">
-                                Admin Dashboard
-                            </a>
+                                <a class="nav-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}"
+                                href="{% url 'admin_dashboard' %}">
+                                    Admin Dashboard
+                                </a>
 
-                            <a class="nav-link"
-                            href="{% url 'manage_users' %}">
-                            User Management
-                            </a>
-                            <a class="nav-link"
+                                <a class="nav-link {% if request.resolver_match.url_name == 'manage_users' %}active{% endif %}"
+                                href="{% url 'manage_users' %}">
+                                    User Management
+                                </a>
+
+                                <a class="nav-link {% if request.resolver_match.url_name == 'manage_departments' %}active{% endif %}"
                                 href="{% url 'manage_departments' %}">
                                     Departments
                                 </a>
-                                <a class="nav-link"
+
+                                <a class="nav-link {% if request.resolver_match.url_name == 'manage_announcements' %}active{% endif %}"
                                 href="{% url 'manage_announcements' %}">
                                     Manage Announcements
                                 </a>
-                                <a class="nav-link"
+
+                                <a class="nav-link {% if request.resolver_match.url_name == 'admin_all_complaints' %}active{% endif %}"
                                 href="{% url 'admin_all_complaints' %}">
                                     All Complaints
                                 </a>
-                                <a class="nav-link"
+
+                                <a class="nav-link {% if request.resolver_match.url_name == 'admin_pending_routing' %}active{% endif %}"
                                 href="{% url 'admin_pending_routing' %}">
-                                Pending Routing
-                            </a>
+                                    Pending Routing
+                                </a>
 
-                            <a class="nav-link"
-                            href="{% url 'manage_categories' %}">
-                                Categories
-                            </a>
-                            <a class="nav-link"
-                            href="{% url 'manage_products' %}">
-                                Software Products
-                            </a>
+                                <a class="nav-link {% if request.resolver_match.url_name == 'manage_categories' %}active{% endif %}"
+                                href="{% url 'manage_categories' %}">
+                                    Categories
+                                </a>
 
-                            
-                            <a class="nav-link"
-                            href="{% url 'admin_reports' %}">
-                                Complaint Reports
-                            </a>
+                                <a class="nav-link {% if request.resolver_match.url_name == 'manage_products' %}active{% endif %}"
+                                href="{% url 'manage_products' %}">
+                                    Software Products
+                                </a>
 
+                                <a class="nav-link {% if request.resolver_match.url_name == 'admin_reports' %}active{% endif %}"
+                                href="{% url 'admin_reports' %}">
+                                    Complaint Reports
+                                </a>
 
-                        {% elif user.role == 'employee' %}
+                            {% elif user.role == 'employee' %}
 
-                            <a class="nav-link"
-                            href="{% url 'employee_dashboard' %}">
-                                Employee Dashboard
-                            </a>
+                                <a class="nav-link {% if request.resolver_match.url_name == 'employee_dashboard' %}active{% endif %}"
+                                href="{% url 'employee_dashboard' %}">
+                                    Employee Dashboard
+                                </a>
 
-                           <a class="nav-link"
+                                <a class="nav-link {% if request.resolver_match.url_name == 'submit_employee_complaint' %}active{% endif %}"
                                 href="{% url 'submit_employee_complaint' %}">
                                     Submit Complaint
                                 </a>
 
-                                <a class="nav-link"
+                                <a class="nav-link {% if request.resolver_match.url_name == 'employee_my_tickets' %}active{% endif %}"
                                 href="{% url 'employee_my_tickets' %}">
                                     My Tickets
                                 </a>
 
-                        {% elif user.role == 'customer' %}
+                            {% elif user.role == 'customer' %}
 
-                            <a class="nav-link"
-                            href="{% url 'customer_dashboard' %}">
-                                Customer Dashboard
-                            </a>
+                                <a class="nav-link {% if request.resolver_match.url_name == 'customer_dashboard' %}active{% endif %}"
+                                href="{% url 'customer_dashboard' %}">
+                                    Customer Dashboard
+                                </a>
 
-                            <a class="nav-link"
+                                <a class="nav-link {% if request.resolver_match.url_name == 'submit_customer_complaint' %}active{% endif %}"
                                 href="{% url 'submit_customer_complaint' %}">
                                     Submit Complaint
                                 </a>
 
-                                <a class="nav-link"
+                                <a class="nav-link {% if request.resolver_match.url_name == 'customer_my_tickets' %}active{% endif %}"
                                 href="{% url 'customer_my_tickets' %}">
                                     My Tickets
                                 </a>
 
                         {% elif user.role == 'support' %}
 
-                            
-                            <a class="nav-link"
+                            <a class="nav-link {% if request.resolver_match.url_name == 'support_reports' %}active{% endif %}"
                             href="{% url 'support_reports' %}">
                                 Department Reports
                             </a>
 
-
-                            <a class="nav-link"
+                            <a class="nav-link {% if request.resolver_match.url_name == 'support_dashboard' %}active{% endif %}"
                             href="{% url 'support_dashboard' %}">
                                 Support Dashboard
                             </a>
 
-                            <a class="nav-link"
+                            <a class="nav-link {% if request.resolver_match.url_name == 'support_department_queue' %}active{% endif %}"
                             href="{% url 'support_department_queue' %}">
                                 Department Queue
                             </a>
 
-                            <a class="nav-link"
+                            <a class="nav-link {% if request.resolver_match.url_name == 'support_assigned_tickets' %}active{% endif %}"
                             href="{% url 'support_assigned_tickets' %}">
                                 Assigned Tickets
                             </a>
 
-                            <a class="nav-link"
-                                href="{% url 'support_incident_list' %}">
+                            <a class="nav-link {% if request.resolver_match.url_name == 'support_incident_list' %}active{% endif %}"
+                            href="{% url 'support_incident_list' %}">
                                 Incidents
                             </a>
+
                             {% if request.user.department and request.user.department.name == 'Product Support' %}
-                            <a class="nav-link"
-                            href="{% url 'support_recurring_product_issues' %}">
-                                Recurring Product Issues
-                            </a>
+
+                                <a class="nav-link {% if request.resolver_match.url_name == 'support_recurring_product_issues' %}active{% endif %}"
+                                href="{% url 'support_recurring_product_issues' %}">
+                                    Recurring Product Issues
+                                </a>
+
                             {% endif %}
 
                         {% endif %}
+
+                        
+
+                        
 
 
                         {% if user.is_staff %}

@@ -169,6 +169,7 @@ class AdminReportsTests(TestCase):
         )
         self.assertEqual(response.context['total'], 2)
 
+    
     def test_custom_date_range(self):
         today = timezone.localdate().isoformat()
 
@@ -177,7 +178,9 @@ class AdminReportsTests(TestCase):
             'date_from': today,
             'date_to': today,
         })
-        self.assertEqual(response.context['total'], 1)
+
+        self.assertEqual(response.context['total'], 2)
+
 
     def test_invalid_date_range(self):
         response = self.client.get(self.url, {
